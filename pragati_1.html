@@ -1,0 +1,2031 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+<title>Pragati — Daily Growth</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0F1D18;
+  --surface:#17281F;
+  --surface-2:#1F3527;
+  --surface-3:#28422F;
+  --border:#31493B;
+  --border-soft:#25392C;
+  --text:#F2EFE3;
+  --text-dim:#A9BCAC;
+  --text-faint:#71897A;
+  --gold:#E3A857;
+  --gold-dim:#B9884A;
+  --gold-soft:rgba(227,168,87,.16);
+  --sage:#84B594;
+  --sage-soft:rgba(132,181,148,.16);
+  --coral:#DD7259;
+  --coral-soft:rgba(221,114,89,.16);
+  --radius-sm:10px;
+  --radius:16px;
+  --radius-lg:24px;
+  --shadow: 0 16px 40px -16px rgba(0,0,0,.55);
+  --font-display:'Fraunces', Georgia, 'Times New Roman', serif;
+  --font-body:'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-mono:'JetBrains Mono', 'SF Mono', Consolas, monospace;
+  --nav-w: 252px;
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{
+  background:
+    radial-gradient(1100px 550px at 105% -10%, rgba(227,168,87,.08), transparent 60%),
+    radial-gradient(900px 500px at -10% 105%, rgba(132,181,148,.10), transparent 60%),
+    var(--bg);
+  color:var(--text);
+  font-family:var(--font-body);
+  min-height:100vh;
+  -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3,h4{font-family:var(--font-display); font-weight:600; margin:0; letter-spacing:.2px;}
+p{margin:0;}
+button{font-family:inherit; cursor:pointer;}
+input,select,textarea{font-family:inherit;}
+a{color:inherit;}
+::selection{background:var(--gold-soft); color:var(--text);}
+:focus-visible{outline:2px solid var(--gold); outline-offset:2px; border-radius:6px;}
+@media (prefers-reduced-motion: reduce){
+  *{animation-duration:.01ms !important; transition-duration:.01ms !important;}
+}
+
+/* ---------- Layout ---------- */
+#app{display:flex; min-height:100vh;}
+.sidebar{
+  width:var(--nav-w); flex-shrink:0; background:var(--surface);
+  border-right:1px solid var(--border-soft);
+  display:flex; flex-direction:column; padding:22px 16px;
+  position:fixed; top:0; left:0; bottom:0; z-index:40;
+  transition:transform .28s ease;
+}
+.brand{display:flex; align-items:center; gap:10px; padding:6px 8px 20px 8px;}
+.brand-mark{width:34px;height:34px; flex-shrink:0;}
+.brand-name{font-family:var(--font-display); font-size:21px; font-weight:700; color:var(--text);}
+.brand-sub{font-size:11px; color:var(--text-faint); letter-spacing:.4px; text-transform:uppercase; margin-top:1px;}
+.nav-list{list-style:none; margin:6px 0 0 0; padding:0; display:flex; flex-direction:column; gap:2px; overflow-y:auto;}
+.nav-item{
+  display:flex; align-items:center; gap:12px; padding:10px 12px; border-radius:12px;
+  color:var(--text-dim); font-size:14.5px; font-weight:600; background:transparent; border:none; width:100%; text-align:left;
+  transition:background .15s ease, color .15s ease;
+}
+.nav-item:hover{background:var(--surface-2); color:var(--text);}
+.nav-item.active{background:linear-gradient(135deg, var(--gold-soft), var(--sage-soft)); color:var(--text);}
+.nav-icon{
+  width:30px; height:30px; border-radius:9px; background:var(--surface-3); display:flex; align-items:center; justify-content:center;
+  font-size:15px; flex-shrink:0;
+}
+.nav-item.active .nav-icon{background:var(--gold); color:var(--surface);}
+.sidebar-foot{margin-top:auto; padding:14px 8px 4px; font-size:11.5px; color:var(--text-faint); line-height:1.5;}
+
+.overlay{position:fixed; inset:0; background:rgba(6,12,9,.55); z-index:35; opacity:0; pointer-events:none; transition:opacity .2s ease;}
+.overlay.visible{opacity:1; pointer-events:auto;}
+.mobile-topbar{display:none;}
+
+.main{flex:1; margin-left:var(--nav-w); min-width:0; display:flex; flex-direction:column;}
+.topbar{
+  padding:26px 36px 14px; display:flex; align-items:flex-end; justify-content:space-between; gap:20px; flex-wrap:wrap;
+}
+.topbar-date{font-size:12.5px; color:var(--text-faint); text-transform:uppercase; letter-spacing:.6px; font-weight:600;}
+.topbar-greet{font-family:var(--font-display); font-size:26px; margin-top:4px;}
+.topbar-stats{display:flex; gap:10px; flex-wrap:wrap;}
+.stat-pill{
+  background:var(--surface); border:1px solid var(--border-soft); border-radius:999px; padding:8px 14px;
+  display:flex; align-items:center; gap:7px; font-size:12.5px; color:var(--text-dim); white-space:nowrap;
+}
+.stat-pill b{color:var(--text); font-family:var(--font-mono); font-weight:600;}
+.view-root{padding:8px 36px 60px;}
+
+/* ---------- Components ---------- */
+.card{
+  background:var(--surface); border:1px solid var(--border-soft); border-radius:var(--radius-lg);
+  padding:22px; box-shadow:var(--shadow);
+}
+.card + .card{margin-top:18px;}
+.section-title{font-size:22px; margin-bottom:4px;}
+.section-sub{color:var(--text-dim); font-size:14px; margin-bottom:22px; line-height:1.5;}
+.row{display:flex; gap:16px; flex-wrap:wrap;}
+.col{flex:1; min-width:220px;}
+.grid-2{display:grid; grid-template-columns:1fr 1fr; gap:16px;}
+.grid-3{display:grid; grid-template-columns:repeat(3,1fr); gap:16px;}
+@media(max-width:720px){.grid-2,.grid-3{grid-template-columns:1fr;}}
+
+.btn{
+  display:inline-flex; align-items:center; gap:8px; padding:10px 16px; border-radius:11px; border:1px solid var(--border);
+  background:var(--surface-2); color:var(--text); font-size:13.5px; font-weight:600; transition:transform .12s ease, background .15s ease, border-color .15s ease;
+}
+.btn:hover{background:var(--surface-3); border-color:var(--gold-dim);}
+.btn:active{transform:scale(.97);}
+.btn-primary{background:var(--gold); color:#20160A; border-color:var(--gold);}
+.btn-primary:hover{background:#eeb66a; border-color:#eeb66a;}
+.btn-ghost{background:transparent; border-color:transparent; color:var(--text-dim); padding:8px 10px;}
+.btn-ghost:hover{background:var(--surface-2); color:var(--text);}
+.btn-danger{background:transparent; border-color:var(--coral); color:var(--coral);}
+.btn-danger:hover{background:var(--coral-soft);}
+.btn-sm{padding:7px 12px; font-size:12.5px; border-radius:9px;}
+.btn-block{width:100%; justify-content:center;}
+.icon-btn{
+  width:32px; height:32px; border-radius:9px; background:transparent; border:1px solid transparent; color:var(--text-faint);
+  display:flex; align-items:center; justify-content:center; font-size:14px; flex-shrink:0;
+}
+.icon-btn:hover{background:var(--surface-3); color:var(--text);}
+
+.field{display:flex; flex-direction:column; gap:6px; margin-bottom:14px;}
+.field label{font-size:12.5px; font-weight:700; color:var(--text-dim); text-transform:uppercase; letter-spacing:.3px;}
+.input,.select,.textarea{
+  background:var(--surface-2); border:1px solid var(--border); border-radius:10px; padding:10px 12px; color:var(--text); font-size:14px; width:100%;
+}
+.input:focus,.select:focus,.textarea:focus{border-color:var(--gold-dim);}
+.textarea{resize:vertical; min-height:64px;}
+.input-row{display:flex; gap:10px;}
+
+.slider{-webkit-appearance:none; appearance:none; width:100%; height:6px; border-radius:99px; background:var(--surface-3); outline:none;}
+.slider::-webkit-slider-thumb{-webkit-appearance:none; width:20px; height:20px; border-radius:50%; background:var(--gold); cursor:pointer; border:3px solid var(--surface); box-shadow:0 2px 6px rgba(0,0,0,.4);}
+.slider::-moz-range-thumb{width:20px; height:20px; border-radius:50%; background:var(--gold); cursor:pointer; border:3px solid var(--surface);}
+
+.badge{display:inline-flex; align-items:center; gap:5px; font-size:11.5px; font-weight:700; padding:4px 10px; border-radius:999px;}
+.badge-sage{background:var(--sage-soft); color:var(--sage);}
+.badge-gold{background:var(--gold-soft); color:var(--gold);}
+.badge-coral{background:var(--coral-soft); color:var(--coral);}
+.badge-muted{background:var(--surface-3); color:var(--text-dim);}
+
+.progress{height:8px; border-radius:99px; background:var(--surface-3); overflow:hidden;}
+.progress > div{height:100%; background:linear-gradient(90deg, var(--sage), var(--gold)); border-radius:99px; transition:width .4s ease;}
+
+.list{display:flex; flex-direction:column; gap:10px;}
+.list-item{
+  display:flex; align-items:center; gap:14px; padding:13px 14px; border-radius:13px; background:var(--surface-2); border:1px solid var(--border-soft);
+}
+.list-item-main{flex:1; min-width:0;}
+.list-item-title{font-size:14.5px; font-weight:700; color:var(--text);}
+.list-item-sub{font-size:12.5px; color:var(--text-dim); margin-top:2px; line-height:1.4;}
+.list-item-amount{font-family:var(--font-mono); font-weight:600; font-size:14.5px; white-space:nowrap;}
+.list-item-actions{display:flex; gap:4px; flex-shrink:0;}
+
+.empty-state{
+  text-align:center; padding:34px 20px; color:var(--text-faint);
+}
+.empty-state .emoji{font-size:30px; display:block; margin-bottom:10px;}
+.empty-state p{font-size:13.5px; line-height:1.6;}
+
+.checkbox-row{display:flex; align-items:center; gap:12px; padding:12px 14px; border-radius:13px; background:var(--surface-2); border:1px solid var(--border-soft);}
+.checkbox{
+  width:24px; height:24px; border-radius:8px; border:2px solid var(--border); flex-shrink:0; display:flex; align-items:center; justify-content:center;
+  background:var(--surface); transition:all .15s ease; font-size:13px; color:transparent;
+}
+.checkbox.checked{background:var(--sage); border-color:var(--sage); color:var(--surface);}
+
+.tabs{display:flex; gap:6px; overflow-x:auto; padding-bottom:2px; margin-bottom:20px;}
+.tab{
+  padding:9px 15px; border-radius:11px; background:var(--surface-2); border:1px solid var(--border-soft); color:var(--text-dim);
+  font-size:13px; font-weight:700; white-space:nowrap; flex-shrink:0;
+}
+.tab.active{background:var(--gold); color:#20160A; border-color:var(--gold);}
+
+.stat-box{background:var(--surface-2); border:1px solid var(--border-soft); border-radius:16px; padding:18px;}
+.stat-box .num{font-family:var(--font-mono); font-size:26px; font-weight:700; color:var(--text);}
+.stat-box .lbl{font-size:12px; color:var(--text-dim); margin-top:4px;}
+
+.timer-wrap{display:flex; flex-direction:column; align-items:center; gap:18px; padding:14px 0 6px;}
+.timer-durations{display:flex; gap:8px;}
+.dur-btn{padding:8px 16px; border-radius:999px; border:1px solid var(--border); background:var(--surface-2); color:var(--text-dim); font-size:13px; font-weight:700;}
+.dur-btn.active{background:var(--sage-soft); border-color:var(--sage); color:var(--sage);}
+.timer-ring{
+  width:190px; height:190px; border-radius:50%; border:5px solid var(--sage); display:flex; flex-direction:column; align-items:center; justify-content:center;
+  background:var(--surface-2);
+}
+.timer-ring .time{font-family:var(--font-mono); font-size:38px; font-weight:700;}
+.timer-ring .lbl{font-size:11.5px; color:var(--text-faint); margin-top:4px; text-transform:uppercase; letter-spacing:.5px;}
+.timer-actions{display:flex; gap:10px; flex-wrap:wrap; justify-content:center;}
+
+.breath-circle{
+  width:190px; height:190px; border-radius:50%;
+  background:radial-gradient(circle at 38% 30%, var(--sage-soft), var(--surface-2));
+  border:3px solid var(--sage); display:flex; flex-direction:column; align-items:center; justify-content:center;
+  transform:scale(.72); transition:transform 1s ease-in-out;
+}
+.breath-phase{font-weight:700; font-size:14.5px; letter-spacing:.4px;}
+.breath-count{font-family:var(--font-mono); font-size:26px; margin-top:4px;}
+
+.video-embed{position:relative; width:100%; padding-top:56.25%; border-radius:14px; overflow:hidden; background:#000;}
+.video-embed iframe{position:absolute; inset:0; width:100%; height:100%; border:0;}
+
+.weight-chart{width:100%; height:auto; display:block;}
+.chart-label{font-family:var(--font-mono); font-size:9px; fill:var(--text-faint);}
+.chart-label.gold{fill:var(--gold);}
+
+.sprout-wrap{display:flex; align-items:center; gap:22px; flex-wrap:wrap;}
+
+.modal-overlay{
+  position:fixed; inset:0; background:rgba(6,12,9,.62); z-index:60; display:flex; align-items:flex-end; justify-content:center;
+  opacity:0; pointer-events:none; transition:opacity .18s ease;
+}
+.modal-overlay.visible{opacity:1; pointer-events:auto;}
+.modal{
+  background:var(--surface); border:1px solid var(--border); border-radius:22px 22px 0 0; width:100%; max-width:480px; max-height:88vh; overflow-y:auto;
+  padding:24px 22px 26px; transform:translateY(24px); transition:transform .22s ease;
+}
+.modal-overlay.visible .modal{transform:translateY(0);}
+@media(min-width:640px){
+  .modal-overlay{align-items:center;}
+  .modal{border-radius:22px;}
+}
+.modal-header{display:flex; align-items:center; justify-content:space-between; margin-bottom:18px;}
+.modal-footer{display:flex; gap:10px; margin-top:6px;}
+
+.toast-host{position:fixed; bottom:22px; left:50%; transform:translateX(-50%); z-index:80; display:flex; flex-direction:column; gap:8px; align-items:center;}
+.toast{background:var(--surface-3); border:1px solid var(--border); color:var(--text); padding:10px 18px; border-radius:11px; font-size:13px; font-weight:600; box-shadow:var(--shadow); animation:toast-in .18s ease;}
+.toast.error{border-color:var(--coral); color:var(--coral);}
+@keyframes toast-in{from{opacity:0; transform:translateY(8px);} to{opacity:1; transform:translateY(0);}}
+
+.loading-screen{position:fixed; inset:0; background:var(--bg); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:14px; z-index:100;}
+.loading-screen .lbl{color:var(--text-faint); font-size:13px;}
+
+.helper-text{font-size:12px; color:var(--text-faint); margin-top:-6px; margin-bottom:14px; line-height:1.5;}
+
+/* Mobile */
+@media(max-width:900px){
+  :root{--nav-w:0px;}
+  .sidebar{transform:translateX(-100%); width:270px;}
+  .sidebar.open{transform:translateX(0);}
+  .main{margin-left:0;}
+  .mobile-topbar{
+    display:flex; align-items:center; gap:12px; padding:16px 18px; position:sticky; top:0; z-index:30;
+    background:var(--bg); border-bottom:1px solid var(--border-soft);
+  }
+  .mobile-topbar .brand-name{font-size:18px;}
+  .topbar{padding:20px 18px 10px;}
+  .view-root{padding:8px 18px 60px;}
+  .grid-3{grid-template-columns:1fr 1fr;}
+}
+@media(max-width:480px){
+  .grid-3{grid-template-columns:1fr;}
+  .timer-ring, .breath-circle{width:160px; height:160px;}
+  .timer-ring .time, .breath-count{font-size:30px;}
+}
+</style>
+</head>
+<body>
+
+<div id="loadingScreen" class="loading-screen">
+  <svg width="46" height="46" viewBox="0 0 120 100"><line x1="60" y1="95" x2="60" y2="30" stroke="#84B594" stroke-width="4" stroke-linecap="round"/><circle cx="60" cy="26" r="8" fill="#E3A857"/></svg>
+  <div class="lbl">Loading your Pragati space…</div>
+</div>
+
+<div id="app" style="display:none;">
+  <div class="mobile-topbar">
+    <button class="icon-btn" id="hamburgerBtn" style="font-size:20px;">☰</button>
+    <span class="brand-name">Pragati</span>
+  </div>
+
+  <div class="overlay" id="overlay"></div>
+
+  <nav class="sidebar" id="sidebar">
+    <div class="brand">
+      <svg class="brand-mark" viewBox="0 0 120 100"><line x1="60" y1="95" x2="60" y2="28" stroke="#84B594" stroke-width="5" stroke-linecap="round"/><path d="M60 55 q-20 -6 -25 12 q18 5 25 -11" fill="#84B594"/><path d="M60 55 q20 -6 25 12 q-18 5 -25 -11" fill="#84B594"/><circle cx="60" cy="24" r="8" fill="#E3A857"/></svg>
+      <div>
+        <div class="brand-name">Pragati</div>
+        <div class="brand-sub">Daily growth</div>
+      </div>
+    </div>
+    <ul class="nav-list" id="navList"></ul>
+    <div class="sidebar-foot">Saved automatically on this device.<br>Everything here is private to you.</div>
+  </nav>
+
+  <div class="main">
+    <div class="topbar">
+      <div>
+        <div class="topbar-date" id="topbarDate"></div>
+        <div class="topbar-greet" id="topbarGreet"></div>
+      </div>
+      <div class="topbar-stats" id="topbarStats"></div>
+    </div>
+    <div class="view-root" id="viewRoot"></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="modalTitle">Add</h3>
+      <button class="icon-btn" id="modalCloseBtn">✕</button>
+    </div>
+    <form id="modalForm"></form>
+  </div>
+</div>
+
+<div class="toast-host" id="toastHost"></div>
+
+<script>
+(function(){
+"use strict";
+
+/* ===================== Constants ===================== */
+const NAV_ITEMS = [
+  {id:'dashboard', label:'Dashboard', icon:'🏠'},
+  {id:'ritual', label:'Morning Ritual', icon:'🌅'},
+  {id:'habits', label:'Habit Tracker', icon:'✅'},
+  {id:'fitness', label:'Fitness', icon:'💪'},
+  {id:'expenses', label:'Expenses', icon:'💰'},
+  {id:'growth', label:'Personal Growth', icon:'✨'},
+  {id:'mistakes', label:'Lessons Journal', icon:'🪞'},
+  {id:'relationships', label:'Relationships', icon:'🤝'},
+  {id:'gratitude', label:'Gratitude', icon:'🙏'},
+  {id:'export', label:'Weekly Export', icon:'📊'},
+];
+
+const RITUAL_PRACTICES = [
+  {id:'meditation', label:'Meditation', icon:'🧘', hint:'Sit quietly, observe your breath.'},
+  {id:'recovery', label:'Recovery', icon:'🦵', hint:'Mobility work, cool-down, easing tight muscles.'},
+  {id:'mangalMaitri', label:'Mangal Maitri', icon:'🤲', hint:'A few quiet minutes of goodwill for others.'},
+  {id:'stretching', label:'Stretching', icon:'🤸', hint:'Work through the list, one stretch at a time.'},
+  {id:'read', label:'Read', icon:'📖', hint:'A few pages of something worth reading.'},
+  {id:'breathing', label:'Breathing', icon:'🌬️', hint:'Slow, deliberate breathwork.'},
+];
+
+const EXPENSE_CATEGORIES = ['Food','Petrol/Fuel','Transport','Groceries','Shopping','Fashion','Fun & Entertainment','Bills & Utilities','Health','Family & Gifts','Business','Other'];
+
+const MANGAL_MAITRI_VIDEO_ID = 'euCByLM6Mpo';
+
+/* ===================== State ===================== */
+let state = {
+  profile:{ name:'', currentWeight:null, goalWeight:null, startWeight:null },
+  habits:[],
+  habitLogs:{},
+  ritualLogs:{},
+  breathingSettings:{ inhale:4, hold1:0, exhale:6, hold2:0, durationMin:6 },
+  stretchExercises:[],
+  weightLog:[],
+  workoutEntries:[],
+  expenses:[],
+  growthEntries:[],
+  growthTasks:[],
+  growthTaskLogs:{},
+  mistakeEntries:[],
+  relationships:[],
+  relationshipEntries:[],
+  relationshipTasks:[],
+  relationshipTaskLogs:{},
+  gratitudeEntries:[],
+};
+let currentView = 'dashboard';
+let activeTimer = null;  // generic ritual timer: {practiceId, remaining, totalSeconds, intervalId, running}
+let breathTimer = null;  // breathing timer: {phaseIdx, phaseRemaining, cyclesDone, totalCycles, running, finished, intervalId}
+let ritualActiveTab = RITUAL_PRACTICES[0].id;
+
+/* ===================== Utils ===================== */
+function toDateStr(d){
+  const y=d.getFullYear(), m=String(d.getMonth()+1).padStart(2,'0'), day=String(d.getDate()).padStart(2,'0');
+  return `${y}-${m}-${day}`;
+}
+function todayStr(){ return toDateStr(new Date()); }
+function parseDate(ds){ return new Date(ds+'T00:00:00'); }
+function formatDateNice(ds){
+  if(!ds) return '';
+  return parseDate(ds).toLocaleDateString('en-IN', {weekday:'short', day:'numeric', month:'short'});
+}
+function formatDateShort(ds){
+  if(!ds) return '';
+  return parseDate(ds).toLocaleDateString('en-IN', {day:'numeric', month:'short'});
+}
+function uid(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,7); }
+function escapeHtml(s){ return String(s==null?'':s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function clamp(n,min,max){ return Math.max(min, Math.min(max, n)); }
+function daysAgoStr(n){ const d=new Date(); d.setDate(d.getDate()-n); return toDateStr(d); }
+function lastNDates(n){ const arr=[]; for(let i=n-1;i>=0;i--) arr.push(daysAgoStr(i)); return arr; }
+
+function computeStreak(successSet){
+  let cursor = new Date();
+  if(!successSet.has(toDateStr(cursor))) cursor.setDate(cursor.getDate()-1);
+  let streak=0;
+  while(successSet.has(toDateStr(cursor))){
+    streak++;
+    cursor.setDate(cursor.getDate()-1);
+  }
+  return streak;
+}
+
+function showToast(msg, kind){
+  const host = document.getElementById('toastHost');
+  const t = document.createElement('div');
+  t.className = 'toast'+(kind==='error'?' error':'');
+  t.textContent = msg;
+  host.appendChild(t);
+  setTimeout(()=>{ t.remove(); }, 2600);
+}
+
+/* ===================== Storage ===================== */
+const STORAGE_KEYS = {
+  profile:'profile', habits:'habits', habitLogs:'habit-logs', ritualLogs:'ritual-logs',
+  breathingSettings:'breathing-settings', stretchExercises:'stretch-exercises',
+  weightLog:'weight-log', workoutEntries:'workout-entries', expenses:'expenses',
+  growthEntries:'growth-entries', growthTasks:'growth-tasks', growthTaskLogs:'growth-task-logs',
+  mistakeEntries:'mistake-entries',
+  relationships:'relationships', relationshipEntries:'relationship-entries',
+  relationshipTasks:'relationship-tasks', relationshipTaskLogs:'relationship-task-logs',
+  gratitudeEntries:'gratitude-entries',
+};
+
+async function loadKey(key, fallback){
+  try{
+    const res = await window.storage.get(key, false);
+    if(res && res.value){ return JSON.parse(res.value); }
+    return fallback;
+  }catch(e){ return fallback; }
+}
+async function saveKey(stateKey){
+  const key = STORAGE_KEYS[stateKey];
+  try{
+    const res = await window.storage.set(key, JSON.stringify(state[stateKey]), false);
+    if(!res){ showToast('Could not save — try again', 'error'); }
+  }catch(e){
+    console.error(e);
+    showToast('Save failed — check connection', 'error');
+  }
+}
+
+async function loadAll(){
+  const [profile, habits, habitLogs, ritualLogs, breathingSettings, stretchExercises, weightLog, workoutEntries, expenses, growthEntries, growthTasks, growthTaskLogs, mistakeEntries, relationships, relationshipEntries, relationshipTasks, relationshipTaskLogs, gratitudeEntries] = await Promise.all([
+    loadKey(STORAGE_KEYS.profile, {name:'', currentWeight:null, goalWeight:null, startWeight:null}),
+    loadKey(STORAGE_KEYS.habits, seedHabits()),
+    loadKey(STORAGE_KEYS.habitLogs, {}),
+    loadKey(STORAGE_KEYS.ritualLogs, {}),
+    loadKey(STORAGE_KEYS.breathingSettings, defaultBreathingSettings()),
+    loadKey(STORAGE_KEYS.stretchExercises, seedStretchExercises()),
+    loadKey(STORAGE_KEYS.weightLog, []),
+    loadKey(STORAGE_KEYS.workoutEntries, []),
+    loadKey(STORAGE_KEYS.expenses, []),
+    loadKey(STORAGE_KEYS.growthEntries, []),
+    loadKey(STORAGE_KEYS.growthTasks, seedGrowthTasks()),
+    loadKey(STORAGE_KEYS.growthTaskLogs, {}),
+    loadKey(STORAGE_KEYS.mistakeEntries, []),
+    loadKey(STORAGE_KEYS.relationships, seedRelationships()),
+    loadKey(STORAGE_KEYS.relationshipEntries, []),
+    loadKey(STORAGE_KEYS.relationshipTasks, seedRelationshipTasks()),
+    loadKey(STORAGE_KEYS.relationshipTaskLogs, {}),
+    loadKey(STORAGE_KEYS.gratitudeEntries, []),
+  ]);
+  state = {profile, habits, habitLogs, ritualLogs, breathingSettings, stretchExercises, weightLog, workoutEntries, expenses, growthEntries, growthTasks, growthTaskLogs, mistakeEntries, relationships, relationshipEntries, relationshipTasks, relationshipTaskLogs, gratitudeEntries};
+}
+
+function seedHabits(){
+  return [
+    {id:uid(), name:'Up by 5:30 AM', icon:'⏰'},
+    {id:uid(), name:'Asleep by 10:30 PM', icon:'🌙'},
+    {id:uid(), name:'1 litre water first thing', icon:'💧'},
+    {id:uid(), name:'Morning affirmation', icon:'💬'},
+    {id:uid(), name:'Visualisation', icon:'🎯'},
+    {id:uid(), name:'One most important thing', icon:'✅'},
+    {id:uid(), name:'Fruits, nuts & seeds', icon:'🥜'},
+    {id:uid(), name:'10,000 steps', icon:'🚶'},
+  ];
+}
+function seedRelationships(){
+  return [ {id:uid(), name:'Parents'}, {id:uid(), name:'Wife'} ];
+}
+function seedStretchExercises(){
+  return [
+    {id:uid(), name:'Neck rolls'},
+    {id:uid(), name:'Shoulder rolls'},
+    {id:uid(), name:'Arm circles'},
+    {id:uid(), name:'Standing forward fold'},
+    {id:uid(), name:'Cat-cow'},
+    {id:uid(), name:'Cobra stretch'},
+    {id:uid(), name:'Hamstring stretch'},
+    {id:uid(), name:'Seated spinal twist'},
+  ];
+}
+function seedRelationshipTasks(){
+  return [
+    {id:uid(), name:'Zero fight today', icon:'🕊️'},
+    {id:uid(), name:'Quality time, no phone', icon:'⏳'},
+    {id:uid(), name:'Say sorry if needed', icon:'🙏'},
+    {id:uid(), name:'Say thank you', icon:'🌸'},
+    {id:uid(), name:'Say I love you', icon:'❤️'},
+    {id:uid(), name:'Zero irritated tone', icon:'🎐'},
+  ];
+}
+function seedGrowthTasks(){
+  return [
+    {id:uid(), name:'No complaining today', icon:'🚫'},
+    {id:uid(), name:'One act of giving', icon:'🎁'},
+    {id:uid(), name:'5-min mindful walk', icon:'🚶'},
+    {id:uid(), name:'Study a successful person', icon:'📘'},
+    {id:uid(), name:'Up with the 5-second rule', icon:'⏱️'},
+  ];
+}
+function defaultBreathingSettings(){
+  return {inhale:4, hold1:0, exhale:6, hold2:0, durationMin:6};
+}
+
+/* ===================== Modal ===================== */
+function openModal({title, fields, values, submitLabel, onSubmit, onDelete}){
+  const overlay = document.getElementById('modalOverlay');
+  document.getElementById('modalTitle').textContent = title;
+  const oldForm = document.getElementById('modalForm');
+  const form = oldForm.cloneNode(false);
+  oldForm.replaceWith(form);
+
+  let html = '';
+  fields.forEach(f=>{
+    const val = values && values[f.key]!=null ? values[f.key] : '';
+    html += `<div class="field"><label>${escapeHtml(f.label)}</label>`;
+    if(f.type==='textarea'){
+      html += `<textarea class="textarea" name="${f.key}" placeholder="${escapeHtml(f.placeholder||'')}" ${f.required?'required':''}>${escapeHtml(val)}</textarea>`;
+    } else if(f.type==='select'){
+      html += `<select class="select" name="${f.key}" ${f.required?'required':''}>`;
+      (f.options||[]).forEach(opt=>{
+        const ov = typeof opt==='object'?opt.value:opt;
+        const ol = typeof opt==='object'?opt.label:opt;
+        html += `<option value="${escapeHtml(ov)}" ${String(ov)===String(val)?'selected':''}>${escapeHtml(ol)}</option>`;
+      });
+      html += `</select>`;
+    } else {
+      html += `<input class="input" type="${f.type||'text'}" name="${f.key}" value="${escapeHtml(val)}" placeholder="${escapeHtml(f.placeholder||'')}" ${f.step?`step="${f.step}"`:''} ${f.required?'required':''}>`;
+    }
+    if(f.helper) html += `<div class="helper-text">${escapeHtml(f.helper)}</div>`;
+    html += `</div>`;
+  });
+  html += `<div class="modal-footer">`;
+  if(onDelete){ html += `<button type="button" class="btn btn-danger" id="modalDeleteBtn">Delete</button>`; }
+  html += `<button type="button" class="btn btn-ghost" id="modalCancelBtn">Cancel</button>
+    <button type="submit" class="btn btn-primary" style="flex:1;">${escapeHtml(submitLabel||'Save')}</button>
+  </div>`;
+  form.innerHTML = html;
+
+  overlay.classList.add('visible');
+  const closeIt = ()=> overlay.classList.remove('visible');
+  document.getElementById('modalCancelBtn').addEventListener('click', closeIt);
+  document.getElementById('modalCloseBtn').onclick = closeIt;
+  if(onDelete){
+    document.getElementById('modalDeleteBtn').addEventListener('click', ()=>{ closeIt(); onDelete(); });
+  }
+  form.addEventListener('submit', (e)=>{
+    e.preventDefault();
+    const data = {};
+    fields.forEach(f=>{
+      const el = form.elements[f.key];
+      let v = el.value;
+      if(f.type==='number') v = v===''? null : parseFloat(v);
+      data[f.key] = v;
+    });
+    closeIt();
+    onSubmit(data);
+  });
+}
+document.getElementById('modalOverlay').addEventListener('click', (e)=>{
+  if(e.target.id==='modalOverlay') e.target.classList.remove('visible');
+});
+
+/* ===================== Rendering shell ===================== */
+function renderNav(){
+  const list = document.getElementById('navList');
+  list.innerHTML = NAV_ITEMS.map(item=>`
+    <li>
+      <button class="nav-item ${currentView===item.id?'active':''}" data-nav="${item.id}">
+        <span class="nav-icon">${item.icon}</span> ${item.label}
+      </button>
+    </li>`).join('');
+}
+function renderTopbar(){
+  const d = new Date();
+  document.getElementById('topbarDate').textContent = d.toLocaleDateString('en-IN', {weekday:'long', day:'numeric', month:'long', year:'numeric'});
+  const hour = d.getHours();
+  const greetWord = hour<12?'Good morning':hour<17?'Good afternoon':'Good evening';
+  const name = state.profile.name ? `, ${state.profile.name}` : '';
+  document.getElementById('topbarGreet').textContent = `${greetWord}${name} 🙏`;
+
+  const today = todayStr();
+  const ritualDone = RITUAL_PRACTICES.filter(p=> (state.ritualLogs[today]||{})[p.id]?.done).length;
+  const habitsDone = state.habits.filter(h=> (state.habitLogs[today]||{})[h.id]).length;
+  const gratStreak = computeStreak(new Set(state.gratitudeEntries.map(g=>g.date)));
+
+  document.getElementById('topbarStats').innerHTML = `
+    <div class="stat-pill">🌅 Ritual <b>${ritualDone}/${RITUAL_PRACTICES.length}</b></div>
+    <div class="stat-pill">✅ Habits <b>${habitsDone}/${state.habits.length}</b></div>
+    <div class="stat-pill">🙏 Gratitude streak <b>${gratStreak}d</b></div>
+  `;
+}
+function switchView(view){
+  currentView = view;
+  renderNav();
+  closeSidebarMobile();
+  const root = document.getElementById('viewRoot');
+  root.scrollTop = 0;
+  window.scrollTo(0,0);
+  const renderers = {
+    dashboard: renderDashboard, ritual: renderRitual, habits: renderHabits, fitness: renderFitness,
+    expenses: renderExpenses, growth: renderGrowth, mistakes: renderMistakes,
+    relationships: renderRelationships, gratitude: renderGratitude, export: renderExport,
+  };
+  root.innerHTML = renderers[view] ? renderers[view]() : '';
+  renderTopbar();
+  attachViewHandlers(view);
+}
+function openSidebarMobile(){ document.getElementById('sidebar').classList.add('open'); document.getElementById('overlay').classList.add('visible'); }
+function closeSidebarMobile(){ document.getElementById('sidebar').classList.remove('open'); document.getElementById('overlay').classList.remove('visible'); }
+
+/* ===================== Sprout visual ===================== */
+function sproutSVG(percent, size){
+  size = size||150;
+  const p = clamp(percent,0,100);
+  const stemH = 22 + (p/100)*66;
+  const pairs = Math.min(4, Math.floor(p/22));
+  const bloom = p>=95;
+  let leaves='';
+  for(let i=0;i<pairs;i++){
+    const y = 92 - (i+1)*(stemH/(pairs+1));
+    const op = (0.55+i*0.11).toFixed(2);
+    leaves += `<path d="M60 ${y} q-19 -6 -24 11 q17 4 24 -11" fill="#84B594" opacity="${op}"/>
+               <path d="M60 ${y} q19 -6 24 11 q-17 4 -24 -11" fill="#84B594" opacity="${op}"/>`;
+  }
+  return `<svg viewBox="0 0 120 100" width="${size}" height="${Math.round(size*100/120)}">
+    <line x1="60" y1="94" x2="60" y2="${94-stemH}" stroke="#84B594" stroke-width="4" stroke-linecap="round"/>
+    ${leaves}
+    ${bloom? `<circle cx="60" cy="${94-stemH}" r="8" fill="#E3A857"/>`:''}
+  </svg>`;
+}
+
+/* ===================== DASHBOARD ===================== */
+function renderDashboard(){
+  const today = todayStr();
+  const ritualDone = RITUAL_PRACTICES.filter(p=> (state.ritualLogs[today]||{})[p.id]?.done).length;
+  const ritualPct = RITUAL_PRACTICES.length? (ritualDone/RITUAL_PRACTICES.length)*100 : 0;
+  const habitsDone = state.habits.filter(h=> (state.habitLogs[today]||{})[h.id]).length;
+  const habitPct = state.habits.length? (habitsDone/state.habits.length)*100 : 0;
+  const overallPct = state.habits.length? Math.round((ritualPct+habitPct)/2) : Math.round(ritualPct);
+
+  const ritualStreakSet = new Set(Object.keys(state.ritualLogs).filter(d=> RITUAL_PRACTICES.every(p=> state.ritualLogs[d][p.id]?.done)));
+  const ritualStreak = computeStreak(ritualStreakSet);
+
+  const expensesToday = state.expenses.filter(e=>e.date===today).reduce((s,e)=>s+(e.amount||0),0);
+  const weekAgo = daysAgoStr(6);
+  const expensesWeek = state.expenses.filter(e=>e.date>=weekAgo).reduce((s,e)=>s+(e.amount||0),0);
+
+  const lastWeight = state.weightLog.length? [...state.weightLog].sort((a,b)=>b.date.localeCompare(a.date))[0] : null;
+  const fightFreeSet = new Set(state.relationshipEntries.filter(r=>r.fightFree).map(r=>r.date));
+  const fightFreeStreak = computeStreak(fightFreeSet);
+
+  const growthWeekMins = state.growthEntries.filter(g=>g.date>=weekAgo).reduce((s,g)=>s+(g.minutes||0),0);
+
+  return `
+  <div class="card">
+    <div class="sprout-wrap">
+      ${sproutSVG(overallPct, 130)}
+      <div>
+        <div class="section-title">Today, you're at ${overallPct}%</div>
+        <div class="section-sub" style="margin-bottom:12px;">Ritual and habits together for ${formatDateNice(today)}.</div>
+        <div class="progress" style="width:220px;"><div style="width:${overallPct}%"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid-3" style="margin-top:18px;">
+    <div class="stat-box"><div class="num">${ritualStreak}d</div><div class="lbl">🌅 Morning ritual streak</div></div>
+    <div class="stat-box"><div class="num">${lastWeight? lastWeight.weight+'kg' : '—'}</div><div class="lbl">💪 Last logged weight</div></div>
+    <div class="stat-box"><div class="num">₹${expensesToday.toFixed(0)}</div><div class="lbl">💰 Spent today</div></div>
+    <div class="stat-box"><div class="num">${growthWeekMins}m</div><div class="lbl">✨ Growth time this week</div></div>
+    <div class="stat-box"><div class="num">${fightFreeStreak}d</div><div class="lbl">🤝 Fight-free streak</div></div>
+    <div class="stat-box"><div class="num">₹${expensesWeek.toFixed(0)}</div><div class="lbl">💰 Spent this week</div></div>
+  </div>
+
+  <div class="card">
+    <h3 style="margin-bottom:14px;">Quick add</h3>
+    <div class="row">
+      <button class="btn" data-quick="gratitude">🙏 Add gratitude</button>
+      <button class="btn" data-quick="weight">💪 Log weight</button>
+      <button class="btn" data-quick="expense">💰 Add expense</button>
+      <button class="btn" data-quick="mistake">🪞 Note a lesson</button>
+    </div>
+  </div>`;
+}
+
+/* ===================== MORNING RITUAL ===================== */
+function getRitualEntry(date, practiceId){
+  const cur = (state.ritualLogs[date] && state.ritualLogs[date][practiceId]) || {};
+  return {done:false, duration:10, note:'', checked:{}, ...cur};
+}
+function setRitualEntry(date, practiceId, patch){
+  if(!state.ritualLogs[date]) state.ritualLogs[date] = {};
+  const cur = getRitualEntry(date, practiceId);
+  state.ritualLogs[date][practiceId] = {...cur, ...patch};
+  saveKey('ritualLogs');
+}
+
+function renderRitual(){
+  const today = todayStr();
+  const doneCount = RITUAL_PRACTICES.filter(p=> getRitualEntry(today,p.id).done).length;
+  const active = RITUAL_PRACTICES.find(p=>p.id===ritualActiveTab) || RITUAL_PRACTICES[0];
+
+  let panel;
+  if(active.id==='breathing') panel = renderBreathingPanel();
+  else if(active.id==='stretching') panel = renderStretchingPanel();
+  else if(active.id==='mangalMaitri') panel = renderMangalMaitriPanel();
+  else panel = renderGenericTimerPanel(active);
+
+  return `
+  <div class="section-title">🌅 Morning Ritual</div>
+  <div class="section-sub">${formatDateNice(today)} · ${doneCount}/${RITUAL_PRACTICES.length} practices done <span class="badge badge-sage" style="margin-left:6px;">${Math.round(doneCount/RITUAL_PRACTICES.length*100)}%</span></div>
+
+  <div class="tabs">
+    ${RITUAL_PRACTICES.map(p=>`<button class="tab ${p.id===active.id?'active':''}" data-ritual-tab="${p.id}">${p.icon} ${p.label} ${getRitualEntry(today,p.id).done?'✓':''}</button>`).join('')}
+  </div>
+
+  ${panel}`;
+}
+
+function attachRitualHandlers(){
+  document.querySelectorAll('[data-ritual-tab]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      if(activeTimer && activeTimer.running) pauseTimer();
+      if(breathTimer && breathTimer.running) pauseBreathing();
+      ritualActiveTab = btn.getAttribute('data-ritual-tab');
+      switchView('ritual');
+    });
+  });
+  const active = RITUAL_PRACTICES.find(p=>p.id===ritualActiveTab) || RITUAL_PRACTICES[0];
+  if(active.id==='breathing') attachBreathingHandlers();
+  else if(active.id==='stretching') attachStretchingHandlers();
+  else if(active.id==='mangalMaitri') attachMangalMaitriHandlers();
+  else attachGenericTimerHandlers();
+}
+
+/* ---- Generic timer panel: Meditation, Recovery, Read ---- */
+function renderGenericTimerPanel(active){
+  const today = todayStr();
+  const entry = getRitualEntry(today, active.id);
+  return `
+  <div class="card">
+    <h3>${active.icon} ${active.label}</h3>
+    <p class="section-sub" style="margin-top:6px;">${active.hint}</p>
+    <div class="timer-wrap">
+      <div class="timer-durations" id="durationBtns">
+        ${[5,10,15,20].map(m=>`<button class="dur-btn ${entry.duration===m?'active':''}" data-dur="${m}">${m} min</button>`).join('')}
+      </div>
+      <div class="timer-ring" id="timerRing">
+        <div class="time" id="timerTime">${String(entry.duration).padStart(2,'0')}:00</div>
+        <div class="lbl" id="timerLbl">choose duration</div>
+      </div>
+      <div class="timer-actions">
+        <button class="btn btn-primary" id="timerStartBtn">▶ Start</button>
+        <button class="btn" id="timerResetBtn">↺ Reset</button>
+        <button class="btn ${entry.done?'btn-primary':''}" id="markDoneBtn">${entry.done?'✓ Marked done':'Mark done'}</button>
+      </div>
+    </div>
+    <div class="field" style="margin-top:10px;">
+      <label>Note (optional)</label>
+      <textarea class="textarea" id="ritualNote" placeholder="Anything worth remembering about today's ${active.label.toLowerCase()}…">${escapeHtml(entry.note)}</textarea>
+    </div>
+    <button class="btn btn-sm" id="saveNoteBtn">Save note</button>
+  </div>`;
+}
+function attachGenericTimerHandlers(){
+  const today = todayStr();
+  document.querySelectorAll('[data-dur]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const m = parseInt(btn.getAttribute('data-dur'),10);
+      setRitualEntry(today, ritualActiveTab, {duration:m});
+      if(activeTimer) stopTimer();
+      switchView('ritual');
+    });
+  });
+  const startBtn = document.getElementById('timerStartBtn');
+  if(startBtn) startBtn.addEventListener('click', ()=>{
+    if(activeTimer && activeTimer.practiceId===ritualActiveTab && activeTimer.running){ pauseTimer(); }
+    else { startTimer(ritualActiveTab); }
+  });
+  const resetBtn = document.getElementById('timerResetBtn');
+  if(resetBtn) resetBtn.addEventListener('click', ()=> stopTimer());
+  const doneBtn = document.getElementById('markDoneBtn');
+  if(doneBtn) doneBtn.addEventListener('click', ()=>{
+    const cur = getRitualEntry(today, ritualActiveTab);
+    setRitualEntry(today, ritualActiveTab, {done: !cur.done});
+    switchView('ritual');
+  });
+  const saveNoteBtn = document.getElementById('saveNoteBtn');
+  if(saveNoteBtn) saveNoteBtn.addEventListener('click', ()=>{
+    setRitualEntry(today, ritualActiveTab, {note:document.getElementById('ritualNote').value});
+    showToast('Note saved');
+  });
+  syncTimerUI();
+}
+function startTimer(practiceId){
+  const today = todayStr();
+  const entry = getRitualEntry(today, practiceId);
+  if(!activeTimer || activeTimer.practiceId!==practiceId){
+    activeTimer = {practiceId, remaining: entry.duration*60, totalSeconds: entry.duration*60, intervalId:null, running:false};
+  }
+  activeTimer.running = true;
+  clearInterval(activeTimer.intervalId);
+  activeTimer.intervalId = setInterval(()=>{
+    activeTimer.remaining--;
+    if(activeTimer.remaining<=0){
+      clearInterval(activeTimer.intervalId);
+      activeTimer.running = false;
+      activeTimer.remaining = 0;
+      setRitualEntry(todayStr(), practiceId, {done:true});
+      showToast('Practice complete 🌿');
+      if(currentView==='ritual') switchView('ritual');
+      return;
+    }
+    syncTimerUI();
+  }, 1000);
+  syncTimerUI();
+}
+function pauseTimer(){
+  if(!activeTimer) return;
+  activeTimer.running = false;
+  clearInterval(activeTimer.intervalId);
+  syncTimerUI();
+}
+function stopTimer(){
+  if(activeTimer){ clearInterval(activeTimer.intervalId); }
+  const today = todayStr();
+  const entry = getRitualEntry(today, ritualActiveTab);
+  activeTimer = {practiceId:ritualActiveTab, remaining:entry.duration*60, totalSeconds:entry.duration*60, intervalId:null, running:false};
+  syncTimerUI();
+}
+function syncTimerUI(){
+  const timeEl = document.getElementById('timerTime');
+  if(!timeEl) return;
+  const today = todayStr();
+  const entry = getRitualEntry(today, ritualActiveTab);
+  let remaining = entry.duration*60;
+  let running = false;
+  let lbl = 'choose duration';
+  if(activeTimer && activeTimer.practiceId===ritualActiveTab){
+    remaining = activeTimer.remaining;
+    running = activeTimer.running;
+    lbl = running? 'in progress' : (remaining<activeTimer.totalSeconds? 'paused' : 'ready');
+  }
+  const mm = String(Math.floor(remaining/60)).padStart(2,'0');
+  const ss = String(remaining%60).padStart(2,'0');
+  timeEl.textContent = `${mm}:${ss}`;
+  document.getElementById('timerLbl').textContent = lbl;
+  const startBtn = document.getElementById('timerStartBtn');
+  if(startBtn) startBtn.textContent = running? '⏸ Pause' : '▶ Start';
+}
+
+/* ---- Breathing panel: box-breathing timer ---- */
+function buildBreathPhases(s){
+  return [
+    {key:'inhale', sec:s.inhale, label:'Inhale ↑'},
+    {key:'hold1', sec:s.hold1, label:'Hold'},
+    {key:'exhale', sec:s.exhale, label:'Exhale ↓'},
+    {key:'hold2', sec:s.hold2, label:'Hold'},
+  ].filter(p=>p.sec>0);
+}
+function cycleLength(s){ return (s.inhale||0)+(s.hold1||0)+(s.exhale||0)+(s.hold2||0); }
+function computeTotalCycles(s, durationMin){
+  const cl = cycleLength(s);
+  if(cl<=0) return 0;
+  if(durationMin==='inf') return 999;
+  return Math.max(1, Math.round((durationMin*60)/cl));
+}
+function renderBreathingPanel(){
+  const today = todayStr();
+  const entry = getRitualEntry(today,'breathing');
+  const s = state.breathingSettings;
+  const cl = cycleLength(s);
+  const totalCycles = computeTotalCycles(s, s.durationMin);
+  const totalSec = cl*totalCycles;
+  const lenLabel = s.durationMin==='inf' ? '∞' : `${Math.floor(totalSec/60)} min ${totalSec%60} sec`;
+  return `
+  <div class="card">
+    <h3>🌬️ Breathing</h3>
+    <p class="section-sub" style="margin-bottom:18px;">Set your rhythm, then start.</p>
+
+    <div class="field">
+      <label>Inhale — <span id="inhaleVal">${s.inhale}</span>s</label>
+      <input type="range" min="2" max="12" value="${s.inhale}" id="inhaleSlider" class="slider">
+    </div>
+    <div class="field">
+      <label>Hold — <span id="hold1Val">${s.hold1}</span>s</label>
+      <input type="range" min="0" max="12" value="${s.hold1}" id="hold1Slider" class="slider">
+    </div>
+    <div class="field">
+      <label>Exhale — <span id="exhaleVal">${s.exhale}</span>s</label>
+      <input type="range" min="2" max="14" value="${s.exhale}" id="exhaleSlider" class="slider">
+    </div>
+    <div class="field" style="margin-bottom:8px;">
+      <label>Hold — <span id="hold2Val">${s.hold2}</span>s</label>
+      <input type="range" min="0" max="12" value="${s.hold2}" id="hold2Slider" class="slider">
+    </div>
+
+    <div class="row" style="justify-content:space-between; margin:8px 0 18px; font-size:12.5px; color:var(--text-dim);">
+      <span>Cycle length: <b id="cycleLenLbl" style="color:var(--text); font-family:var(--font-mono);">${cl}s</b></span>
+      <span>Exercise length: <b id="exerciseLenLbl" style="color:var(--text); font-family:var(--font-mono);">${lenLabel}</b></span>
+    </div>
+
+    <div class="timer-durations" style="flex-wrap:wrap; margin-bottom:18px;">
+      ${[6,10,15,20,30].map(m=>`<button class="dur-btn ${s.durationMin===m?'active':''}" data-breath-dur="${m}">${m} min</button>`).join('')}
+      <button class="dur-btn ${s.durationMin==='inf'?'active':''}" data-breath-dur="inf">∞</button>
+    </div>
+
+    <div class="timer-wrap">
+      <div class="breath-circle" id="breathCircle">
+        <div class="breath-phase" id="breathPhaseLbl">Ready</div>
+        <div class="breath-count" id="breathCountLbl">${cl>0? (buildBreathPhases(s)[0]? buildBreathPhases(s)[0].sec : '--') : '--'}</div>
+      </div>
+      <div class="section-sub" id="breathCycleCount" style="margin-bottom:0;">0 / ${s.durationMin==='inf'?'∞':totalCycles} cycles</div>
+      <div class="timer-actions">
+        <button class="btn btn-primary" id="breathStartBtn">▶ Start</button>
+        <button class="btn" id="breathResetBtn">↺ Reset</button>
+        <button class="btn ${entry.done?'btn-primary':''}" id="breathDoneBtn">${entry.done?'✓ Marked done':'Mark done'}</button>
+      </div>
+    </div>
+  </div>`;
+}
+function attachBreathingHandlers(){
+  const today = todayStr();
+  const s = state.breathingSettings;
+  const sliderDefs = [
+    {id:'inhaleSlider', key:'inhale', lbl:'inhaleVal'},
+    {id:'hold1Slider', key:'hold1', lbl:'hold1Val'},
+    {id:'exhaleSlider', key:'exhale', lbl:'exhaleVal'},
+    {id:'hold2Slider', key:'hold2', lbl:'hold2Val'},
+  ];
+  function liveValues(){
+    return {
+      inhale: parseInt(document.getElementById('inhaleSlider').value,10)||0,
+      hold1: parseInt(document.getElementById('hold1Slider').value,10)||0,
+      exhale: parseInt(document.getElementById('exhaleSlider').value,10)||0,
+      hold2: parseInt(document.getElementById('hold2Slider').value,10)||0,
+    };
+  }
+  function updateLengthLabels(){
+    const v = liveValues();
+    const cl = cycleLength(v);
+    document.getElementById('cycleLenLbl').textContent = cl+'s';
+    const totalCycles = computeTotalCycles(v, s.durationMin);
+    const lenEl = document.getElementById('exerciseLenLbl');
+    if(s.durationMin==='inf'){ lenEl.textContent = '∞'; }
+    else { const totalSec = cl*totalCycles; lenEl.textContent = `${Math.floor(totalSec/60)} min ${totalSec%60} sec`; }
+  }
+  sliderDefs.forEach(sl=>{
+    const el = document.getElementById(sl.id);
+    if(!el) return;
+    el.addEventListener('input', ()=>{
+      document.getElementById(sl.lbl).textContent = el.value;
+      updateLengthLabels();
+    });
+    el.addEventListener('change', ()=>{
+      state.breathingSettings[sl.key] = parseInt(el.value,10);
+      saveKey('breathingSettings');
+    });
+  });
+  document.querySelectorAll('[data-breath-dur]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const v = btn.getAttribute('data-breath-dur');
+      state.breathingSettings.durationMin = v==='inf' ? 'inf' : parseInt(v,10);
+      saveKey('breathingSettings');
+      switchView('ritual');
+    });
+  });
+  const startBtn = document.getElementById('breathStartBtn');
+  if(startBtn) startBtn.addEventListener('click', ()=>{
+    if(breathTimer && breathTimer.running){ pauseBreathing(); } else { startBreathing(); }
+  });
+  const resetBtn = document.getElementById('breathResetBtn');
+  if(resetBtn) resetBtn.addEventListener('click', resetBreathing);
+  const doneBtn = document.getElementById('breathDoneBtn');
+  if(doneBtn) doneBtn.addEventListener('click', ()=>{
+    const cur = getRitualEntry(today,'breathing');
+    setRitualEntry(today,'breathing',{done:!cur.done});
+    switchView('ritual');
+  });
+  syncBreathUI();
+}
+function startBreathing(){
+  const s = state.breathingSettings;
+  const phases = buildBreathPhases(s);
+  if(!phases.length){ showToast('Set at least one phase above 0 seconds','error'); return; }
+  if(!breathTimer || breathTimer.finished){
+    breathTimer = {phaseIdx:0, phaseRemaining:phases[0].sec, cyclesDone:0, totalCycles:computeTotalCycles(s,s.durationMin), running:true, finished:false, intervalId:null};
+  } else {
+    breathTimer.running = true;
+  }
+  clearInterval(breathTimer.intervalId);
+  breathTimer.intervalId = setInterval(()=>{
+    breathTimer.phaseRemaining--;
+    if(breathTimer.phaseRemaining<=0){
+      breathTimer.phaseIdx++;
+      if(breathTimer.phaseIdx>=phases.length){
+        breathTimer.phaseIdx = 0;
+        breathTimer.cyclesDone++;
+        if(breathTimer.cyclesDone>=breathTimer.totalCycles){
+          clearInterval(breathTimer.intervalId);
+          breathTimer.running=false;
+          breathTimer.finished=true;
+          setRitualEntry(todayStr(),'breathing',{done:true});
+          showToast('Breathing session complete 🌬️');
+          if(currentView==='ritual') switchView('ritual');
+          return;
+        }
+      }
+      breathTimer.phaseRemaining = phases[breathTimer.phaseIdx].sec;
+    }
+    syncBreathUI();
+  }, 1000);
+  syncBreathUI();
+}
+function pauseBreathing(){
+  if(!breathTimer) return;
+  breathTimer.running = false;
+  clearInterval(breathTimer.intervalId);
+  syncBreathUI();
+}
+function resetBreathing(){
+  if(breathTimer) clearInterval(breathTimer.intervalId);
+  breathTimer = null;
+  const circle = document.getElementById('breathCircle');
+  if(circle){ circle.style.transition='transform .3s ease'; circle.style.transform='scale(.72)'; }
+  syncBreathUI();
+}
+function syncBreathUI(){
+  const circle = document.getElementById('breathCircle');
+  if(!circle) return;
+  const s = state.breathingSettings;
+  const phases = buildBreathPhases(s);
+  const phaseLbl = document.getElementById('breathPhaseLbl');
+  const countLbl = document.getElementById('breathCountLbl');
+  const cycleLbl = document.getElementById('breathCycleCount');
+  const startBtn = document.getElementById('breathStartBtn');
+  if(!breathTimer || !phases.length){
+    if(phaseLbl) phaseLbl.textContent = 'Ready';
+    if(countLbl) countLbl.textContent = phases.length? phases[0].sec : '--';
+    if(startBtn) startBtn.textContent = '▶ Start';
+    return;
+  }
+  const phase = phases[breathTimer.phaseIdx];
+  if(phaseLbl) phaseLbl.textContent = phase.label;
+  if(countLbl) countLbl.textContent = breathTimer.phaseRemaining;
+  if(cycleLbl) cycleLbl.textContent = `${breathTimer.cyclesDone} / ${s.durationMin==='inf'?'∞':breathTimer.totalCycles} cycles`;
+  if(phase.key==='inhale'){ circle.style.transition = `transform ${phase.sec}s ease-in-out`; circle.style.transform = 'scale(1)'; }
+  else if(phase.key==='exhale'){ circle.style.transition = `transform ${phase.sec}s ease-in-out`; circle.style.transform = 'scale(.7)'; }
+  if(startBtn) startBtn.textContent = breathTimer.running? '⏸ Pause' : '▶ Start';
+}
+
+/* ---- Stretching panel: exercise checklist ---- */
+function renderStretchingPanel(){
+  const today = todayStr();
+  const entry = getRitualEntry(today,'stretching');
+  const checked = entry.checked||{};
+  const total = state.stretchExercises.length;
+  const doneCount = state.stretchExercises.filter(ex=>checked[ex.id]).length;
+  const list = total? state.stretchExercises.map(ex=>{
+    const isChecked = !!checked[ex.id];
+    return `<div class="checkbox-row">
+      <button class="checkbox ${isChecked?'checked':''}" data-stretch-toggle="${ex.id}">${isChecked?'✓':''}</button>
+      <div class="list-item-main"><div class="list-item-title">${escapeHtml(ex.name)}</div></div>
+      <div class="list-item-actions"><button class="icon-btn" data-stretch-edit="${ex.id}">✎</button></div>
+    </div>`;
+  }).join('') : `<div class="empty-state"><span class="emoji">🤸</span><p>Add the stretches you want to work through.</p></div>`;
+
+  return `
+  <div class="card">
+    <div class="row" style="justify-content:space-between; align-items:flex-start;">
+      <div>
+        <h3>🤸 Stretching</h3>
+        <p class="section-sub" style="margin-top:6px;">${doneCount}/${total} done today</p>
+      </div>
+      <button class="btn btn-sm" id="addStretchBtn">+ Add exercise</button>
+    </div>
+    <div class="list" style="margin-top:14px;">${list}</div>
+  </div>`;
+}
+function stretchFormFields(){
+  return [{key:'name', label:'Exercise', type:'text', placeholder:'e.g. Cat-cow', required:true}];
+}
+function attachStretchingHandlers(){
+  const today = todayStr();
+  document.querySelectorAll('[data-stretch-toggle]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const id = btn.getAttribute('data-stretch-toggle');
+      const entry = getRitualEntry(today,'stretching');
+      const checked = {...(entry.checked||{})};
+      checked[id] = !checked[id];
+      const allDone = state.stretchExercises.length>0 && state.stretchExercises.every(ex=>checked[ex.id]);
+      setRitualEntry(today,'stretching',{checked, done:allDone});
+      switchView('ritual');
+    });
+  });
+  const addBtn = document.getElementById('addStretchBtn');
+  if(addBtn) addBtn.addEventListener('click', ()=>{
+    openModal({title:'Add stretch', fields:stretchFormFields(), submitLabel:'Add', onSubmit:(data)=>{
+      state.stretchExercises.push({id:uid(), name:data.name});
+      saveKey('stretchExercises');
+      switchView('ritual');
+    }});
+  });
+  document.querySelectorAll('[data-stretch-edit]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const id = btn.getAttribute('data-stretch-edit');
+      const ex = state.stretchExercises.find(x=>x.id===id);
+      openModal({title:'Edit exercise', fields:stretchFormFields(), values:ex, submitLabel:'Save', onSubmit:(data)=>{
+        ex.name = data.name;
+        saveKey('stretchExercises');
+        switchView('ritual');
+      }, onDelete:()=>{
+        state.stretchExercises = state.stretchExercises.filter(x=>x.id!==id);
+        saveKey('stretchExercises');
+        switchView('ritual');
+      }});
+    });
+  });
+}
+
+/* ---- Mangal Maitri panel: video ---- */
+function renderMangalMaitriPanel(){
+  const today = todayStr();
+  const entry = getRitualEntry(today,'mangalMaitri');
+  return `
+  <div class="card">
+    <h3>🤲 Mangal Maitri</h3>
+    <p class="section-sub" style="margin:6px 0 16px;">A few quiet minutes of goodwill for others.</p>
+    <div class="video-embed">
+      <iframe src="https://www.youtube-nocookie.com/embed/${MANGAL_MAITRI_VIDEO_ID}" title="Mangal Maitri practice" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+    </div>
+    <div class="timer-actions" style="margin-top:18px;">
+      <button class="btn ${entry.done?'btn-primary':''}" id="mmDoneBtn">${entry.done?'✓ Marked done':'Mark done'}</button>
+    </div>
+    <div class="field" style="margin-top:16px;">
+      <label>Note (optional)</label>
+      <textarea class="textarea" id="mmNote" placeholder="Anything that came up">${escapeHtml(entry.note)}</textarea>
+    </div>
+    <button class="btn btn-sm" id="mmSaveNoteBtn">Save note</button>
+  </div>`;
+}
+function attachMangalMaitriHandlers(){
+  const today = todayStr();
+  const doneBtn = document.getElementById('mmDoneBtn');
+  if(doneBtn) doneBtn.addEventListener('click', ()=>{
+    const cur = getRitualEntry(today,'mangalMaitri');
+    setRitualEntry(today,'mangalMaitri',{done:!cur.done});
+    switchView('ritual');
+  });
+  const saveNoteBtn = document.getElementById('mmSaveNoteBtn');
+  if(saveNoteBtn) saveNoteBtn.addEventListener('click', ()=>{
+    setRitualEntry(today,'mangalMaitri',{note:document.getElementById('mmNote').value});
+    showToast('Note saved');
+  });
+}
+
+/* ===================== HABIT TRACKER ===================== */
+function renderHabits(){
+  const today = todayStr();
+  const days = lastNDates(7);
+  const todayLog = state.habitLogs[today] || {};
+  const doneToday = state.habits.filter(h=>todayLog[h.id]).length;
+
+  const list = state.habits.length? state.habits.map(h=>{
+    const checked = !!todayLog[h.id];
+    const successSet = new Set(Object.keys(state.habitLogs).filter(d=> state.habitLogs[d][h.id]));
+    const streak = computeStreak(successSet);
+    return `<div class="checkbox-row">
+      <button class="checkbox ${checked?'checked':''}" data-habit-toggle="${h.id}">${checked?'✓':''}</button>
+      <div class="list-item-main">
+        <div class="list-item-title">${h.icon||'•'} ${escapeHtml(h.name)}</div>
+        <div class="list-item-sub">${streak>0? `🔥 ${streak} day streak` : 'No streak yet'}</div>
+      </div>
+      <div class="list-item-actions">
+        <button class="icon-btn" data-habit-edit="${h.id}">✎</button>
+      </div>
+    </div>`;
+  }).join('') : `<div class="empty-state"><span class="emoji">✅</span><p>No habits yet. Add the first one you want to build.</p></div>`;
+
+  const gridRows = state.habits.map(h=>{
+    const cells = days.map(d=> `<td style="text-align:center; padding:6px;">${state.habitLogs[d] && state.habitLogs[d][h.id] ? '<span style="color:var(--sage)">●</span>' : '<span style="color:var(--border)">○</span>'}</td>`).join('');
+    return `<tr><td style="padding:6px 10px 6px 0; font-size:12.5px; color:var(--text-dim); white-space:nowrap;">${h.icon||''} ${escapeHtml(h.name)}</td>${cells}</tr>`;
+  }).join('');
+  const headerCells = days.map(d=> `<th style="font-size:10.5px; color:var(--text-faint); font-weight:600; padding:6px;">${formatDateShort(d)}</th>`).join('');
+
+  return `
+  <div class="section-title">✅ Habit Tracker</div>
+  <div class="section-sub">${formatDateNice(today)} · ${doneToday}/${state.habits.length} done today</div>
+
+  <div class="card">
+    <div class="row" style="justify-content:space-between; align-items:center; margin-bottom:14px;">
+      <h3>Today</h3>
+      <button class="btn btn-sm btn-primary" id="addHabitBtn">+ Add habit</button>
+    </div>
+    <div class="list">${list}</div>
+  </div>
+
+  ${state.habits.length? `<div class="card">
+    <h3 style="margin-bottom:14px;">Last 7 days</h3>
+    <div style="overflow-x:auto;">
+    <table style="border-collapse:collapse; width:100%;">
+      <thead><tr><th></th>${headerCells}</tr></thead>
+      <tbody>${gridRows}</tbody>
+    </table>
+    </div>
+  </div>`:''}`;
+}
+function habitFormFields(){
+  return [
+    {key:'icon', label:'Emoji', type:'text', placeholder:'🏃'},
+    {key:'name', label:'Habit', type:'text', placeholder:'e.g. Read 10 pages', required:true},
+  ];
+}
+function attachHabitsHandlers(){
+  document.querySelectorAll('[data-habit-toggle]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const id = btn.getAttribute('data-habit-toggle');
+      const today = todayStr();
+      if(!state.habitLogs[today]) state.habitLogs[today] = {};
+      state.habitLogs[today][id] = !state.habitLogs[today][id];
+      saveKey('habitLogs');
+      switchView('habits');
+    });
+  });
+  const addBtn = document.getElementById('addHabitBtn');
+  if(addBtn) addBtn.addEventListener('click', ()=>{
+    openModal({title:'Add habit', fields:habitFormFields(), submitLabel:'Add', onSubmit:(data)=>{
+      state.habits.push({id:uid(), name:data.name, icon:data.icon||'•'});
+      saveKey('habits');
+      switchView('habits');
+      showToast('Habit added');
+    }});
+  });
+  document.querySelectorAll('[data-habit-edit]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const id = btn.getAttribute('data-habit-edit');
+      const h = state.habits.find(x=>x.id===id);
+      openModal({title:'Edit habit', fields:habitFormFields(), values:h, submitLabel:'Save', onSubmit:(data)=>{
+        Object.assign(h, {name:data.name, icon:data.icon||'•'});
+        saveKey('habits');
+        switchView('habits');
+      }, onDelete:()=>{
+        state.habits = state.habits.filter(x=>x.id!==id);
+        saveKey('habits');
+        switchView('habits');
+        showToast('Habit removed');
+      }});
+    });
+  });
+}
+
+/* ===================== FITNESS ===================== */
+function renderFitness(){
+  const p = state.profile;
+  const sorted = [...state.weightLog].sort((a,b)=>a.date.localeCompare(b.date));
+  const last = sorted[sorted.length-1];
+  let progressPct = 0;
+  if(p.startWeight!=null && p.goalWeight!=null && last){
+    const span = p.goalWeight - p.startWeight;
+    progressPct = span!==0 ? clamp(((last.weight-p.startWeight)/span)*100, 0, 100) : 0;
+  }
+
+  const workoutsSorted = [...state.workoutEntries].sort((a,b)=>b.date.localeCompare(a.date));
+  const workoutList = workoutsSorted.length? workoutsSorted.map(w=>`
+    <div class="list-item">
+      <div class="list-item-main">
+        <div class="list-item-title">${escapeHtml(w.exercise)}</div>
+        <div class="list-item-sub">${formatDateNice(w.date)} · ${w.sets||'–'} sets × ${w.reps||'–'} reps ${w.weight?`· ${w.weight}kg`:''}${w.notes? ' · '+escapeHtml(w.notes):''}</div>
+      </div>
+      <div class="list-item-actions"><button class="icon-btn" data-workout-edit="${w.id}">✎</button></div>
+    </div>`).join('') : `<div class="empty-state"><span class="emoji">🏋️</span><p>Log your first workout to start building the record.</p></div>`;
+
+  return `
+  <div class="section-title">💪 Fitness</div>
+  <div class="section-sub">Strength training &amp; weight-gain tracking.</div>
+
+  <div class="card">
+    <div class="row" style="justify-content:space-between; align-items:flex-start;">
+      <div>
+        <h3>Weight goal</h3>
+        <p class="section-sub" style="margin-top:6px;">${p.startWeight!=null&&p.goalWeight!=null ? `${p.startWeight}kg → ${p.goalWeight}kg goal` : 'Set your starting and goal weight to track progress.'}</p>
+      </div>
+      <button class="btn btn-sm" id="editGoalBtn">✎ Edit goal</button>
+    </div>
+    ${p.startWeight!=null && p.goalWeight!=null ? `<div class="progress" style="margin:10px 0 4px;"><div style="width:${progressPct}%"></div></div>
+    <div class="section-sub">${last? `Currently ${last.weight}kg · ${Math.round(progressPct)}% of the way there`:'Log a weigh-in to see progress'}</div>`:''}
+  </div>
+
+  <div class="card">
+    <div class="row" style="justify-content:space-between; align-items:center; margin-bottom:12px;">
+      <h3>Weight log</h3>
+      <button class="btn btn-sm btn-primary" id="addWeightBtn">+ Log weigh-in</button>
+    </div>
+    ${renderWeightChart(sorted, p.goalWeight)}
+  </div>
+
+  <div class="card">
+    <div class="row" style="justify-content:space-between; align-items:center; margin-bottom:12px;">
+      <h3>Workout log</h3>
+      <button class="btn btn-sm btn-primary" id="addWorkoutBtn">+ Add workout</button>
+    </div>
+    <div class="list">${workoutList}</div>
+  </div>`;
+}
+function renderWeightChart(sorted, goal){
+  if(!sorted.length) return `<div class="empty-state"><span class="emoji">📈</span><p>No weigh-ins logged yet.</p></div>`;
+  const w=600,h=180,pad=32;
+  const weights = sorted.map(e=>e.weight);
+  let min = Math.min(...weights, goal!=null?goal:weights[0]) - 1.5;
+  let max = Math.max(...weights, goal!=null?goal:weights[0]) + 1.5;
+  if(max===min){max+=1;min-=1;}
+  const stepX = sorted.length>1 ? (w-2*pad)/(sorted.length-1) : 0;
+  const scaleY = v => h-pad - ((v-min)/(max-min))*(h-2*pad);
+  const pts = sorted.map((e,i)=> `${pad+i*stepX},${scaleY(e.weight).toFixed(1)}`).join(' ');
+  const goalY = goal!=null? scaleY(goal).toFixed(1) : null;
+  return `<svg viewBox="0 0 ${w} ${h}" class="weight-chart" preserveAspectRatio="none">
+    ${goal!=null? `<line x1="${pad}" y1="${goalY}" x2="${w-pad}" y2="${goalY}" stroke="#E3A857" stroke-dasharray="4 4" stroke-width="1.4"/>
+    <text x="${w-pad}" y="${Number(goalY)-6}" text-anchor="end" class="chart-label gold">goal ${goal}kg</text>`:''}
+    <polyline points="${pts}" fill="none" stroke="#84B594" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+    ${sorted.map((e,i)=>`<circle cx="${pad+i*stepX}" cy="${scaleY(e.weight).toFixed(1)}" r="3.6" fill="#84B594" />`).join('')}
+    <text x="${pad}" y="${h-8}" class="chart-label">${formatDateShort(sorted[0].date)}</text>
+    <text x="${w-pad}" y="${h-8}" text-anchor="end" class="chart-label">${formatDateShort(sorted[sorted.length-1].date)}</text>
+  </svg>`;
+}
+function weightFormFields(){
+  return [
+    {key:'date', label:'Date', type:'date', required:true},
+    {key:'weight', label:'Weight (kg)', type:'number', step:'0.1', placeholder:'e.g. 53.2', required:true},
+  ];
+}
+function workoutFormFields(){
+  return [
+    {key:'date', label:'Date', type:'date', required:true},
+    {key:'exercise', label:'Exercise', type:'text', placeholder:'e.g. Push-ups', required:true},
+    {key:'sets', label:'Sets', type:'number', placeholder:'3'},
+    {key:'reps', label:'Reps', type:'number', placeholder:'12'},
+    {key:'weight', label:'Weight used (kg, optional)', type:'number', step:'0.5'},
+    {key:'notes', label:'Notes', type:'textarea', placeholder:'How did it feel?'},
+  ];
+}
+function attachFitnessHandlers(){
+  const editGoalBtn = document.getElementById('editGoalBtn');
+  if(editGoalBtn) editGoalBtn.addEventListener('click', ()=>{
+    openModal({title:'Weight goal', fields:[
+      {key:'startWeight', label:'Starting weight (kg)', type:'number', step:'0.1', placeholder:'Current weight in kg'},
+      {key:'goalWeight', label:'Goal weight (kg)', type:'number', step:'0.1', placeholder:'e.g. 60'},
+    ], values:state.profile, submitLabel:'Save', onSubmit:(data)=>{
+      state.profile.startWeight = data.startWeight;
+      state.profile.goalWeight = data.goalWeight;
+      saveKey('profile');
+      switchView('fitness');
+    }});
+  });
+  const addWeightBtn = document.getElementById('addWeightBtn');
+  if(addWeightBtn) addWeightBtn.addEventListener('click', ()=>{
+    openModal({title:'Log weigh-in', fields:weightFormFields(), values:{date:todayStr()}, submitLabel:'Save', onSubmit:(data)=>{
+      state.weightLog.push({id:uid(), date:data.date, weight:data.weight});
+      saveKey('weightLog');
+      switchView('fitness');
+      showToast('Weight logged');
+    }});
+  });
+  const addWorkoutBtn = document.getElementById('addWorkoutBtn');
+  if(addWorkoutBtn) addWorkoutBtn.addEventListener('click', ()=>{
+    openModal({title:'Add workout', fields:workoutFormFields(), values:{date:todayStr()}, submitLabel:'Add', onSubmit:(data)=>{
+      state.workoutEntries.push({id:uid(), ...data});
+      saveKey('workoutEntries');
+      switchView('fitness');
+    }});
+  });
+  document.querySelectorAll('[data-workout-edit]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const id = btn.getAttribute('data-workout-edit');
+      const w = state.workoutEntries.find(x=>x.id===id);
+      openModal({title:'Edit workout', fields:workoutFormFields(), values:w, submitLabel:'Save', onSubmit:(data)=>{
+        Object.assign(w, data);
+        saveKey('workoutEntries');
+        switchView('fitness');
+      }, onDelete:()=>{
+        state.workoutEntries = state.workoutEntries.filter(x=>x.id!==id);
+        saveKey('workoutEntries');
+        switchView('fitness');
+        showToast('Workout removed');
+      }});
+    });
+  });
+}
+
+/* ===================== EXPENSES ===================== */
+function renderExpenses(){
+  const today = todayStr();
+  const weekAgo = daysAgoStr(6);
+  const sorted = [...state.expenses].sort((a,b)=> b.date.localeCompare(a.date));
+  const todayTotal = state.expenses.filter(e=>e.date===today).reduce((s,e)=>s+(e.amount||0),0);
+  const weekTotal = state.expenses.filter(e=>e.date>=weekAgo).reduce((s,e)=>s+(e.amount||0),0);
+
+  const byCategory = {};
+  state.expenses.filter(e=>e.date>=weekAgo).forEach(e=>{ byCategory[e.category] = (byCategory[e.category]||0)+(e.amount||0); });
+  const catRows = Object.entries(byCategory).sort((a,b)=>b[1]-a[1]).map(([cat,amt])=>{
+    const pct = weekTotal? (amt/weekTotal*100):0;
+    return `<div style="margin-bottom:10px;">
+      <div style="display:flex; justify-content:space-between; font-size:12.5px; margin-bottom:4px;"><span>${escapeHtml(cat)}</span><span style="font-family:var(--font-mono);">₹${amt.toFixed(0)}</span></div>
+      <div class="progress"><div style="width:${pct}%"></div></div>
+    </div>`;
+  }).join('') || `<p class="section-sub">No expenses logged this week yet.</p>`;
+
+  const list = sorted.length? sorted.slice(0,30).map(e=>`
+    <div class="list-item">
+      <div class="list-item-main">
+        <div class="list-item-title">${escapeHtml(e.category)}${e.note? ' · '+escapeHtml(e.note):''}</div>
+        <div class="list-item-sub">${formatDateNice(e.date)}</div>
+      </div>
+      <div class="list-item-amount">₹${(e.amount||0).toFixed(0)}</div>
+      <div class="list-item-actions"><button class="icon-btn" data-expense-edit="${e.id}">✎</button></div>
+    </div>`).join('') : `<div class="empty-state"><span class="emoji">💸</span><p>No expenses yet. Add today's first one.</p></div>`;
+
+  return `
+  <div class="section-title">💰 Expenses</div>
+  <div class="section-sub">Track what goes out, every day.</div>
+
+  <div class="grid-2">
+    <div class="stat-box"><div class="num">₹${todayTotal.toFixed(0)}</div><div class="lbl">Spent today</div></div>
+    <div class="stat-box"><div class="num">₹${weekTotal.toFixed(0)}</div><div class="lbl">Spent last 7 days</div></div>
+  </div>
+
+  <div class="card">
+    <div class="row" style="justify-content:space-between; align-items:center; margin-bottom:12px;">
+      <h3>This week by category</h3>
+      <button class="btn btn-sm btn-primary" id="addExpenseBtn">+ Add expense</button>
+    </div>
+    ${catRows}
+  </div>
+
+  <div class="card">
+    <h3 style="margin-bottom:14px;">Recent</h3>
+    <div class="list">${list}</div>
+  </div>`;
+}
+function expenseFormFields(){
+  return [
+    {key:'date', label:'Date', type:'date', required:true},
+    {key:'amount', label:'Amount (₹)', type:'number', step:'1', placeholder:'e.g. 250', required:true},
+    {key:'category', label:'Category', type:'select', options:EXPENSE_CATEGORIES, required:true},
+    {key:'note', label:'Where / what for', type:'text', placeholder:'e.g. Auto to market'},
+  ];
+}
+function attachExpensesHandlers(){
+  const addBtn = document.getElementById('addExpenseBtn');
+  if(addBtn) addBtn.addEventListener('click', ()=>{
+    openModal({title:'Add expense', fields:expenseFormFields(), values:{date:todayStr(), category:EXPENSE_CATEGORIES[0]}, submitLabel:'Add', onSubmit:(data)=>{
+      state.expenses.push({id:uid(), ...data});
+      saveKey('expenses');
+      switchView('expenses');
+    }});
+  });
+  document.querySelectorAll('[data-expense-edit]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const id = btn.getAttribute('data-expense-edit');
+      const e = state.expenses.find(x=>x.id===id);
+      openModal({title:'Edit expense', fields:expenseFormFields(), values:e, submitLabel:'Save', onSubmit:(data)=>{
+        Object.assign(e, data);
+        saveKey('expenses');
+        switchView('expenses');
+      }, onDelete:()=>{
+        state.expenses = state.expenses.filter(x=>x.id!==id);
+        saveKey('expenses');
+        switchView('expenses');
+        showToast('Expense removed');
+      }});
+    });
+  });
+}
+
+/* ===================== PERSONAL GROWTH ===================== */
+function renderGrowth(){
+  const today = todayStr();
+  const weekAgo = daysAgoStr(6);
+  const weekMins = state.growthEntries.filter(g=>g.date>=weekAgo).reduce((s,g)=>s+(g.minutes||0),0);
+  const sorted = [...state.growthEntries].sort((a,b)=>b.date.localeCompare(a.date));
+
+  const todayTaskLog = state.growthTaskLogs[today] || {};
+  const taskDoneCount = state.growthTasks.filter(t=>todayTaskLog[t.id]).length;
+  const taskList = state.growthTasks.length? state.growthTasks.map(t=>{
+    const checked = !!todayTaskLog[t.id];
+    return `<div class="checkbox-row">
+      <button class="checkbox ${checked?'checked':''}" data-growthtask-toggle="${t.id}">${checked?'✓':''}</button>
+      <div class="list-item-main"><div class="list-item-title">${t.icon||'•'} ${escapeHtml(t.name)}</div></div>
+      <div class="list-item-actions"><button class="icon-btn" data-growthtask-edit="${t.id}">✎</button></div>
+    </div>`;
+  }).join('') : `<div class="empty-state"><span class="emoji">✨</span><p>Add the mindset habits you want to build.</p></div>`;
+
+  const list = sorted.length? sorted.map(g=>`
+    <div class="list-item">
+      <div class="list-item-main">
+        <div class="list-item-title">${escapeHtml(g.skill)}</div>
+        <div class="list-item-sub">${formatDateNice(g.date)} · ${g.minutes||0} min${g.notes? ' · '+escapeHtml(g.notes):''}</div>
+      </div>
+      <div class="list-item-actions"><button class="icon-btn" data-growth-edit="${g.id}">✎</button></div>
+    </div>`).join('') : `<div class="empty-state"><span class="emoji">✨</span><p>Log what you're learning or working on today.</p></div>`;
+
+  return `
+  <div class="section-title">✨ Personal Growth</div>
+  <div class="section-sub">Mindset work and new skills, one session at a time.</div>
+
+  <div class="stat-box" style="max-width:260px;"><div class="num">${weekMins}m</div><div class="lbl">Invested this week</div></div>
+
+  <div class="card">
+    <div class="row" style="justify-content:space-between; align-items:center; margin-bottom:10px;">
+      <h3>Daily mindset checklist</h3>
+      <button class="btn btn-sm" id="addGrowthTaskBtn">+ Add task</button>
+    </div>
+    <p class="section-sub">${taskDoneCount}/${state.growthTasks.length} done today</p>
+    <div class="list" style="margin-top:10px;">${taskList}</div>
+  </div>
+
+  <div class="card">
+    <div class="row" style="justify-content:space-between; align-items:center; margin-bottom:12px;">
+      <h3>Skill &amp; learning log</h3>
+      <button class="btn btn-sm btn-primary" id="addGrowthBtn">+ Add entry</button>
+    </div>
+    <div class="list">${list}</div>
+  </div>`;
+}
+function growthFormFields(){
+  return [
+    {key:'date', label:'Date', type:'date', required:true},
+    {key:'skill', label:'Skill / topic', type:'text', placeholder:'e.g. English speaking, Excel, reading', required:true},
+    {key:'minutes', label:'Time spent (minutes)', type:'number', placeholder:'30'},
+    {key:'notes', label:'Notes / reflection', type:'textarea', placeholder:'What did you learn or notice about yourself?'},
+  ];
+}
+function attachGrowthHandlers(){
+  const today = todayStr();
+  document.querySelectorAll('[data-growthtask-toggle]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const id = btn.getAttribute('data-growthtask-toggle');
+      if(!state.growthTaskLogs[today]) state.growthTaskLogs[today] = {};
+      state.growthTaskLogs[today][id] = !state.growthTaskLogs[today][id];
+      saveKey('growthTaskLogs');
+      switchView('growth');
+    });
+  });
+  const addTaskBtn = document.getElementById('addGrowthTaskBtn');
+  if(addTaskBtn) addTaskBtn.addEventListener('click', ()=>{
+    openModal({title:'Add daily task', fields:[{key:'icon',label:'Emoji',type:'text',placeholder:'✨'},{key:'name',label:'Task',type:'text',placeholder:'e.g. Read for 10 minutes', required:true}], submitLabel:'Add', onSubmit:(data)=>{
+      state.growthTasks.push({id:uid(), name:data.name, icon:data.icon||'•'});
+      saveKey('growthTasks');
+      switchView('growth');
+    }});
+  });
+  document.querySelectorAll('[data-growthtask-edit]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const id = btn.getAttribute('data-growthtask-edit');
+      const t = state.growthTasks.find(x=>x.id===id);
+      openModal({title:'Edit task', fields:[{key:'icon',label:'Emoji',type:'text'},{key:'name',label:'Task',type:'text', required:true}], values:t, submitLabel:'Save', onSubmit:(data)=>{
+        Object.assign(t, {name:data.name, icon:data.icon||'•'});
+        saveKey('growthTasks');
+        switchView('growth');
+      }, onDelete:()=>{
+        state.growthTasks = state.growthTasks.filter(x=>x.id!==id);
+        saveKey('growthTasks');
+        switchView('growth');
+      }});
+    });
+  });
+  const addBtn = document.getElementById('addGrowthBtn');
+  if(addBtn) addBtn.addEventListener('click', ()=>{
+    openModal({title:'Add growth entry', fields:growthFormFields(), values:{date:todayStr()}, submitLabel:'Add', onSubmit:(data)=>{
+      state.growthEntries.push({id:uid(), ...data});
+      saveKey('growthEntries');
+      switchView('growth');
+    }});
+  });
+  document.querySelectorAll('[data-growth-edit]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const id = btn.getAttribute('data-growth-edit');
+      const g = state.growthEntries.find(x=>x.id===id);
+      openModal({title:'Edit entry', fields:growthFormFields(), values:g, submitLabel:'Save', onSubmit:(data)=>{
+        Object.assign(g, data);
+        saveKey('growthEntries');
+        switchView('growth');
+      }, onDelete:()=>{
+        state.growthEntries = state.growthEntries.filter(x=>x.id!==id);
+        saveKey('growthEntries');
+        switchView('growth');
+        showToast('Entry removed');
+      }});
+    });
+  });
+}
+
+/* ===================== LESSONS / MISTAKES JOURNAL ===================== */
+function renderMistakes(){
+  const sorted = [...state.mistakeEntries].sort((a,b)=>b.date.localeCompare(a.date));
+  const list = sorted.length? sorted.map(m=>`
+    <div class="list-item" style="align-items:flex-start;">
+      <div class="list-item-main">
+        <div class="list-item-title">${escapeHtml(m.title)}</div>
+        <div class="list-item-sub">${formatDateNice(m.date)}</div>
+        ${m.lesson? `<div class="list-item-sub" style="margin-top:6px; color:var(--sage);">Lesson: ${escapeHtml(m.lesson)}</div>`:''}
+      </div>
+      <div class="list-item-actions"><button class="icon-btn" data-mistake-edit="${m.id}">✎</button></div>
+    </div>`).join('') : `<div class="empty-state"><span class="emoji">🪞</span><p>Every setback has something to teach. Write down the next one here.</p></div>`;
+
+  return `
+  <div class="section-title">🪞 Lessons Journal</div>
+  <div class="section-sub">Turn what went wrong into something you carry forward.</div>
+
+  <div class="card">
+    <div class="row" style="justify-content:space-between; align-items:center; margin-bottom:12px;">
+      <h3>Entries</h3>
+      <button class="btn btn-sm btn-primary" id="addMistakeBtn">+ New entry</button>
+    </div>
+    <div class="list">${list}</div>
+  </div>`;
+}
+function mistakeFormFields(){
+  return [
+    {key:'date', label:'Date', type:'date', required:true},
+    {key:'title', label:'What happened', type:'text', placeholder:'Short summary', required:true},
+    {key:'lesson', label:'What you learned', type:'textarea', placeholder:'What will you do differently next time?'},
+  ];
+}
+function attachMistakesHandlers(){
+  const addBtn = document.getElementById('addMistakeBtn');
+  if(addBtn) addBtn.addEventListener('click', ()=>{
+    openModal({title:'New journal entry', fields:mistakeFormFields(), values:{date:todayStr()}, submitLabel:'Add', onSubmit:(data)=>{
+      state.mistakeEntries.push({id:uid(), ...data});
+      saveKey('mistakeEntries');
+      switchView('mistakes');
+    }});
+  });
+  document.querySelectorAll('[data-mistake-edit]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const id = btn.getAttribute('data-mistake-edit');
+      const m = state.mistakeEntries.find(x=>x.id===id);
+      openModal({title:'Edit entry', fields:mistakeFormFields(), values:m, submitLabel:'Save', onSubmit:(data)=>{
+        Object.assign(m, data);
+        saveKey('mistakeEntries');
+        switchView('mistakes');
+      }, onDelete:()=>{
+        state.mistakeEntries = state.mistakeEntries.filter(x=>x.id!==id);
+        saveKey('mistakeEntries');
+        switchView('mistakes');
+        showToast('Entry removed');
+      }});
+    });
+  });
+}
+
+/* ===================== RELATIONSHIPS ===================== */
+function renderRelationships(){
+  const today = todayStr();
+  const fightFreeSet = new Set(state.relationshipEntries.filter(r=>r.fightFree).map(r=>r.date));
+  const streak = computeStreak(fightFreeSet);
+  const sorted = [...state.relationshipEntries].sort((a,b)=>b.date.localeCompare(a.date));
+  const peopleChips = state.relationships.map(p=>`<span class="badge badge-muted" data-person-edit="${p.id}" style="cursor:pointer;">${escapeHtml(p.name)} ✎</span>`).join(' ');
+
+  const todayTaskLog = state.relationshipTaskLogs[today] || {};
+  const taskDoneCount = state.relationshipTasks.filter(t=>todayTaskLog[t.id]).length;
+  const taskList = state.relationshipTasks.length? state.relationshipTasks.map(t=>{
+    const checked = !!todayTaskLog[t.id];
+    return `<div class="checkbox-row">
+      <button class="checkbox ${checked?'checked':''}" data-reltask-toggle="${t.id}">${checked?'✓':''}</button>
+      <div class="list-item-main"><div class="list-item-title">${t.icon||'•'} ${escapeHtml(t.name)}</div></div>
+      <div class="list-item-actions"><button class="icon-btn" data-reltask-edit="${t.id}">✎</button></div>
+    </div>`;
+  }).join('') : `<div class="empty-state"><span class="emoji">🤝</span><p>Add the daily habits you want with the people you love.</p></div>`;
+
+  const list = sorted.length? sorted.map(r=>`
+    <div class="list-item" style="align-items:flex-start;">
+      <div class="list-item-main">
+        <div class="list-item-title">${formatDateNice(r.date)} <span class="badge ${r.fightFree?'badge-sage':'badge-coral'}" style="margin-left:6px;">${r.fightFree?'Fight-free':'Rough day'}</span></div>
+        ${r.note? `<div class="list-item-sub" style="margin-top:6px;">${escapeHtml(r.note)}</div>`:''}
+      </div>
+      <div class="list-item-actions"><button class="icon-btn" data-rel-edit="${r.id}">✎</button></div>
+    </div>`).join('') : `<div class="empty-state"><span class="emoji">🤝</span><p>Log how today went with the people who matter.</p></div>`;
+
+  return `
+  <div class="section-title">🤝 Relationships</div>
+  <div class="section-sub">Keeping things warm with family and loved ones.</div>
+
+  <div class="stat-box" style="max-width:260px;"><div class="num">${streak}d</div><div class="lbl">Fight-free streak</div></div>
+
+  <div class="card">
+    <div class="row" style="justify-content:space-between; align-items:center; margin-bottom:10px;">
+      <h3>Daily tasks</h3>
+      <button class="btn btn-sm" id="addRelTaskBtn">+ Add task</button>
+    </div>
+    <p class="section-sub">${taskDoneCount}/${state.relationshipTasks.length} done today</p>
+    <div class="list" style="margin-top:10px;">${taskList}</div>
+  </div>
+
+  <div class="card">
+    <div class="row" style="justify-content:space-between; align-items:center; margin-bottom:10px;">
+      <h3>People</h3>
+      <button class="btn btn-sm" id="addPersonBtn">+ Add person</button>
+    </div>
+    <div class="row" style="gap:8px;">${peopleChips || '<span class="section-sub">No one added yet.</span>'}</div>
+  </div>
+
+  <div class="card">
+    <div class="row" style="justify-content:space-between; align-items:center; margin-bottom:12px;">
+      <h3>Daily log</h3>
+      <button class="btn btn-sm btn-primary" id="addRelEntryBtn">+ Log today</button>
+    </div>
+    <div class="list">${list}</div>
+  </div>`;
+}
+function relEntryFormFields(){
+  return [
+    {key:'date', label:'Date', type:'date', required:true},
+    {key:'fightFree', label:'How did it go?', type:'select', options:[{value:'true',label:'Fight-free day'},{value:'false',label:'There was friction'}]},
+    {key:'note', label:'Note', type:'textarea', placeholder:'Anything worth remembering'},
+  ];
+}
+function attachRelationshipsHandlers(){
+  const today = todayStr();
+  document.querySelectorAll('[data-reltask-toggle]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const id = btn.getAttribute('data-reltask-toggle');
+      if(!state.relationshipTaskLogs[today]) state.relationshipTaskLogs[today] = {};
+      state.relationshipTaskLogs[today][id] = !state.relationshipTaskLogs[today][id];
+      saveKey('relationshipTaskLogs');
+      switchView('relationships');
+    });
+  });
+  const addTaskBtn = document.getElementById('addRelTaskBtn');
+  if(addTaskBtn) addTaskBtn.addEventListener('click', ()=>{
+    openModal({title:'Add daily task', fields:[{key:'icon',label:'Emoji',type:'text',placeholder:'❤️'},{key:'name',label:'Task',type:'text',placeholder:'e.g. Ask how their day was', required:true}], submitLabel:'Add', onSubmit:(data)=>{
+      state.relationshipTasks.push({id:uid(), name:data.name, icon:data.icon||'•'});
+      saveKey('relationshipTasks');
+      switchView('relationships');
+    }});
+  });
+  document.querySelectorAll('[data-reltask-edit]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const id = btn.getAttribute('data-reltask-edit');
+      const t = state.relationshipTasks.find(x=>x.id===id);
+      openModal({title:'Edit task', fields:[{key:'icon',label:'Emoji',type:'text'},{key:'name',label:'Task',type:'text', required:true}], values:t, submitLabel:'Save', onSubmit:(data)=>{
+        Object.assign(t, {name:data.name, icon:data.icon||'•'});
+        saveKey('relationshipTasks');
+        switchView('relationships');
+      }, onDelete:()=>{
+        state.relationshipTasks = state.relationshipTasks.filter(x=>x.id!==id);
+        saveKey('relationshipTasks');
+        switchView('relationships');
+      }});
+    });
+  });
+  const addPersonBtn = document.getElementById('addPersonBtn');
+  if(addPersonBtn) addPersonBtn.addEventListener('click', ()=>{
+    openModal({title:'Add person', fields:[{key:'name', label:'Name / relation', type:'text', placeholder:'e.g. Mama', required:true}], submitLabel:'Add', onSubmit:(data)=>{
+      state.relationships.push({id:uid(), name:data.name});
+      saveKey('relationships');
+      switchView('relationships');
+    }});
+  });
+  document.querySelectorAll('[data-person-edit]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const id = btn.getAttribute('data-person-edit');
+      const p = state.relationships.find(x=>x.id===id);
+      openModal({title:'Edit person', fields:[{key:'name', label:'Name / relation', type:'text', required:true}], values:p, submitLabel:'Save', onSubmit:(data)=>{
+        p.name = data.name; saveKey('relationships'); switchView('relationships');
+      }, onDelete:()=>{
+        state.relationships = state.relationships.filter(x=>x.id!==id);
+        saveKey('relationships'); switchView('relationships');
+      }});
+    });
+  });
+  const addRelBtn = document.getElementById('addRelEntryBtn');
+  if(addRelBtn) addRelBtn.addEventListener('click', ()=>{
+    openModal({title:'Log today', fields:relEntryFormFields(), values:{date:todayStr(), fightFree:'true'}, submitLabel:'Save', onSubmit:(data)=>{
+      state.relationshipEntries.push({id:uid(), date:data.date, fightFree:data.fightFree==='true', note:data.note});
+      saveKey('relationshipEntries');
+      switchView('relationships');
+    }});
+  });
+  document.querySelectorAll('[data-rel-edit]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const id = btn.getAttribute('data-rel-edit');
+      const r = state.relationshipEntries.find(x=>x.id===id);
+      openModal({title:'Edit log', fields:relEntryFormFields(), values:{...r, fightFree:String(r.fightFree)}, submitLabel:'Save', onSubmit:(data)=>{
+        r.date=data.date; r.fightFree = data.fightFree==='true'; r.note=data.note;
+        saveKey('relationshipEntries'); switchView('relationships');
+      }, onDelete:()=>{
+        state.relationshipEntries = state.relationshipEntries.filter(x=>x.id!==id);
+        saveKey('relationshipEntries'); switchView('relationships');
+        showToast('Entry removed');
+      }});
+    });
+  });
+}
+
+/* ===================== GRATITUDE ===================== */
+function renderGratitude(){
+  const streak = computeStreak(new Set(state.gratitudeEntries.map(g=>g.date)));
+  const sorted = [...state.gratitudeEntries].sort((a,b)=>b.date.localeCompare(a.date));
+  const list = sorted.length? sorted.map(g=>`
+    <div class="list-item" style="align-items:flex-start;">
+      <div class="list-item-main">
+        <div class="list-item-title">${formatDateNice(g.date)}</div>
+        <div class="list-item-sub" style="margin-top:6px;">
+          ${(g.items||[]).filter(Boolean).map(it=>`🙏 ${escapeHtml(it)}`).join('<br>')}
+        </div>
+        ${g.note? `<div class="list-item-sub" style="margin-top:6px;">${escapeHtml(g.note)}</div>`:''}
+      </div>
+      <div class="list-item-actions"><button class="icon-btn" data-grat-edit="${g.id}">✎</button></div>
+    </div>`).join('') : `<div class="empty-state"><span class="emoji">🙏</span><p>Write down three things you're grateful for today.</p></div>`;
+
+  return `
+  <div class="section-title">🙏 Gratitude Journal</div>
+  <div class="section-sub">A few good things, every day.</div>
+
+  <div class="stat-box" style="max-width:260px;"><div class="num">${streak}d</div><div class="lbl">Current streak</div></div>
+
+  <div class="card">
+    <div class="row" style="justify-content:space-between; align-items:center; margin-bottom:12px;">
+      <h3>Entries</h3>
+      <button class="btn btn-sm btn-primary" id="addGratBtn">+ Add today</button>
+    </div>
+    <div class="list">${list}</div>
+  </div>`;
+}
+function gratFormFields(values){
+  return [
+    {key:'date', label:'Date', type:'date', required:true},
+    {key:'item1', label:'Grateful for #1', type:'text', placeholder:"e.g. Family's health"},
+    {key:'item2', label:'Grateful for #2', type:'text'},
+    {key:'item3', label:'Grateful for #3', type:'text'},
+    {key:'note', label:'Note (optional)', type:'textarea'},
+  ];
+}
+function attachGratitudeHandlers(){
+  const addBtn = document.getElementById('addGratBtn');
+  if(addBtn) addBtn.addEventListener('click', ()=>{
+    openModal({title:'Today\u2019s gratitude', fields:gratFormFields(), values:{date:todayStr()}, submitLabel:'Save', onSubmit:(data)=>{
+      state.gratitudeEntries.push({id:uid(), date:data.date, items:[data.item1,data.item2,data.item3], note:data.note});
+      saveKey('gratitudeEntries');
+      switchView('gratitude');
+    }});
+  });
+  document.querySelectorAll('[data-grat-edit]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const id = btn.getAttribute('data-grat-edit');
+      const g = state.gratitudeEntries.find(x=>x.id===id);
+      const values = {date:g.date, item1:g.items?.[0]||'', item2:g.items?.[1]||'', item3:g.items?.[2]||'', note:g.note};
+      openModal({title:'Edit entry', fields:gratFormFields(values), values, submitLabel:'Save', onSubmit:(data)=>{
+        g.date=data.date; g.items=[data.item1,data.item2,data.item3]; g.note=data.note;
+        saveKey('gratitudeEntries'); switchView('gratitude');
+      }, onDelete:()=>{
+        state.gratitudeEntries = state.gratitudeEntries.filter(x=>x.id!==id);
+        saveKey('gratitudeEntries'); switchView('gratitude');
+        showToast('Entry removed');
+      }});
+    });
+  });
+}
+
+/* ===================== EXPORT ===================== */
+function toCSV(rows, headers){
+  const esc = v => `"${String(v==null?'':v).replace(/"/g,'""')}"`;
+  const lines = [headers.map(esc).join(',')];
+  rows.forEach(r=> lines.push(headers.map(h=>esc(r[h])).join(',')));
+  return lines.join('\n');
+}
+function downloadFile(filename, content, mime){
+  const blob = new Blob([content], {type:mime});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  setTimeout(()=>URL.revokeObjectURL(url), 1000);
+}
+function renderExport(){
+  const weekAgo = daysAgoStr(6);
+  const days = lastNDates(7);
+  const ritualCompleteDays = days.filter(d=> RITUAL_PRACTICES.every(p=> (state.ritualLogs[d]||{})[p.id]?.done)).length;
+  const habitPctAvg = state.habits.length? Math.round(days.reduce((s,d)=> s + (state.habits.filter(h=>(state.habitLogs[d]||{})[h.id]).length/state.habits.length), 0)/7*100) : 0;
+  const weekExpense = state.expenses.filter(e=>e.date>=weekAgo).reduce((s,e)=>s+(e.amount||0),0);
+  const weekGrowthMins = state.growthEntries.filter(g=>g.date>=weekAgo).reduce((s,g)=>s+(g.minutes||0),0);
+  const weekGratitude = state.gratitudeEntries.filter(g=>g.date>=weekAgo).length;
+  const weekMistakes = state.mistakeEntries.filter(m=>m.date>=weekAgo).length;
+  const weekFightFree = state.relationshipEntries.filter(r=>r.date>=weekAgo && r.fightFree).length;
+  const weightChange = (()=>{
+    const inRange = [...state.weightLog].filter(w=>w.date>=weekAgo).sort((a,b)=>a.date.localeCompare(b.date));
+    if(inRange.length<2) return null;
+    return (inRange[inRange.length-1].weight - inRange[0].weight).toFixed(1);
+  })();
+
+  return `
+  <div class="section-title">📊 Weekly Export</div>
+  <div class="section-sub">Last 7 days, ready to download for your own analysis.</div>
+
+  <div class="grid-3">
+    <div class="stat-box"><div class="num">${ritualCompleteDays}/7</div><div class="lbl">Full ritual days</div></div>
+    <div class="stat-box"><div class="num">${habitPctAvg}%</div><div class="lbl">Avg habit completion</div></div>
+    <div class="stat-box"><div class="num">${weightChange!=null? (weightChange>0?'+':'')+weightChange+'kg' : '—'}</div><div class="lbl">Weight change</div></div>
+    <div class="stat-box"><div class="num">₹${weekExpense.toFixed(0)}</div><div class="lbl">Total spent</div></div>
+    <div class="stat-box"><div class="num">${weekGrowthMins}m</div><div class="lbl">Growth time</div></div>
+    <div class="stat-box"><div class="num">${weekGratitude}</div><div class="lbl">Gratitude entries</div></div>
+    <div class="stat-box"><div class="num">${weekMistakes}</div><div class="lbl">Lessons logged</div></div>
+    <div class="stat-box"><div class="num">${weekFightFree}/7</div><div class="lbl">Fight-free days</div></div>
+  </div>
+
+  <div class="card">
+    <h3 style="margin-bottom:6px;">Download</h3>
+    <p class="section-sub" style="margin-bottom:18px;">A CSV daily summary for the last 7 days, or a full JSON backup of everything ever logged.</p>
+    <div class="row">
+      <button class="btn btn-primary" id="downloadCsvBtn">⬇ Weekly summary (CSV)</button>
+      <button class="btn" id="downloadJsonBtn">⬇ Full backup (JSON)</button>
+    </div>
+  </div>`;
+}
+function attachExportHandlers(){
+  const csvBtn = document.getElementById('downloadCsvBtn');
+  if(csvBtn) csvBtn.addEventListener('click', ()=>{
+    const days = lastNDates(7);
+    const rows = days.map(d=>{
+      const ritualDone = RITUAL_PRACTICES.filter(p=>(state.ritualLogs[d]||{})[p.id]?.done).length;
+      const habitsDone = state.habits.filter(h=>(state.habitLogs[d]||{})[h.id]).length;
+      const wt = state.weightLog.find(w=>w.date===d);
+      const dayExpense = state.expenses.filter(e=>e.date===d).reduce((s,e)=>s+(e.amount||0),0);
+      const growthMin = state.growthEntries.filter(g=>g.date===d).reduce((s,g)=>s+(g.minutes||0),0);
+      const gratCount = state.gratitudeEntries.filter(g=>g.date===d).length;
+      const mistakeCount = state.mistakeEntries.filter(m=>m.date===d).length;
+      const relEntry = state.relationshipEntries.find(r=>r.date===d);
+      return {
+        date:d, ritual_done:`${ritualDone}/${RITUAL_PRACTICES.length}`, habits_done:`${habitsDone}/${state.habits.length}`,
+        weight_kg: wt? wt.weight : '', expense_inr: dayExpense.toFixed(0), growth_minutes: growthMin,
+        gratitude_entries: gratCount, lessons_logged: mistakeCount, relationship: relEntry? (relEntry.fightFree?'fight-free':'friction') : ''
+      };
+    });
+    const csv = toCSV(rows, ['date','ritual_done','habits_done','weight_kg','expense_inr','growth_minutes','gratitude_entries','lessons_logged','relationship']);
+    downloadFile(`pragati-weekly-${todayStr()}.csv`, csv, 'text/csv');
+    showToast('CSV downloaded');
+  });
+  const jsonBtn = document.getElementById('downloadJsonBtn');
+  if(jsonBtn) jsonBtn.addEventListener('click', ()=>{
+    downloadFile(`pragati-backup-${todayStr()}.json`, JSON.stringify(state, null, 2), 'application/json');
+    showToast('Backup downloaded');
+  });
+}
+
+/* ===================== Quick add (dashboard) ===================== */
+function attachDashboardHandlers(){
+  document.querySelectorAll('[data-quick]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const kind = btn.getAttribute('data-quick');
+      if(kind==='gratitude'){
+        openModal({title:'Today\u2019s gratitude', fields:gratFormFields(), values:{date:todayStr()}, submitLabel:'Save', onSubmit:(data)=>{
+          state.gratitudeEntries.push({id:uid(), date:data.date, items:[data.item1,data.item2,data.item3], note:data.note});
+          saveKey('gratitudeEntries'); switchView('dashboard');
+        }});
+      } else if(kind==='weight'){
+        openModal({title:'Log weigh-in', fields:weightFormFields(), values:{date:todayStr()}, submitLabel:'Save', onSubmit:(data)=>{
+          state.weightLog.push({id:uid(), date:data.date, weight:data.weight});
+          saveKey('weightLog'); switchView('dashboard');
+        }});
+      } else if(kind==='expense'){
+        openModal({title:'Add expense', fields:expenseFormFields(), values:{date:todayStr(), category:EXPENSE_CATEGORIES[0]}, submitLabel:'Add', onSubmit:(data)=>{
+          state.expenses.push({id:uid(), ...data});
+          saveKey('expenses'); switchView('dashboard');
+        }});
+      } else if(kind==='mistake'){
+        openModal({title:'New journal entry', fields:mistakeFormFields(), values:{date:todayStr()}, submitLabel:'Add', onSubmit:(data)=>{
+          state.mistakeEntries.push({id:uid(), ...data});
+          saveKey('mistakeEntries'); switchView('dashboard');
+        }});
+      }
+    });
+  });
+}
+
+function attachViewHandlers(view){
+  const map = {
+    dashboard: attachDashboardHandlers, ritual: attachRitualHandlers, habits: attachHabitsHandlers,
+    fitness: attachFitnessHandlers, expenses: attachExpensesHandlers, growth: attachGrowthHandlers,
+    mistakes: attachMistakesHandlers, relationships: attachRelationshipsHandlers, gratitude: attachGratitudeHandlers,
+    export: attachExportHandlers,
+  };
+  if(map[view]) map[view]();
+}
+
+/* ===================== Init ===================== */
+function attachShellHandlers(){
+  document.getElementById('hamburgerBtn').addEventListener('click', openSidebarMobile);
+  document.getElementById('overlay').addEventListener('click', closeSidebarMobile);
+  document.getElementById('navList').addEventListener('click', (e)=>{
+    const btn = e.target.closest('[data-nav]');
+    if(btn){ switchView(btn.getAttribute('data-nav')); }
+  });
+}
+
+async function init(){
+  await loadAll();
+  renderNav();
+  attachShellHandlers();
+  switchView('dashboard');
+  document.getElementById('loadingScreen').style.display = 'none';
+  document.getElementById('app').style.display = 'flex';
+}
+init();
+
+})();
+</script>
+</body>
+</html>
