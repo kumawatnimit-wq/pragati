@@ -471,7 +471,12 @@ async function loadAll(){
     loadKey(STORAGE_KEYS.relationshipTaskLogs, {}),
     loadKey(STORAGE_KEYS.gratitudeEntries, []),
   ]);
-  state = {profile, habits, habitLogs, ritualLogs, breathingSettings, stretchExercises, weightLog, workoutEntries, expenses, growthEntries, growthTasks, growthTaskLogs, mistakeEntries, relationships, relationshipEntries, relationshipTasks, relationshipTaskLogs, gratitudeEntries};
+state = {profile, habits, habitLogs, ritualLogs, breathingSettings, stretchExercises, weightLog, workoutEntries, expenses, growthEntries, growthTasks, growthTaskLogs, mistakeEntries, relationships, relationshipEntries, relationshipTasks, relationshipTaskLogs, gratitudeEntries};
+  // Persist freshly-seeded defaults immediately so their generated IDs stay stable on the next load
+  await Promise.all([
+    saveKey('habits'), saveKey('stretchExercises'), saveKey('relationshipTasks'),
+    saveKey('relationships'), saveKey('growthTasks'), saveKey('breathingSettings'),
+  ]);
 }
 
 function seedHabits(){
