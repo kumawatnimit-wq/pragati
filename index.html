@@ -432,21 +432,21 @@ const STORAGE_KEYS = {
   gratitudeEntries:'gratitude-entries',
 };
 
+const STORAGE_PREFIX = 'pragati:';
 async function loadKey(key, fallback){
   try{
-    const res = await window.storage.get(key, false);
-    if(res && res.value){ return JSON.parse(res.value); }
+    const raw = localStorage.getItem(STORAGE_PREFIX + key);
+    if(raw!=null){ return JSON.parse(raw); }
     return fallback;
   }catch(e){ return fallback; }
 }
 async function saveKey(stateKey){
   const key = STORAGE_KEYS[stateKey];
   try{
-    const res = await window.storage.set(key, JSON.stringify(state[stateKey]), false);
-    if(!res){ showToast('Could not save — try again', 'error'); }
+    localStorage.setItem(STORAGE_PREFIX + key, JSON.stringify(state[stateKey]));
   }catch(e){
     console.error(e);
-    showToast('Save failed — check connection', 'error');
+    showToast('Save failed — your browser storage may be full or blocked', 'error');
   }
 }
 
