@@ -537,6 +537,20 @@ async function loadAll(){
     loadKey(STORAGE_KEYS.journalEntries, []),
   ]);
 state = {profile, habits, habitLogs, ritualLogs, breathingSettings, stretchExercises, recoverySteps, mangalMaitriVideo, meditationVideo, weightLog, workoutEntries, expenses, growthEntries, growthTasks, growthTaskLogs, mistakeEntries, relationships, relationshipEntries, relationshipTasks, relationshipTaskLogs, gratitudeEntries, journalEntries};
+  // Migrate stretch entries saved before desc/illustration fields existed
+  {
+    const byName = {};
+    seedStretchExercises().forEach(d=>{ byName[d.name] = d; });
+    let changed = false;
+    state.stretchExercises = state.stretchExercises.map(it=>{
+      if(!it.illustration && byName[it.name]){
+        changed = true;
+        return {...it, illustration: byName[it.name].illustration, desc: byName[it.name].desc};
+      }
+      return it;
+    });
+    if(changed) await saveKey('stretchExercises');
+  }
   // Persist freshly-seeded defaults immediately so their generated IDs stay stable on the next load
   await Promise.all([
     saveKey('habits'), saveKey('stretchExercises'), saveKey('recoverySteps'), saveKey('relationshipTasks'),
