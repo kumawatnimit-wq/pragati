@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
-<title>Pragati — Daily Growth</title>
+<title>AI Wisdom — Daily Growth</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -175,6 +175,10 @@ a{color:inherit;}
 .empty-state p{font-size:13.5px; line-height:1.6;}
 
 .checkbox-row{display:flex; align-items:center; gap:12px; padding:12px 14px; border-radius:13px; background:var(--surface-2); border:1px solid var(--border-soft);}
+.detail-item{display:flex; align-items:flex-start; gap:14px; padding:14px; border-radius:13px; background:var(--surface-2); border:1px solid var(--border-soft);}
+.detail-item .checkbox{margin-top:2px;}
+.detail-illo{flex-shrink:0; background:var(--surface-3); border-radius:11px; padding:4px;}
+.detail-num{font-family:var(--font-mono); font-size:12px; color:var(--text-faint); width:20px; flex-shrink:0; padding-top:3px;}
 .checkbox{
   width:24px; height:24px; border-radius:8px; border:2px solid var(--border); flex-shrink:0; display:flex; align-items:center; justify-content:center;
   background:var(--surface); transition:all .15s ease; font-size:13px; color:transparent;
@@ -275,13 +279,13 @@ a{color:inherit;}
 
 <div id="loadingScreen" class="loading-screen">
   <svg width="46" height="46" viewBox="0 0 120 100"><line x1="60" y1="95" x2="60" y2="30" stroke="#84B594" stroke-width="4" stroke-linecap="round"/><circle cx="60" cy="26" r="8" fill="#E3A857"/></svg>
-  <div class="lbl">Loading your Pragati space…</div>
+  <div class="lbl">Loading your AI Wisdom space…</div>
 </div>
 
 <div id="app" style="display:none;">
   <div class="mobile-topbar">
     <button class="icon-btn" id="hamburgerBtn" style="font-size:20px;">☰</button>
-    <span class="brand-name">Pragati</span>
+    <span class="brand-name">AI Wisdom</span>
   </div>
 
   <div class="overlay" id="overlay"></div>
@@ -290,7 +294,7 @@ a{color:inherit;}
     <div class="brand">
       <svg class="brand-mark" viewBox="0 0 120 100"><line x1="60" y1="95" x2="60" y2="28" stroke="#84B594" stroke-width="5" stroke-linecap="round"/><path d="M60 55 q-20 -6 -25 12 q18 5 25 -11" fill="#84B594"/><path d="M60 55 q20 -6 25 12 q-18 5 -25 -11" fill="#84B594"/><circle cx="60" cy="24" r="8" fill="#E3A857"/></svg>
       <div>
-        <div class="brand-name">Pragati</div>
+        <div class="brand-name">AI Wisdom</div>
         <div class="brand-sub">Daily growth</div>
       </div>
     </div>
@@ -337,7 +341,8 @@ const NAV_ITEMS = [
   {id:'mistakes', label:'Lessons Journal', icon:'🪞'},
   {id:'relationships', label:'Relationships', icon:'🤝'},
   {id:'gratitude', label:'Gratitude', icon:'🙏'},
-  {id:'export', label:'Weekly Export', icon:'📊'},
+  {id:'journal', label:'Journal', icon:'📝'},
+  {id:'export', label:'Reports', icon:'📊'},
 ];
 
 const RITUAL_PRACTICES = [
@@ -349,9 +354,59 @@ const RITUAL_PRACTICES = [
   {id:'breathing', label:'Breathing', icon:'🌬️', hint:'Slow, deliberate breathwork.'},
 ];
 
-const EXPENSE_CATEGORIES = ['Food','Petrol/Fuel','Transport','Groceries','Shopping','Fashion','Fun & Entertainment','Bills & Utilities','Health','Family & Gifts','Business','Other'];
+const EXPENSE_CATEGORIES = ['Food','Petrol/Fuel','Cab','Travel','Transport','Groceries','Shopping','Fashion','Fun & Entertainment','Recharge','Bills & Utilities','Health','Growth','Event','Family & Gifts','Business','Other'];
 
-const MANGAL_MAITRI_VIDEO_ID = 'euCByLM6Mpo';
+const WORKOUT_DAY_ORDER = ['mon','tue','wed','thu','fri','sat','sun'];
+const WORKOUT_PLAN = {
+  mon: {day:'Monday', label:'Chest', exercises:[
+    {name:'Dumbbell Floor Press', sets:4, reps:'10-12', note:'Lie on your back, press dumbbells up from chest level.'},
+    {name:'Dumbbell Flyes (floor)', sets:3, reps:'12-15', note:'Slight bend in elbows, open arms wide then squeeze back up.'},
+    {name:'Push-ups', sets:3, reps:'15-20', note:'Full range, chest to floor.'},
+    {name:'Resistance Band Chest Press', sets:3, reps:'12-15', note:'Anchor the band behind you, press forward.'},
+    {name:'Incline Push-ups (feet raised)', sets:3, reps:'12-15', note:'Feet on a chair or step, hands on the floor.'},
+  ]},
+  tue: {day:'Tuesday', label:'Back', exercises:[
+    {name:'Dumbbell Bent-over Rows', sets:4, reps:'10-12', note:'Hinge at the hips, pull dumbbells up to your ribs.'},
+    {name:'Single-arm Dumbbell Row', sets:3, reps:'10-12 each side', note:'Support with your other hand on a chair or bed.'},
+    {name:'Resistance Band Pulldown', sets:3, reps:'12-15', note:'Anchor the band high, pull down to your chest.'},
+    {name:'Resistance Band Rows', sets:3, reps:'12-15', note:'Anchor at chest height, pull elbows back.'},
+    {name:'Superman Holds', sets:3, reps:'15-20 sec', note:'Lie face down, lift arms and legs together.'},
+  ]},
+  wed: {day:'Wednesday', label:'Biceps & Triceps', exercises:[
+    {name:'Dumbbell Bicep Curls', sets:3, reps:'10-12'},
+    {name:'Hammer Curls', sets:3, reps:'10-12', note:'Palms facing each other.'},
+    {name:'Resistance Band Curls', sets:3, reps:'12-15'},
+    {name:'Dumbbell Overhead Triceps Extension', sets:3, reps:'10-12'},
+    {name:'Triceps Kickbacks', sets:3, reps:'12-15'},
+    {name:'Diamond Push-ups', sets:3, reps:'10-15', note:'Hands close together, thumbs and index fingers touching.'},
+  ]},
+  thu: {day:'Thursday', label:'Shoulders', exercises:[
+    {name:'Dumbbell Shoulder Press', sets:4, reps:'10-12'},
+    {name:'Lateral Raises', sets:3, reps:'12-15'},
+    {name:'Front Raises', sets:3, reps:'12-15'},
+    {name:'Resistance Band Face Pulls', sets:3, reps:'15'},
+    {name:'Pike Push-ups', sets:3, reps:'10-12', note:'Hips high, head toward the floor.'},
+  ]},
+  fri: {day:'Friday', label:'Abs', exercises:[
+    {name:'Crunches', sets:3, reps:'15-20'},
+    {name:'Plank', sets:3, reps:'30-45 sec hold'},
+    {name:'Leg Raises', sets:3, reps:'12-15'},
+    {name:'Russian Twists', sets:3, reps:'20 (10 each side)'},
+    {name:'Bicycle Crunches', sets:3, reps:'20'},
+    {name:'Mountain Climbers', sets:3, reps:'20'},
+  ]},
+  sat: {day:'Saturday', label:'Legs', exercises:[
+    {name:'Dumbbell Goblet Squats', sets:4, reps:'12-15'},
+    {name:'Dumbbell Lunges', sets:3, reps:'10-12 each leg'},
+    {name:'Dumbbell Romanian Deadlifts', sets:3, reps:'10-12'},
+    {name:'Resistance Band Squats', sets:3, reps:'15'},
+    {name:'Glute Bridges', sets:3, reps:'15'},
+    {name:'Calf Raises', sets:3, reps:'15-20'},
+  ]},
+  sun: {day:'Sunday', label:'Rest & Recovery', exercises:[
+    {name:'Light walk or gentle stretching', sets:1, reps:'20-30 min', note:'Keep it easy — this day is for your muscles to rebuild. Check the Recovery tab in Morning Ritual.'},
+  ]},
+};
 
 /* ===================== State ===================== */
 let state = {
@@ -361,6 +416,9 @@ let state = {
   ritualLogs:{},
   breathingSettings:{ inhale:4, hold1:0, exhale:6, hold2:0, durationMin:6 },
   stretchExercises:[],
+  recoverySteps:[],
+  mangalMaitriVideo:{ youtubeId:'euCByLM6Mpo' },
+  meditationVideo:{ youtubeId:null },
   weightLog:[],
   workoutEntries:[],
   expenses:[],
@@ -373,8 +431,10 @@ let state = {
   relationshipTasks:[],
   relationshipTaskLogs:{},
   gratitudeEntries:[],
+  journalEntries:[],
 };
 let currentView = 'dashboard';
+let workoutPlanActiveDay = ['sun','mon','tue','wed','thu','fri','sat'][new Date().getDay()];
 let activeTimer = null;  // generic ritual timer: {practiceId, remaining, totalSeconds, intervalId, running}
 let breathTimer = null;  // breathing timer: {phaseIdx, phaseRemaining, cyclesDone, totalCycles, running, finished, intervalId}
 let ritualActiveTab = RITUAL_PRACTICES[0].id;
@@ -423,13 +483,14 @@ function showToast(msg, kind){
 /* ===================== Storage ===================== */
 const STORAGE_KEYS = {
   profile:'profile', habits:'habits', habitLogs:'habit-logs', ritualLogs:'ritual-logs',
-  breathingSettings:'breathing-settings', stretchExercises:'stretch-exercises',
+  breathingSettings:'breathing-settings', stretchExercises:'stretch-exercises', recoverySteps:'recovery-steps',
+  mangalMaitriVideo:'mangal-maitri-video', meditationVideo:'meditation-video',
   weightLog:'weight-log', workoutEntries:'workout-entries', expenses:'expenses',
   growthEntries:'growth-entries', growthTasks:'growth-tasks', growthTaskLogs:'growth-task-logs',
   mistakeEntries:'mistake-entries',
   relationships:'relationships', relationshipEntries:'relationship-entries',
   relationshipTasks:'relationship-tasks', relationshipTaskLogs:'relationship-task-logs',
-  gratitudeEntries:'gratitude-entries',
+  gratitudeEntries:'gratitude-entries', journalEntries:'journal-entries',
 };
 
 const STORAGE_PREFIX = 'pragati:';
@@ -451,13 +512,16 @@ async function saveKey(stateKey){
 }
 
 async function loadAll(){
-  const [profile, habits, habitLogs, ritualLogs, breathingSettings, stretchExercises, weightLog, workoutEntries, expenses, growthEntries, growthTasks, growthTaskLogs, mistakeEntries, relationships, relationshipEntries, relationshipTasks, relationshipTaskLogs, gratitudeEntries] = await Promise.all([
+  const [profile, habits, habitLogs, ritualLogs, breathingSettings, stretchExercises, recoverySteps, mangalMaitriVideo, meditationVideo, weightLog, workoutEntries, expenses, growthEntries, growthTasks, growthTaskLogs, mistakeEntries, relationships, relationshipEntries, relationshipTasks, relationshipTaskLogs, gratitudeEntries, journalEntries] = await Promise.all([
     loadKey(STORAGE_KEYS.profile, {name:'', currentWeight:null, goalWeight:null, startWeight:null}),
     loadKey(STORAGE_KEYS.habits, seedHabits()),
     loadKey(STORAGE_KEYS.habitLogs, {}),
     loadKey(STORAGE_KEYS.ritualLogs, {}),
     loadKey(STORAGE_KEYS.breathingSettings, defaultBreathingSettings()),
     loadKey(STORAGE_KEYS.stretchExercises, seedStretchExercises()),
+    loadKey(STORAGE_KEYS.recoverySteps, seedRecoverySteps()),
+    loadKey(STORAGE_KEYS.mangalMaitriVideo, {youtubeId:'euCByLM6Mpo'}),
+    loadKey(STORAGE_KEYS.meditationVideo, {youtubeId:null}),
     loadKey(STORAGE_KEYS.weightLog, []),
     loadKey(STORAGE_KEYS.workoutEntries, []),
     loadKey(STORAGE_KEYS.expenses, []),
@@ -470,11 +534,12 @@ async function loadAll(){
     loadKey(STORAGE_KEYS.relationshipTasks, seedRelationshipTasks()),
     loadKey(STORAGE_KEYS.relationshipTaskLogs, {}),
     loadKey(STORAGE_KEYS.gratitudeEntries, []),
+    loadKey(STORAGE_KEYS.journalEntries, []),
   ]);
-state = {profile, habits, habitLogs, ritualLogs, breathingSettings, stretchExercises, weightLog, workoutEntries, expenses, growthEntries, growthTasks, growthTaskLogs, mistakeEntries, relationships, relationshipEntries, relationshipTasks, relationshipTaskLogs, gratitudeEntries};
+state = {profile, habits, habitLogs, ritualLogs, breathingSettings, stretchExercises, recoverySteps, mangalMaitriVideo, meditationVideo, weightLog, workoutEntries, expenses, growthEntries, growthTasks, growthTaskLogs, mistakeEntries, relationships, relationshipEntries, relationshipTasks, relationshipTaskLogs, gratitudeEntries, journalEntries};
   // Persist freshly-seeded defaults immediately so their generated IDs stay stable on the next load
   await Promise.all([
-    saveKey('habits'), saveKey('stretchExercises'), saveKey('relationshipTasks'),
+    saveKey('habits'), saveKey('stretchExercises'), saveKey('recoverySteps'), saveKey('relationshipTasks'),
     saveKey('relationships'), saveKey('growthTasks'), saveKey('breathingSettings'),
   ]);
 }
@@ -496,14 +561,24 @@ function seedRelationships(){
 }
 function seedStretchExercises(){
   return [
-    {id:uid(), name:'Neck rolls'},
-    {id:uid(), name:'Shoulder rolls'},
-    {id:uid(), name:'Arm circles'},
-    {id:uid(), name:'Standing forward fold'},
-    {id:uid(), name:'Cat-cow'},
-    {id:uid(), name:'Cobra stretch'},
-    {id:uid(), name:'Hamstring stretch'},
-    {id:uid(), name:'Seated spinal twist'},
+    {id:uid(), name:'Neck rolls', illustration:'neckRolls', desc:'Stand tall, slowly drop your ear toward one shoulder, roll your chin down and across to the other side. 5 slow circles each way.'},
+    {id:uid(), name:'Shoulder rolls', illustration:'shoulderRolls', desc:'Lift both shoulders up toward your ears, roll them back and down in a circle. 10 slow circles, then reverse direction.'},
+    {id:uid(), name:'Arm circles', illustration:'armCircles', desc:'Arms straight out to the sides. Make small circles, gradually growing bigger for 15 seconds, then reverse direction.'},
+    {id:uid(), name:'Standing forward fold', illustration:'forwardFold', desc:'Feet hip-width apart, soft knees, hinge forward from the hips and let your head and arms hang. Hold 20-30 seconds, breathing slowly.'},
+    {id:uid(), name:'Cat-cow', illustration:'catCow', desc:'On hands and knees. Inhale, drop your belly and lift your head (cow). Exhale, round your spine up and tuck your chin (cat). Repeat 8-10 times.'},
+    {id:uid(), name:'Cobra stretch', illustration:'cobra', desc:'Lie face down, hands under shoulders. Gently press up, lifting your chest while keeping hips on the floor. Hold 15-20 seconds.'},
+    {id:uid(), name:'Hamstring stretch', illustration:'hamstring', desc:'Sit with one leg extended, other foot tucked in. Reach toward your extended foot, keeping your back long. Hold 20-30 seconds each side.'},
+    {id:uid(), name:'Seated spinal twist', illustration:'spinalTwist', desc:'Sit with legs extended or crossed. Place one hand behind you, twist your torso toward that side, look over your shoulder. Hold 15-20 seconds each side.'},
+  ];
+}
+function seedRecoverySteps(){
+  return [
+    {id:uid(), name:'Foam roll or self-massage', desc:'Work slowly through calves, quads, and back for 3-5 minutes. Pause on any tight or tender spots.'},
+    {id:uid(), name:'Static stretch worked muscles', desc:'Hold each stretch 20-30 seconds, breathing slowly — no bouncing.'},
+    {id:uid(), name:'Hydrate', desc:'Drink a full glass of water.'},
+    {id:uid(), name:'Joint mobility circles', desc:'Slow circles at ankles, wrists, hips and shoulders — 10 each direction.'},
+    {id:uid(), name:'Deep breathing', desc:'2-3 minutes of slow belly breathing to bring your heart rate back down.'},
+    {id:uid(), name:'Gentle cool-down walk', desc:'A relaxed 5-minute walk to ease out of the session.'},
   ];
 }
 function seedRelationshipTasks(){
@@ -529,6 +604,25 @@ function defaultBreathingSettings(){
   return {inhale:4, hold1:0, exhale:6, hold2:0, durationMin:6};
 }
 
+/* Simple stick-figure illustrations for stretches (not photos — a static app can't host real photos) */
+function stretchIllustration(key){
+  const S = 'stroke="#84B594" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"';
+  const D = 'stroke="#E3A857" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-dasharray="4 4"';
+  const figs = {
+    neckRolls: `<circle cx="55" cy="20" r="8" ${S}/><line x1="55" y1="28" x2="50" y2="38" ${S}/><line x1="50" y1="38" x2="50" y2="68" ${S}/><line x1="50" y1="45" x2="35" y2="60" ${S}/><line x1="50" y1="45" x2="65" y2="60" ${S}/><line x1="50" y1="68" x2="42" y2="95" ${S}/><line x1="50" y1="68" x2="58" y2="95" ${S}/><path d="M44 8 A14 14 0 1 1 40 22" ${D}/>`,
+    shoulderRolls: `<circle cx="50" cy="18" r="8" ${S}/><line x1="50" y1="26" x2="50" y2="65" ${S}/><line x1="50" y1="38" x2="35" y2="58" ${S}/><line x1="50" y1="38" x2="65" y2="58" ${S}/><line x1="50" y1="65" x2="42" y2="95" ${S}/><line x1="50" y1="65" x2="58" y2="95" ${S}/><circle cx="35" cy="34" r="7" ${D}/><circle cx="65" cy="34" r="7" ${D}/>`,
+    armCircles: `<circle cx="50" cy="18" r="8" ${S}/><line x1="50" y1="26" x2="50" y2="65" ${S}/><line x1="50" y1="35" x2="20" y2="35" ${S}/><line x1="50" y1="35" x2="80" y2="35" ${S}/><line x1="50" y1="65" x2="42" y2="95" ${S}/><line x1="50" y1="65" x2="58" y2="95" ${S}/><circle cx="20" cy="35" r="6" ${D}/><circle cx="80" cy="35" r="6" ${D}/>`,
+    forwardFold: `<line x1="50" y1="50" x2="44" y2="95" ${S}/><line x1="50" y1="50" x2="56" y2="95" ${S}/><line x1="50" y1="50" x2="50" y2="78" ${S}/><circle cx="50" cy="85" r="7" ${S}/><line x1="50" y1="56" x2="50" y2="83" ${S}/>`,
+    catCow: `<circle cx="18" cy="48" r="7" ${S}/><path d="M25 51 Q50 44 75 48" ${S}/><line x1="25" y1="51" x2="25" y2="82" ${S}/><line x1="75" y1="48" x2="75" y2="82" ${S}/><line x1="32" y1="52" x2="30" y2="82" ${S}/><line x1="68" y1="48" x2="68" y2="82" ${S}/>`,
+    cobra: `<line x1="20" y1="82" x2="70" y2="82" ${S}/><path d="M70 82 Q66 66 58 58" ${S}/><circle cx="52" cy="50" r="7" ${S}/><line x1="58" y1="58" x2="62" y2="80" ${S}/>`,
+    hamstring: `<circle cx="42" cy="52" r="7" ${S}/><line x1="42" y1="59" x2="30" y2="80" ${S}/><line x1="30" y1="80" x2="85" y2="80" ${S}/><line x1="38" y1="58" x2="75" y2="78" ${S}/>`,
+    spinalTwist: `<circle cx="50" cy="50" r="7" ${S}/><line x1="50" y1="57" x2="50" y2="85" ${S}/><line x1="50" y1="85" x2="30" y2="88" ${S}/><line x1="50" y1="85" x2="70" y2="88" ${S}/><line x1="40" y1="60" x2="65" y2="55" ${S}/><line x1="40" y1="60" x2="22" y2="68" ${S}/><line x1="65" y1="55" x2="35" y2="82" ${S}/>`,
+  };
+  const svg = figs[key];
+  if(!svg) return '';
+  return `<div class="detail-illo"><svg viewBox="0 0 100 100" width="64" height="64">${svg}</svg></div>`;
+}
+
 /* ===================== Modal ===================== */
 function openModal({title, fields, values, submitLabel, onSubmit, onDelete}){
   const overlay = document.getElementById('modalOverlay');
@@ -542,7 +636,7 @@ function openModal({title, fields, values, submitLabel, onSubmit, onDelete}){
     const val = values && values[f.key]!=null ? values[f.key] : '';
     html += `<div class="field"><label>${escapeHtml(f.label)}</label>`;
     if(f.type==='textarea'){
-      html += `<textarea class="textarea" name="${f.key}" placeholder="${escapeHtml(f.placeholder||'')}" ${f.required?'required':''}>${escapeHtml(val)}</textarea>`;
+      html += `<textarea class="textarea" name="${f.key}" placeholder="${escapeHtml(f.placeholder||'')}" ${f.big?'style="min-height:180px;"':''} ${f.required?'required':''}>${escapeHtml(val)}</textarea>`;
     } else if(f.type==='select'){
       html += `<select class="select" name="${f.key}" ${f.required?'required':''}>`;
       (f.options||[]).forEach(opt=>{
@@ -627,7 +721,7 @@ function switchView(view){
   const renderers = {
     dashboard: renderDashboard, ritual: renderRitual, habits: renderHabits, fitness: renderFitness,
     expenses: renderExpenses, growth: renderGrowth, mistakes: renderMistakes,
-    relationships: renderRelationships, gratitude: renderGratitude, export: renderExport,
+    relationships: renderRelationships, gratitude: renderGratitude, journal: renderJournal, export: renderExport,
   };
   root.innerHTML = renderers[view] ? renderers[view]() : '';
   renderTopbar();
@@ -732,6 +826,8 @@ function renderRitual(){
   if(active.id==='breathing') panel = renderBreathingPanel();
   else if(active.id==='stretching') panel = renderStretchingPanel();
   else if(active.id==='mangalMaitri') panel = renderMangalMaitriPanel();
+  else if(active.id==='meditation') panel = renderMeditationPanel(active);
+  else if(active.id==='recovery') panel = renderRecoveryPanel();
   else panel = renderGenericTimerPanel(active);
 
   return `
@@ -758,10 +854,12 @@ function attachRitualHandlers(){
   if(active.id==='breathing') attachBreathingHandlers();
   else if(active.id==='stretching') attachStretchingHandlers();
   else if(active.id==='mangalMaitri') attachMangalMaitriHandlers();
+  else if(active.id==='meditation') attachMeditationHandlers();
+  else if(active.id==='recovery') attachRecoveryHandlers();
   else attachGenericTimerHandlers();
 }
 
-/* ---- Generic timer panel: Meditation, Recovery, Read ---- */
+/* ---- Generic timer panel: Read ---- */
 function renderGenericTimerPanel(active){
   const today = todayStr();
   const entry = getRitualEntry(today, active.id);
@@ -1077,76 +1175,57 @@ function syncBreathUI(){
   if(startBtn) startBtn.textContent = breathTimer.running? '⏸ Pause' : '▶ Start';
 }
 
-/* ---- Stretching panel: exercise checklist ---- */
-function renderStretchingPanel(){
-  const today = todayStr();
-  const entry = getRitualEntry(today,'stretching');
-  const checked = entry.checked||{};
-  const total = state.stretchExercises.length;
-  const doneCount = state.stretchExercises.filter(ex=>checked[ex.id]).length;
-  const list = total? state.stretchExercises.map(ex=>{
-    const isChecked = !!checked[ex.id];
-    return `<div class="checkbox-row">
-      <button class="checkbox ${isChecked?'checked':''}" data-stretch-toggle="${ex.id}">${isChecked?'✓':''}</button>
-      <div class="list-item-main"><div class="list-item-title">${escapeHtml(ex.name)}</div></div>
-      <div class="list-item-actions"><button class="icon-btn" data-stretch-edit="${ex.id}">✎</button></div>
-    </div>`;
-  }).join('') : `<div class="empty-state"><span class="emoji">🤸</span><p>Add the stretches you want to work through.</p></div>`;
-
+/* ---- Shared video widget: used by Meditation and Mangal Maitri ---- */
+function parseYouTubeId(url){
+  if(!url) return null;
+  url = url.trim();
+  if(/^[a-zA-Z0-9_-]{11}$/.test(url)) return url;
+  const m = url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|shorts\/))([a-zA-Z0-9_-]{11})/);
+  return m ? m[1] : null;
+}
+function renderVideoWidget(prefix, videoState){
+  const yid = videoState.youtubeId;
   return `
-  <div class="card">
-    <div class="row" style="justify-content:space-between; align-items:flex-start;">
-      <div>
-        <h3>🤸 Stretching</h3>
-        <p class="section-sub" style="margin-top:6px;">${doneCount}/${total} done today</p>
-      </div>
-      <button class="btn btn-sm" id="addStretchBtn">+ Add exercise</button>
+    <div class="row" style="justify-content:flex-end; margin-bottom:8px;">
+      <button class="btn btn-sm" id="${prefix}ChangeLinkBtn">🔗 ${yid?'Change video':'Add a video'}</button>
     </div>
-    <div class="list" style="margin-top:14px;">${list}</div>
-  </div>`;
+    <div class="video-embed">
+      ${yid ? `<iframe src="https://www.youtube-nocookie.com/embed/${yid}" title="video" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`
+        : `<div class="empty-state" style="position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; margin:0;"><span class="emoji">🎬</span><p>No video set — add a link or upload your own below.</p></div>`}
+    </div>
+    <div class="field" style="margin-top:16px;">
+      <label>Or play your own video file</label>
+      <input type="file" accept="video/*" class="input" id="${prefix}FileInput">
+      <div class="helper-text">Plays right here for this visit. Browsers can't store video files, so you'll pick it again next time you open this tab.</div>
+    </div>
+    <video id="${prefix}LocalVideo" controls style="width:100%; border-radius:14px; display:none; margin-top:6px; background:#000;"></video>`;
 }
-function stretchFormFields(){
-  return [{key:'name', label:'Exercise', type:'text', placeholder:'e.g. Cat-cow', required:true}];
-}
-function attachStretchingHandlers(){
-  const today = todayStr();
-  document.querySelectorAll('[data-stretch-toggle]').forEach(btn=>{
-    btn.addEventListener('click', ()=>{
-      const id = btn.getAttribute('data-stretch-toggle');
-      const entry = getRitualEntry(today,'stretching');
-      const checked = {...(entry.checked||{})};
-      checked[id] = !checked[id];
-      const allDone = state.stretchExercises.length>0 && state.stretchExercises.every(ex=>checked[ex.id]);
-      setRitualEntry(today,'stretching',{checked, done:allDone});
-      switchView('ritual');
-    });
-  });
-  const addBtn = document.getElementById('addStretchBtn');
-  if(addBtn) addBtn.addEventListener('click', ()=>{
-    openModal({title:'Add stretch', fields:stretchFormFields(), submitLabel:'Add', onSubmit:(data)=>{
-      state.stretchExercises.push({id:uid(), name:data.name});
-      saveKey('stretchExercises');
+function attachVideoWidgetHandlers(prefix, getVideoState, setVideoState){
+  const changeLinkBtn = document.getElementById(prefix+'ChangeLinkBtn');
+  if(changeLinkBtn) changeLinkBtn.addEventListener('click', ()=>{
+    const cur = getVideoState().youtubeId;
+    openModal({title:'Change video', fields:[
+      {key:'link', label:'YouTube link', type:'text', placeholder:'https://youtu.be/...', helper:'Paste any YouTube link. Leave blank to remove it.'},
+    ], values:{link: cur? `https://youtu.be/${cur}` : ''}, submitLabel:'Save', onSubmit:(data)=>{
+      const id = parseYouTubeId(data.link);
+      if(data.link && !id){ showToast('Could not read that link — try the full YouTube URL', 'error'); return; }
+      setVideoState({youtubeId:id});
       switchView('ritual');
     }});
   });
-  document.querySelectorAll('[data-stretch-edit]').forEach(btn=>{
-    btn.addEventListener('click', ()=>{
-      const id = btn.getAttribute('data-stretch-edit');
-      const ex = state.stretchExercises.find(x=>x.id===id);
-      openModal({title:'Edit exercise', fields:stretchFormFields(), values:ex, submitLabel:'Save', onSubmit:(data)=>{
-        ex.name = data.name;
-        saveKey('stretchExercises');
-        switchView('ritual');
-      }, onDelete:()=>{
-        state.stretchExercises = state.stretchExercises.filter(x=>x.id!==id);
-        saveKey('stretchExercises');
-        switchView('ritual');
-      }});
-    });
+  const fileInput = document.getElementById(prefix+'FileInput');
+  if(fileInput) fileInput.addEventListener('change', (e)=>{
+    const file = e.target.files && e.target.files[0];
+    if(!file) return;
+    const url = URL.createObjectURL(file);
+    const video = document.getElementById(prefix+'LocalVideo');
+    video.src = url;
+    video.style.display = 'block';
+    video.play().catch(()=>{});
   });
 }
 
-/* ---- Mangal Maitri panel: video ---- */
+/* ---- Mangal Maitri panel: video only ---- */
 function renderMangalMaitriPanel(){
   const today = todayStr();
   const entry = getRitualEntry(today,'mangalMaitri');
@@ -1154,9 +1233,7 @@ function renderMangalMaitriPanel(){
   <div class="card">
     <h3>🤲 Mangal Maitri</h3>
     <p class="section-sub" style="margin:6px 0 16px;">A few quiet minutes of goodwill for others.</p>
-    <div class="video-embed">
-      <iframe src="https://www.youtube-nocookie.com/embed/${MANGAL_MAITRI_VIDEO_ID}" title="Mangal Maitri practice" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-    </div>
+    ${renderVideoWidget('mm', state.mangalMaitriVideo)}
     <div class="timer-actions" style="margin-top:18px;">
       <button class="btn ${entry.done?'btn-primary':''}" id="mmDoneBtn">${entry.done?'✓ Marked done':'Mark done'}</button>
     </div>
@@ -1169,6 +1246,7 @@ function renderMangalMaitriPanel(){
 }
 function attachMangalMaitriHandlers(){
   const today = todayStr();
+  attachVideoWidgetHandlers('mm', ()=>state.mangalMaitriVideo, (v)=>{ state.mangalMaitriVideo=v; saveKey('mangalMaitriVideo'); });
   const doneBtn = document.getElementById('mmDoneBtn');
   if(doneBtn) doneBtn.addEventListener('click', ()=>{
     const cur = getRitualEntry(today,'mangalMaitri');
@@ -1181,6 +1259,163 @@ function attachMangalMaitriHandlers(){
     showToast('Note saved');
   });
 }
+
+/* ---- Meditation panel: video + timer ---- */
+function renderMeditationPanel(active){
+  const today = todayStr();
+  const entry = getRitualEntry(today,'meditation');
+  return `
+  <div class="card">
+    <h3>${active.icon} ${active.label}</h3>
+    <p class="section-sub" style="margin:6px 0 16px;">${active.hint}</p>
+    ${renderVideoWidget('med', state.meditationVideo)}
+    <div class="timer-wrap" style="margin-top:18px;">
+      <div class="timer-durations" id="durationBtns">
+        ${[5,10,15,20].map(m=>`<button class="dur-btn ${entry.duration===m?'active':''}" data-dur="${m}">${m} min</button>`).join('')}
+      </div>
+      <div class="timer-ring" id="timerRing">
+        <div class="time" id="timerTime">${String(entry.duration).padStart(2,'0')}:00</div>
+        <div class="lbl" id="timerLbl">choose duration</div>
+      </div>
+      <div class="timer-actions">
+        <button class="btn btn-primary" id="timerStartBtn">▶ Start</button>
+        <button class="btn" id="timerResetBtn">↺ Reset</button>
+        <button class="btn ${entry.done?'btn-primary':''}" id="markDoneBtn">${entry.done?'✓ Marked done':'Mark done'}</button>
+      </div>
+    </div>
+    <div class="field" style="margin-top:16px;">
+      <label>Note (optional)</label>
+      <textarea class="textarea" id="ritualNote" placeholder="Anything worth remembering about today's meditation…">${escapeHtml(entry.note)}</textarea>
+    </div>
+    <button class="btn btn-sm" id="saveNoteBtn">Save note</button>
+  </div>`;
+}
+function attachMeditationHandlers(){
+  attachVideoWidgetHandlers('med', ()=>state.meditationVideo, (v)=>{ state.meditationVideo=v; saveKey('meditationVideo'); });
+  attachGenericTimerHandlers();
+}
+
+/* ---- Shared detail checklist: used by Stretching and Recovery ---- */
+function renderDetailChecklist(practiceId, items, opts){
+  const today = todayStr();
+  const entry = getRitualEntry(today, practiceId);
+  const checked = entry.checked||{};
+  const total = items.length;
+  const doneCount = items.filter(it=>checked[it.id]).length;
+  const list = total? items.map((it,idx)=>{
+    const isChecked = !!checked[it.id];
+    const illo = opts.illustration ? stretchIllustration(it.illustration) : '';
+    const num = opts.numbered? `<div class="detail-num">${String(idx+1).padStart(2,'0')}</div>` : '';
+    return `<div class="detail-item">
+      ${num}
+      <button class="checkbox ${isChecked?'checked':''}" data-dc-toggle="${it.id}">${isChecked?'✓':''}</button>
+      ${illo}
+      <div class="detail-item-main" style="flex:1; min-width:0;">
+        <div class="list-item-title">${escapeHtml(it.name)}</div>
+        ${it.desc? `<div class="list-item-sub" style="margin-top:4px;">${escapeHtml(it.desc)}</div>`:''}
+      </div>
+      <button class="icon-btn" data-dc-edit="${it.id}">✎</button>
+    </div>`;
+  }).join('') : `<div class="empty-state"><span class="emoji">${opts.emptyEmoji||'📋'}</span><p>${opts.emptyText}</p></div>`;
+
+  const priorityCard = opts.priority? `
+  <div class="card">
+    <h3 style="margin-bottom:4px;">If short on time</h3>
+    <p class="section-sub">Priority order — do these first</p>
+    <div class="list">
+      ${opts.priority.map((label,i)=>`<div class="list-item"><div class="list-item-main"><div class="list-item-title">${String(i+1).padStart(2,'0')} · ${escapeHtml(label)}</div></div></div>`).join('')}
+    </div>
+  </div>` : '';
+
+  const quoteCard = opts.quote? `
+  <div class="card" style="text-align:center;">
+    <p style="font-family:var(--font-display); font-style:italic; font-size:16px; color:var(--text);">${escapeHtml(opts.quote.text)}</p>
+    <p class="section-sub" style="margin:8px 0 0; letter-spacing:1px; text-transform:uppercase; font-size:11px;">${escapeHtml(opts.quote.tag)}</p>
+  </div>` : '';
+
+  return `
+  <div class="card">
+    <div class="row" style="justify-content:space-between; align-items:flex-start;">
+      <div>
+        <h3>${opts.icon} ${opts.title}</h3>
+        <p class="section-sub" style="margin-top:6px;">${opts.subtitle || `${doneCount}/${total} done today`}</p>
+      </div>
+      <button class="btn btn-sm" data-dc-add="1">+ Add</button>
+    </div>
+    <div class="list" style="margin-top:14px;">${list}</div>
+  </div>
+  ${priorityCard}${quoteCard}`;
+}
+function attachDetailChecklist(practiceId, stateKey, fields){
+  const today = todayStr();
+  document.querySelectorAll('[data-dc-toggle]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const id = btn.getAttribute('data-dc-toggle');
+      const entry = getRitualEntry(today, practiceId);
+      const checked = {...(entry.checked||{})};
+      checked[id] = !checked[id];
+      const items = state[stateKey];
+      const allDone = items.length>0 && items.every(it=>checked[it.id]);
+      setRitualEntry(today, practiceId, {checked, done:allDone});
+      switchView('ritual');
+    });
+  });
+  const addBtn = document.querySelector('[data-dc-add]');
+  if(addBtn) addBtn.addEventListener('click', ()=>{
+    openModal({title:'Add', fields, submitLabel:'Add', onSubmit:(data)=>{
+      state[stateKey].push({id:uid(), ...data});
+      saveKey(stateKey);
+      switchView('ritual');
+    }});
+  });
+  document.querySelectorAll('[data-dc-edit]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const id = btn.getAttribute('data-dc-edit');
+      const items = state[stateKey];
+      const it = items.find(x=>x.id===id);
+      openModal({title:'Edit', fields, values:it, submitLabel:'Save', onSubmit:(data)=>{
+        Object.assign(it, data);
+        saveKey(stateKey);
+        switchView('ritual');
+      }, onDelete:()=>{
+        state[stateKey] = items.filter(x=>x.id!==id);
+        saveKey(stateKey);
+        switchView('ritual');
+      }});
+    });
+  });
+}
+function renderStretchingPanel(){
+  const total = state.stretchExercises.length;
+  return renderDetailChecklist('stretching', state.stretchExercises, {
+    icon:'🤸', title:'Stretching', illustration:true, numbered:true,
+    subtitle: `${total} poses · about ${total*1.5|0}-${total*2} minutes`,
+    emptyText:'Add the stretches you want to work through.',
+  });
+}
+function attachStretchingHandlers(){
+  attachDetailChecklist('stretching', 'stretchExercises', [
+    {key:'name', label:'Exercise', type:'text', placeholder:'e.g. Cat-cow', required:true},
+    {key:'desc', label:'How to do it', type:'textarea', placeholder:'Steps for this stretch'},
+  ]);
+}
+function renderRecoveryPanel(){
+  const total = state.recoverySteps.length;
+  return renderDetailChecklist('recovery', state.recoverySteps, {
+    icon:'🦵', title:'Recovery', illustration:false, numbered:true,
+    subtitle: `${total} steps · about 20 min · log anytime`,
+    emptyText:'Add the recovery steps you want to work through.',
+    priority:['Deep breathing','Hydrate','Joint mobility circles'],
+    quote:{text:'Recovery is the workout after the workout.', tag:'Daily · Non-negotiable'},
+  });
+}
+function attachRecoveryHandlers(){
+  attachDetailChecklist('recovery', 'recoverySteps', [
+    {key:'name', label:'Step', type:'text', placeholder:'e.g. Foam roll', required:true},
+    {key:'desc', label:'How to do it', type:'textarea', placeholder:'Details for this step'},
+  ]);
+}
+
 
 /* ===================== HABIT TRACKER ===================== */
 function renderHabits(){
@@ -1322,12 +1557,35 @@ function renderFitness(){
     ${renderWeightChart(sorted, p.goalWeight)}
   </div>
 
+  ${renderWorkoutPlanCard()}
+
   <div class="card">
     <div class="row" style="justify-content:space-between; align-items:center; margin-bottom:12px;">
       <h3>Workout log</h3>
       <button class="btn btn-sm btn-primary" id="addWorkoutBtn">+ Add workout</button>
     </div>
     <div class="list">${workoutList}</div>
+  </div>`;
+}
+function renderWorkoutPlanCard(){
+  const day = WORKOUT_PLAN[workoutPlanActiveDay];
+  return `
+  <div class="card">
+    <h3 style="margin-bottom:4px;">🏋️ Weekly workout plan</h3>
+    <p class="section-sub">Dumbbells + resistance band + bodyweight · ~1 hour a day · built for muscle gain</p>
+    <div class="tabs">
+      ${WORKOUT_DAY_ORDER.map(k=>`<button class="tab ${workoutPlanActiveDay===k?'active':''}" data-plan-day="${k}">${WORKOUT_PLAN[k].day.slice(0,3)} · ${WORKOUT_PLAN[k].label}</button>`).join('')}
+    </div>
+    <div class="list">
+      ${day.exercises.map((ex,idx)=>`
+        <div class="list-item" style="align-items:flex-start;">
+          <div class="list-item-main">
+            <div class="list-item-title">${escapeHtml(ex.name)}</div>
+            <div class="list-item-sub">${ex.sets} sets × ${ex.reps}${ex.note? ' — '+escapeHtml(ex.note):''}</div>
+          </div>
+          <div class="list-item-actions"><button class="icon-btn" data-plan-log="${workoutPlanActiveDay}:${idx}" title="Log this">➕</button></div>
+        </div>`).join('')}
+    </div>
   </div>`;
 }
 function renderWeightChart(sorted, goal){
@@ -1367,6 +1625,23 @@ function workoutFormFields(){
   ];
 }
 function attachFitnessHandlers(){
+  document.querySelectorAll('[data-plan-day]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      workoutPlanActiveDay = btn.getAttribute('data-plan-day');
+      switchView('fitness');
+    });
+  });
+  document.querySelectorAll('[data-plan-log]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const [dayKey, idx] = btn.getAttribute('data-plan-log').split(':');
+      const ex = WORKOUT_PLAN[dayKey].exercises[parseInt(idx,10)];
+      openModal({title:'Log workout', fields:workoutFormFields(), values:{date:todayStr(), exercise:ex.name, sets:ex.sets, notes:`Planned: ${ex.sets} sets × ${ex.reps}`}, submitLabel:'Add', onSubmit:(data)=>{
+        state.workoutEntries.push({id:uid(), ...data});
+        saveKey('workoutEntries');
+        switchView('fitness');
+      }});
+    });
+  });
   const editGoalBtn = document.getElementById('editGoalBtn');
   if(editGoalBtn) editGoalBtn.addEventListener('click', ()=>{
     openModal({title:'Weight goal', fields:[
@@ -1862,7 +2137,7 @@ function gratFormFields(values){
 function attachGratitudeHandlers(){
   const addBtn = document.getElementById('addGratBtn');
   if(addBtn) addBtn.addEventListener('click', ()=>{
-    openModal({title:'Today\u2019s gratitude', fields:gratFormFields(), values:{date:todayStr()}, submitLabel:'Save', onSubmit:(data)=>{
+    openModal({title:'Today’s gratitude', fields:gratFormFields(), values:{date:todayStr()}, submitLabel:'Save', onSubmit:(data)=>{
       state.gratitudeEntries.push({id:uid(), date:data.date, items:[data.item1,data.item2,data.item3], note:data.note});
       saveKey('gratitudeEntries');
       switchView('gratitude');
@@ -1885,6 +2160,65 @@ function attachGratitudeHandlers(){
   });
 }
 
+/* ===================== JOURNAL ===================== */
+function renderJournal(){
+  const sorted = [...state.journalEntries].sort((a,b)=>b.date.localeCompare(a.date));
+  const list = sorted.length? sorted.map(j=>`
+    <div class="list-item" style="align-items:flex-start;">
+      <div class="list-item-main">
+        <div class="list-item-title">${j.title? escapeHtml(j.title) : formatDateNice(j.date)}</div>
+        <div class="list-item-sub" style="margin-top:2px;">${formatDateNice(j.date)}</div>
+        <div class="list-item-sub" style="margin-top:8px; white-space:pre-wrap; color:var(--text); line-height:1.6;">${escapeHtml(j.content)}</div>
+      </div>
+      <div class="list-item-actions"><button class="icon-btn" data-journal-edit="${j.id}">✎</button></div>
+    </div>`).join('') : `<div class="empty-state"><span class="emoji">📝</span><p>Write down whatever's on your mind — as much detail as you want.</p></div>`;
+
+  return `
+  <div class="section-title">📝 Journal</div>
+  <div class="section-sub">A free space to write anything, in as much detail as you like.</div>
+
+  <div class="card">
+    <div class="row" style="justify-content:space-between; align-items:center; margin-bottom:12px;">
+      <h3>Entries</h3>
+      <button class="btn btn-sm btn-primary" id="addJournalBtn">+ Write something</button>
+    </div>
+    <div class="list">${list}</div>
+  </div>`;
+}
+function journalFormFields(){
+  return [
+    {key:'date', label:'Date', type:'date', required:true},
+    {key:'title', label:'Title (optional)', type:'text', placeholder:'Give it a name, or leave blank'},
+    {key:'content', label:"What's on your mind", type:'textarea', placeholder:'Write as much as you want…', required:true, big:true},
+  ];
+}
+function attachJournalHandlers(){
+  const addBtn = document.getElementById('addJournalBtn');
+  if(addBtn) addBtn.addEventListener('click', ()=>{
+    openModal({title:'Write something', fields:journalFormFields(), values:{date:todayStr()}, submitLabel:'Save', onSubmit:(data)=>{
+      state.journalEntries.push({id:uid(), ...data});
+      saveKey('journalEntries');
+      switchView('journal');
+    }});
+  });
+  document.querySelectorAll('[data-journal-edit]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const id = btn.getAttribute('data-journal-edit');
+      const j = state.journalEntries.find(x=>x.id===id);
+      openModal({title:'Edit entry', fields:journalFormFields(), values:j, submitLabel:'Save', onSubmit:(data)=>{
+        Object.assign(j, data);
+        saveKey('journalEntries');
+        switchView('journal');
+      }, onDelete:()=>{
+        state.journalEntries = state.journalEntries.filter(x=>x.id!==id);
+        saveKey('journalEntries');
+        switchView('journal');
+        showToast('Entry removed');
+      }});
+    });
+  });
+}
+
 /* ===================== EXPORT ===================== */
 function toCSV(rows, headers){
   const esc = v => `"${String(v==null?'':v).replace(/"/g,'""')}"`;
@@ -1900,50 +2234,63 @@ function downloadFile(filename, content, mime){
   document.body.appendChild(a); a.click(); document.body.removeChild(a);
   setTimeout(()=>URL.revokeObjectURL(url), 1000);
 }
+const EXPORT_PERIODS = [{days:7, label:'Weekly'}, {days:30, label:'Monthly'}, {days:90, label:'Quarterly'}];
+let exportPeriodDays = 7;
 function renderExport(){
-  const weekAgo = daysAgoStr(6);
-  const days = lastNDates(7);
+  const periodInfo = EXPORT_PERIODS.find(p=>p.days===exportPeriodDays) || EXPORT_PERIODS[0];
+  const days = lastNDates(exportPeriodDays);
+  const periodStart = days[0];
   const ritualCompleteDays = days.filter(d=> RITUAL_PRACTICES.every(p=> (state.ritualLogs[d]||{})[p.id]?.done)).length;
-  const habitPctAvg = state.habits.length? Math.round(days.reduce((s,d)=> s + (state.habits.filter(h=>(state.habitLogs[d]||{})[h.id]).length/state.habits.length), 0)/7*100) : 0;
-  const weekExpense = state.expenses.filter(e=>e.date>=weekAgo).reduce((s,e)=>s+(e.amount||0),0);
-  const weekGrowthMins = state.growthEntries.filter(g=>g.date>=weekAgo).reduce((s,g)=>s+(g.minutes||0),0);
-  const weekGratitude = state.gratitudeEntries.filter(g=>g.date>=weekAgo).length;
-  const weekMistakes = state.mistakeEntries.filter(m=>m.date>=weekAgo).length;
-  const weekFightFree = state.relationshipEntries.filter(r=>r.date>=weekAgo && r.fightFree).length;
+  const habitPctAvg = state.habits.length? Math.round(days.reduce((s,d)=> s + (state.habits.filter(h=>(state.habitLogs[d]||{})[h.id]).length/state.habits.length), 0)/days.length*100) : 0;
+  const periodExpense = state.expenses.filter(e=>e.date>=periodStart).reduce((s,e)=>s+(e.amount||0),0);
+  const periodGrowthMins = state.growthEntries.filter(g=>g.date>=periodStart).reduce((s,g)=>s+(g.minutes||0),0);
+  const periodGratitude = state.gratitudeEntries.filter(g=>g.date>=periodStart).length;
+  const periodMistakes = state.mistakeEntries.filter(m=>m.date>=periodStart).length;
+  const periodFightFree = state.relationshipEntries.filter(r=>r.date>=periodStart && r.fightFree).length;
   const weightChange = (()=>{
-    const inRange = [...state.weightLog].filter(w=>w.date>=weekAgo).sort((a,b)=>a.date.localeCompare(b.date));
+    const inRange = [...state.weightLog].filter(w=>w.date>=periodStart).sort((a,b)=>a.date.localeCompare(b.date));
     if(inRange.length<2) return null;
     return (inRange[inRange.length-1].weight - inRange[0].weight).toFixed(1);
   })();
 
   return `
-  <div class="section-title">📊 Weekly Export</div>
-  <div class="section-sub">Last 7 days, ready to download for your own analysis.</div>
+  <div class="section-title">📊 Reports &amp; Export</div>
+  <div class="section-sub">Pick a period, see the summary, download for your own analysis.</div>
+
+  <div class="tabs">
+    ${EXPORT_PERIODS.map(p=>`<button class="tab ${exportPeriodDays===p.days?'active':''}" data-period="${p.days}">${p.label} (${p.days}d)</button>`).join('')}
+  </div>
 
   <div class="grid-3">
-    <div class="stat-box"><div class="num">${ritualCompleteDays}/7</div><div class="lbl">Full ritual days</div></div>
+    <div class="stat-box"><div class="num">${ritualCompleteDays}/${days.length}</div><div class="lbl">Full ritual days</div></div>
     <div class="stat-box"><div class="num">${habitPctAvg}%</div><div class="lbl">Avg habit completion</div></div>
     <div class="stat-box"><div class="num">${weightChange!=null? (weightChange>0?'+':'')+weightChange+'kg' : '—'}</div><div class="lbl">Weight change</div></div>
-    <div class="stat-box"><div class="num">₹${weekExpense.toFixed(0)}</div><div class="lbl">Total spent</div></div>
-    <div class="stat-box"><div class="num">${weekGrowthMins}m</div><div class="lbl">Growth time</div></div>
-    <div class="stat-box"><div class="num">${weekGratitude}</div><div class="lbl">Gratitude entries</div></div>
-    <div class="stat-box"><div class="num">${weekMistakes}</div><div class="lbl">Lessons logged</div></div>
-    <div class="stat-box"><div class="num">${weekFightFree}/7</div><div class="lbl">Fight-free days</div></div>
+    <div class="stat-box"><div class="num">₹${periodExpense.toFixed(0)}</div><div class="lbl">Total spent</div></div>
+    <div class="stat-box"><div class="num">${periodGrowthMins}m</div><div class="lbl">Growth time</div></div>
+    <div class="stat-box"><div class="num">${periodGratitude}</div><div class="lbl">Gratitude entries</div></div>
+    <div class="stat-box"><div class="num">${periodMistakes}</div><div class="lbl">Lessons logged</div></div>
+    <div class="stat-box"><div class="num">${periodFightFree}/${days.length}</div><div class="lbl">Fight-free days</div></div>
   </div>
 
   <div class="card">
     <h3 style="margin-bottom:6px;">Download</h3>
-    <p class="section-sub" style="margin-bottom:18px;">A CSV daily summary for the last 7 days, or a full JSON backup of everything ever logged.</p>
+    <p class="section-sub" style="margin-bottom:18px;">A daily-rows CSV for the ${periodInfo.label.toLowerCase()} period (${periodInfo.days} days), or a full JSON backup of everything ever logged.</p>
     <div class="row">
-      <button class="btn btn-primary" id="downloadCsvBtn">⬇ Weekly summary (CSV)</button>
+      <button class="btn btn-primary" id="downloadCsvBtn">⬇ ${periodInfo.label} summary (CSV)</button>
       <button class="btn" id="downloadJsonBtn">⬇ Full backup (JSON)</button>
     </div>
   </div>`;
 }
 function attachExportHandlers(){
+  document.querySelectorAll('[data-period]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      exportPeriodDays = parseInt(btn.getAttribute('data-period'),10);
+      switchView('export');
+    });
+  });
   const csvBtn = document.getElementById('downloadCsvBtn');
   if(csvBtn) csvBtn.addEventListener('click', ()=>{
-    const days = lastNDates(7);
+    const days = lastNDates(exportPeriodDays);
     const rows = days.map(d=>{
       const ritualDone = RITUAL_PRACTICES.filter(p=>(state.ritualLogs[d]||{})[p.id]?.done).length;
       const habitsDone = state.habits.filter(h=>(state.habitLogs[d]||{})[h.id]).length;
@@ -1960,12 +2307,13 @@ function attachExportHandlers(){
       };
     });
     const csv = toCSV(rows, ['date','ritual_done','habits_done','weight_kg','expense_inr','growth_minutes','gratitude_entries','lessons_logged','relationship']);
-    downloadFile(`pragati-weekly-${todayStr()}.csv`, csv, 'text/csv');
+    const periodInfo = EXPORT_PERIODS.find(p=>p.days===exportPeriodDays) || EXPORT_PERIODS[0];
+    downloadFile(`ai-wisdom-${periodInfo.label.toLowerCase()}-${todayStr()}.csv`, csv, 'text/csv');
     showToast('CSV downloaded');
   });
   const jsonBtn = document.getElementById('downloadJsonBtn');
   if(jsonBtn) jsonBtn.addEventListener('click', ()=>{
-    downloadFile(`pragati-backup-${todayStr()}.json`, JSON.stringify(state, null, 2), 'application/json');
+    downloadFile(`ai-wisdom-backup-${todayStr()}.json`, JSON.stringify(state, null, 2), 'application/json');
     showToast('Backup downloaded');
   });
 }
@@ -1976,7 +2324,7 @@ function attachDashboardHandlers(){
     btn.addEventListener('click', ()=>{
       const kind = btn.getAttribute('data-quick');
       if(kind==='gratitude'){
-        openModal({title:'Today\u2019s gratitude', fields:gratFormFields(), values:{date:todayStr()}, submitLabel:'Save', onSubmit:(data)=>{
+        openModal({title:'Today’s gratitude', fields:gratFormFields(), values:{date:todayStr()}, submitLabel:'Save', onSubmit:(data)=>{
           state.gratitudeEntries.push({id:uid(), date:data.date, items:[data.item1,data.item2,data.item3], note:data.note});
           saveKey('gratitudeEntries'); switchView('dashboard');
         }});
@@ -2005,7 +2353,7 @@ function attachViewHandlers(view){
     dashboard: attachDashboardHandlers, ritual: attachRitualHandlers, habits: attachHabitsHandlers,
     fitness: attachFitnessHandlers, expenses: attachExpensesHandlers, growth: attachGrowthHandlers,
     mistakes: attachMistakesHandlers, relationships: attachRelationshipsHandlers, gratitude: attachGratitudeHandlers,
-    export: attachExportHandlers,
+    journal: attachJournalHandlers, export: attachExportHandlers,
   };
   if(map[view]) map[view]();
 }
