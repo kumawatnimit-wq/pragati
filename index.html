@@ -336,6 +336,7 @@ const NAV_ITEMS = [
   {id:'ritual', label:'Morning Ritual', icon:'🌅'},
   {id:'habits', label:'Habit Tracker', icon:'✅'},
   {id:'fitness', label:'Fitness', icon:'💪'},
+  {id:'food', label:'Food Log', icon:'🍽️'},
   {id:'expenses', label:'Expenses', icon:'💰'},
   {id:'growth', label:'Personal Growth', icon:'✨'},
   {id:'mistakes', label:'Lessons Journal', icon:'🪞'},
@@ -418,13 +419,16 @@ let state = {
   stretchExercises:[],
   recoverySteps:[],
   mangalMaitriVideo:{ youtubeId:'euCByLM6Mpo' },
-  meditationVideo:{ youtubeId:null },
+  meditationVideo:{ youtubeId:'BUlcMJjboEo' },
   weightLog:[],
   workoutEntries:[],
   expenses:[],
+  foodEntries:[],
+  foodReviewNotes:'',
   growthEntries:[],
   growthTasks:[],
   growthTaskLogs:{},
+  learningEntries:[],
   mistakeEntries:[],
   relationships:[],
   relationshipEntries:[],
@@ -486,7 +490,9 @@ const STORAGE_KEYS = {
   breathingSettings:'breathing-settings', stretchExercises:'stretch-exercises', recoverySteps:'recovery-steps',
   mangalMaitriVideo:'mangal-maitri-video', meditationVideo:'meditation-video',
   weightLog:'weight-log', workoutEntries:'workout-entries', expenses:'expenses',
+  foodEntries:'food-entries', foodReviewNotes:'food-review-notes',
   growthEntries:'growth-entries', growthTasks:'growth-tasks', growthTaskLogs:'growth-task-logs',
+  learningEntries:'learning-entries',
   mistakeEntries:'mistake-entries',
   relationships:'relationships', relationshipEntries:'relationship-entries',
   relationshipTasks:'relationship-tasks', relationshipTaskLogs:'relationship-task-logs',
@@ -512,7 +518,7 @@ async function saveKey(stateKey){
 }
 
 async function loadAll(){
-  const [profile, habits, habitLogs, ritualLogs, breathingSettings, stretchExercises, recoverySteps, mangalMaitriVideo, meditationVideo, weightLog, workoutEntries, expenses, growthEntries, growthTasks, growthTaskLogs, mistakeEntries, relationships, relationshipEntries, relationshipTasks, relationshipTaskLogs, gratitudeEntries, journalEntries] = await Promise.all([
+  const [profile, habits, habitLogs, ritualLogs, breathingSettings, stretchExercises, recoverySteps, mangalMaitriVideo, meditationVideo, weightLog, workoutEntries, expenses, foodEntries, foodReviewNotes, growthEntries, growthTasks, growthTaskLogs, learningEntries, mistakeEntries, relationships, relationshipEntries, relationshipTasks, relationshipTaskLogs, gratitudeEntries, journalEntries] = await Promise.all([
     loadKey(STORAGE_KEYS.profile, {name:'', currentWeight:null, goalWeight:null, startWeight:null}),
     loadKey(STORAGE_KEYS.habits, seedHabits()),
     loadKey(STORAGE_KEYS.habitLogs, {}),
@@ -521,13 +527,16 @@ async function loadAll(){
     loadKey(STORAGE_KEYS.stretchExercises, seedStretchExercises()),
     loadKey(STORAGE_KEYS.recoverySteps, seedRecoverySteps()),
     loadKey(STORAGE_KEYS.mangalMaitriVideo, {youtubeId:'euCByLM6Mpo'}),
-    loadKey(STORAGE_KEYS.meditationVideo, {youtubeId:null}),
+    loadKey(STORAGE_KEYS.meditationVideo, {youtubeId:'BUlcMJjboEo'}),
     loadKey(STORAGE_KEYS.weightLog, []),
     loadKey(STORAGE_KEYS.workoutEntries, []),
     loadKey(STORAGE_KEYS.expenses, []),
+    loadKey(STORAGE_KEYS.foodEntries, []),
+    loadKey(STORAGE_KEYS.foodReviewNotes, ''),
     loadKey(STORAGE_KEYS.growthEntries, []),
     loadKey(STORAGE_KEYS.growthTasks, seedGrowthTasks()),
     loadKey(STORAGE_KEYS.growthTaskLogs, {}),
+    loadKey(STORAGE_KEYS.learningEntries, []),
     loadKey(STORAGE_KEYS.mistakeEntries, []),
     loadKey(STORAGE_KEYS.relationships, seedRelationships()),
     loadKey(STORAGE_KEYS.relationshipEntries, []),
@@ -536,7 +545,7 @@ async function loadAll(){
     loadKey(STORAGE_KEYS.gratitudeEntries, []),
     loadKey(STORAGE_KEYS.journalEntries, []),
   ]);
-state = {profile, habits, habitLogs, ritualLogs, breathingSettings, stretchExercises, recoverySteps, mangalMaitriVideo, meditationVideo, weightLog, workoutEntries, expenses, growthEntries, growthTasks, growthTaskLogs, mistakeEntries, relationships, relationshipEntries, relationshipTasks, relationshipTaskLogs, gratitudeEntries, journalEntries};
+state = {profile, habits, habitLogs, ritualLogs, breathingSettings, stretchExercises, recoverySteps, mangalMaitriVideo, meditationVideo, weightLog, workoutEntries, expenses, foodEntries, foodReviewNotes, growthEntries, growthTasks, growthTaskLogs, learningEntries, mistakeEntries, relationships, relationshipEntries, relationshipTasks, relationshipTaskLogs, gratitudeEntries, journalEntries};
   // Migrate stretch entries saved before desc/illustration fields existed
   {
     const byName = {};
@@ -734,7 +743,7 @@ function switchView(view){
   window.scrollTo(0,0);
   const renderers = {
     dashboard: renderDashboard, ritual: renderRitual, habits: renderHabits, fitness: renderFitness,
-    expenses: renderExpenses, growth: renderGrowth, mistakes: renderMistakes,
+    food: renderFoodLog, expenses: renderExpenses, growth: renderGrowth, mistakes: renderMistakes,
     relationships: renderRelationships, gratitude: renderGratitude, journal: renderJournal, export: renderExport,
   };
   root.innerHTML = renderers[view] ? renderers[view]() : '';
@@ -1788,6 +1797,98 @@ function attachExpensesHandlers(){
   });
 }
 
+/* ===================== FOOD LOG ===================== */
+function renderFoodLog(){
+  const today = todayStr();
+  const weekAgo = daysAgoStr(6);
+  const weekEntries = state.foodEntries.filter(e=>e.date>=weekAgo);
+  const todayCount = state.foodEntries.filter(e=>e.date===today).length;
+  const days = lastNDates(7).slice().reverse();
+
+  const groupsHtml = days.map(d=>{
+    const entries = weekEntries.filter(e=>e.date===d);
+    if(!entries.length) return '';
+    return `<div style="margin-bottom:16px;">
+      <div style="font-size:12.5px; font-weight:700; color:var(--text); margin-bottom:8px;">${formatDateNice(d)}</div>
+      <div class="list">
+        ${entries.map(e=>`
+          <div class="list-item">
+            <div class="list-item-main">
+              <div class="list-item-title">${e.meal? `<span class="badge badge-sage" style="margin-right:6px;">${escapeHtml(e.meal)}</span>`:''}${escapeHtml(e.food)}</div>
+              <div class="list-item-sub">${escapeHtml(e.amount||'')}${e.notes? ' \u00b7 '+escapeHtml(e.notes):''}</div>
+            </div>
+            <div class="list-item-actions"><button class="icon-btn" data-food-edit="${e.id}">\u270E</button></div>
+          </div>`).join('')}
+      </div>
+    </div>`;
+  }).join('') || `<div class="empty-state"><span class="emoji">\u{1F37D}\uFE0F</span><p>Log what you eat \u2014 start with today's first meal.</p></div>`;
+
+  return `
+  <div class="section-title">\u{1F37D}\uFE0F Food Log</div>
+  <div class="section-sub">Write down what you eat, and review it weekly.</div>
+
+  <div class="grid-2">
+    <div class="stat-box"><div class="num">${todayCount}</div><div class="lbl">Logged today</div></div>
+    <div class="stat-box"><div class="num">${weekEntries.length}</div><div class="lbl">Logged this week</div></div>
+  </div>
+
+  <div class="card">
+    <div class="row" style="justify-content:space-between; align-items:center; margin-bottom:14px;">
+      <h3>This week</h3>
+      <button class="btn btn-sm btn-primary" id="addFoodBtn">+ Add food</button>
+    </div>
+    ${groupsHtml}
+  </div>
+
+  <div class="card">
+    <h3 style="margin-bottom:6px;">Weekly review</h3>
+    <p class="section-sub">Look back at what you've eaten this week, then write your own notes \u2014 what to eat more of, less of, or plan for next week.</p>
+    <textarea class="textarea" id="foodReviewNotes" style="min-height:120px;" placeholder="Your reflections and plan for next week\u2026">${escapeHtml(state.foodReviewNotes)}</textarea>
+    <button class="btn btn-sm" id="saveFoodNotesBtn" style="margin-top:10px;">Save notes</button>
+  </div>`;
+}
+function foodFormFields(){
+  return [
+    {key:'date', label:'Date', type:'date', required:true},
+    {key:'meal', label:'Meal', type:'select', options:['Breakfast','Lunch','Dinner','Snack']},
+    {key:'food', label:'What did you eat?', type:'text', placeholder:'e.g. Dal, rice, roti', required:true},
+    {key:'amount', label:'How much?', type:'text', placeholder:'e.g. 2 rotis, 1 bowl'},
+    {key:'notes', label:'Notes (optional)', type:'textarea', placeholder:'How did you feel?'},
+  ];
+}
+function attachFoodLogHandlers(){
+  const addBtn = document.getElementById('addFoodBtn');
+  if(addBtn) addBtn.addEventListener('click', ()=>{
+    openModal({title:'Add food', fields:foodFormFields(), values:{date:todayStr(), meal:'Breakfast'}, submitLabel:'Add', onSubmit:(data)=>{
+      state.foodEntries.push({id:uid(), ...data});
+      saveKey('foodEntries');
+      switchView('food');
+    }});
+  });
+  document.querySelectorAll('[data-food-edit]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const id = btn.getAttribute('data-food-edit');
+      const e = state.foodEntries.find(x=>x.id===id);
+      openModal({title:'Edit entry', fields:foodFormFields(), values:e, submitLabel:'Save', onSubmit:(data)=>{
+        Object.assign(e, data);
+        saveKey('foodEntries');
+        switchView('food');
+      }, onDelete:()=>{
+        state.foodEntries = state.foodEntries.filter(x=>x.id!==id);
+        saveKey('foodEntries');
+        switchView('food');
+        showToast('Entry removed');
+      }});
+    });
+  });
+  const saveNotesBtn = document.getElementById('saveFoodNotesBtn');
+  if(saveNotesBtn) saveNotesBtn.addEventListener('click', ()=>{
+    state.foodReviewNotes = document.getElementById('foodReviewNotes').value;
+    saveKey('foodReviewNotes');
+    showToast('Notes saved');
+  });
+}
+
 /* ===================== PERSONAL GROWTH ===================== */
 function renderGrowth(){
   const today = todayStr();
@@ -1815,6 +1916,16 @@ function renderGrowth(){
       <div class="list-item-actions"><button class="icon-btn" data-growth-edit="${g.id}">✎</button></div>
     </div>`).join('') : `<div class="empty-state"><span class="emoji">✨</span><p>Log what you're learning or working on today.</p></div>`;
 
+  const learningSorted = [...state.learningEntries].sort((a,b)=>b.date.localeCompare(a.date));
+  const learningList = learningSorted.length? learningSorted.map(l=>`
+    <div class="list-item">
+      <div class="list-item-main">
+        <div class="list-item-title">${escapeHtml(l.item)}</div>
+        <div class="list-item-sub">${formatDateNice(l.date)}</div>
+      </div>
+      <div class="list-item-actions"><button class="icon-btn" data-learning-edit="${l.id}">✎</button></div>
+    </div>`).join('') : `<div class="empty-state"><span class="emoji">💡</span><p>Write down one thing you learned today.</p></div>`;
+
   return `
   <div class="section-title">✨ Personal Growth</div>
   <div class="section-sub">Mindset work and new skills, one session at a time.</div>
@@ -1832,11 +1943,25 @@ function renderGrowth(){
 
   <div class="card">
     <div class="row" style="justify-content:space-between; align-items:center; margin-bottom:12px;">
+      <h3>What I learned today</h3>
+      <button class="btn btn-sm btn-primary" id="addLearningBtn">+ Add</button>
+    </div>
+    <div class="list">${learningList}</div>
+  </div>
+
+  <div class="card">
+    <div class="row" style="justify-content:space-between; align-items:center; margin-bottom:12px;">
       <h3>Skill &amp; learning log</h3>
       <button class="btn btn-sm btn-primary" id="addGrowthBtn">+ Add entry</button>
     </div>
     <div class="list">${list}</div>
   </div>`;
+}
+function learningFormFields(){
+  return [
+    {key:'date', label:'Date', type:'date', required:true},
+    {key:'item', label:'What did you learn?', type:'text', placeholder:'e.g. How to stay calm in a negotiation', required:true},
+  ];
 }
 function growthFormFields(){
   return [
@@ -1899,6 +2024,30 @@ function attachGrowthHandlers(){
       }, onDelete:()=>{
         state.growthEntries = state.growthEntries.filter(x=>x.id!==id);
         saveKey('growthEntries');
+        switchView('growth');
+        showToast('Entry removed');
+      }});
+    });
+  });
+  const addLearningBtn = document.getElementById('addLearningBtn');
+  if(addLearningBtn) addLearningBtn.addEventListener('click', ()=>{
+    openModal({title:'What did you learn?', fields:learningFormFields(), values:{date:todayStr()}, submitLabel:'Add', onSubmit:(data)=>{
+      state.learningEntries.push({id:uid(), ...data});
+      saveKey('learningEntries');
+      switchView('growth');
+    }});
+  });
+  document.querySelectorAll('[data-learning-edit]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const id = btn.getAttribute('data-learning-edit');
+      const l = state.learningEntries.find(x=>x.id===id);
+      openModal({title:'Edit entry', fields:learningFormFields(), values:l, submitLabel:'Save', onSubmit:(data)=>{
+        Object.assign(l, data);
+        saveKey('learningEntries');
+        switchView('growth');
+      }, onDelete:()=>{
+        state.learningEntries = state.learningEntries.filter(x=>x.id!==id);
+        saveKey('learningEntries');
         switchView('growth');
         showToast('Entry removed');
       }});
@@ -2365,7 +2514,7 @@ function attachDashboardHandlers(){
 function attachViewHandlers(view){
   const map = {
     dashboard: attachDashboardHandlers, ritual: attachRitualHandlers, habits: attachHabitsHandlers,
-    fitness: attachFitnessHandlers, expenses: attachExpensesHandlers, growth: attachGrowthHandlers,
+    fitness: attachFitnessHandlers, food: attachFoodLogHandlers, expenses: attachExpensesHandlers, growth: attachGrowthHandlers,
     mistakes: attachMistakesHandlers, relationships: attachRelationshipsHandlers, gratitude: attachGratitudeHandlers,
     journal: attachJournalHandlers, export: attachExportHandlers,
   };
