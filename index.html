@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>AI Wisdom — Daily Growth</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -108,6 +108,13 @@ a{color:inherit;}
   padding:22px; box-shadow:var(--shadow);
 }
 .card + .card{margin-top:18px;}
+/* Consistent vertical gap between ALL stacked blocks, not just card-after-card */
+.grid-2 + .card, .grid-3 + .card,
+.card + .grid-2, .card + .grid-3,
+.grid-2 + .grid-2, .grid-2 + .grid-3,
+.grid-3 + .grid-2, .grid-3 + .grid-3,
+.stat-box + .card, .stat-box + .grid-2, .stat-box + .grid-3,
+.tabs + .grid-2, .tabs + .grid-3{margin-top:18px;}
 .section-title{font-size:22px; margin-bottom:4px;}
 .section-sub{color:var(--text-dim); font-size:14px; margin-bottom:22px; line-height:1.5;}
 .row{display:flex; gap:16px; flex-wrap:wrap;}
@@ -185,10 +192,15 @@ a{color:inherit;}
 }
 .checkbox.checked{background:var(--sage); border-color:var(--sage); color:var(--surface);}
 
-.tabs{display:flex; gap:6px; overflow-x:auto; padding-bottom:2px; margin-bottom:20px;}
+.tabs{
+  display:flex; gap:6px; overflow-x:auto; padding-bottom:2px; margin-bottom:20px;
+  scroll-snap-type:x proximity; -webkit-overflow-scrolling:touch;
+  scrollbar-width:none;
+}
+.tabs::-webkit-scrollbar{display:none;}
 .tab{
   padding:9px 15px; border-radius:11px; background:var(--surface-2); border:1px solid var(--border-soft); color:var(--text-dim);
-  font-size:13px; font-weight:700; white-space:nowrap; flex-shrink:0;
+  font-size:13px; font-weight:700; white-space:nowrap; flex-shrink:0; scroll-snap-align:start;
 }
 .tab.active{background:var(--gold); color:#20160A; border-color:var(--gold);}
 
@@ -256,17 +268,44 @@ a{color:inherit;}
 /* Mobile */
 @media(max-width:900px){
   :root{--nav-w:0px;}
+  /* FIX: #app is display:flex (a row), which turned .mobile-topbar into a
+     left-hand column and squeezed content to ~290px. Stack normally instead. */
+  #app{display:block;}
   .sidebar{transform:translateX(-100%); width:270px;}
   .sidebar.open{transform:translateX(0);}
-  .main{margin-left:0;}
+  .main{margin-left:0; width:100%; display:block;}
   .mobile-topbar{
-    display:flex; align-items:center; gap:12px; padding:16px 18px; position:sticky; top:0; z-index:30;
-    background:var(--bg); border-bottom:1px solid var(--border-soft);
+    display:flex; align-items:center; gap:12px; padding:14px 18px; position:sticky; top:0; z-index:30;
+    width:100%; background:var(--bg); border-bottom:1px solid var(--border-soft);
   }
   .mobile-topbar .brand-name{font-size:18px;}
-  .topbar{padding:20px 18px 10px;}
+  /* Title block on top, stat pills in one sideways-scrolling row */
+  .topbar{padding:18px 18px 10px; flex-direction:column; align-items:stretch; gap:12px;}
+  .topbar-stats{
+    flex-wrap:nowrap; overflow-x:auto; width:100%;
+    -webkit-overflow-scrolling:touch; scrollbar-width:none; padding-bottom:2px;
+  }
+  .topbar-stats::-webkit-scrollbar{display:none;}
+  .stat-pill{flex:0 0 auto;}
   .view-root{padding:8px 18px 60px;}
   .grid-3{grid-template-columns:1fr 1fr;}
+  /* Soft fade at the right of scrollable tab rows = hint there is more */
+  .tabs{
+    -webkit-mask-image:linear-gradient(to right, #000 0, #000 calc(100% - 26px), transparent 100%);
+            mask-image:linear-gradient(to right, #000 0, #000 calc(100% - 26px), transparent 100%);
+  }
+  /* Tap targets at least 44x44 */
+  .btn, .btn-sm, .dur-btn{min-height:44px;}
+  .tab{min-height:44px; display:inline-flex; align-items:center;}
+  .icon-btn{width:44px; height:44px;}
+  .checkbox{position:relative;}
+  .checkbox::after{
+    content:''; position:absolute; top:50%; left:50%;
+    width:44px; height:44px; transform:translate(-50%,-50%);
+  }
+  .input,.select{min-height:44px;}
+  /* 16px stops iOS auto-zooming on focus */
+  .input,.select,.textarea{font-size:16px;}
 }
 @media(max-width:480px){
   .grid-3{grid-template-columns:1fr;}
@@ -757,6 +796,16 @@ function closeSidebarMobile(){ document.getElementById('sidebar').classList.remo
 function sproutSVG(percent, size){
   size = size||150;
   const p = clamp(percent,0,100);
+  // 0% gets its own deliberate "seed in the soil" look instead of a bare line
+  if(p <= 0){
+    return `<svg viewBox="0 0 120 100" width="${size}" height="${Math.round(size*100/120)}" role="img" aria-label="Not started yet">
+      <path d="M18 88 Q60 79 102 88" stroke="#28422F" stroke-width="7" fill="none" stroke-linecap="round"/>
+      <line x1="60" y1="76" x2="60" y2="62" stroke="#84B594" stroke-width="4" stroke-linecap="round"/>
+      <path d="M60 68 q-16 -6 -21 7 q15 5 21 -7" fill="#84B594" opacity=".75"/>
+      <path d="M60 64 q14 -6 19 6 q-14 4 -19 -6" fill="#84B594" opacity=".55"/>
+      <ellipse cx="60" cy="80" rx="10" ry="7" fill="#E3A857" opacity=".9"/>
+    </svg>`;
+  }
   const stemH = 22 + (p/100)*66;
   const pairs = Math.min(4, Math.floor(p/22));
   const bloom = p>=95;
@@ -801,9 +850,9 @@ function renderDashboard(){
     <div class="sprout-wrap">
       ${sproutSVG(overallPct, 130)}
       <div>
-        <div class="section-title">Today, you're at ${overallPct}%</div>
-        <div class="section-sub" style="margin-bottom:12px;">Ritual and habits together for ${formatDateNice(today)}.</div>
-        <div class="progress" style="width:220px;"><div style="width:${overallPct}%"></div></div>
+        <div class="section-title">${overallPct===0 ? 'Aaj ka pehla kadam uthao' : `Today, you're at ${overallPct}%`}</div>
+        <div class="section-sub" style="margin-bottom:12px;">${overallPct===0 ? 'Ek chhota sa tick bhi shuruaat hai \u2014 ritual ya habit se shuru karo.' : `Ritual and habits together for ${formatDateNice(today)}.`}</div>
+        <div class="progress" style="width:220px; max-width:100%;"><div style="width:${overallPct}%"></div></div>
       </div>
     </div>
   </div>
@@ -1210,12 +1259,11 @@ function renderVideoWidget(prefix, videoState){
   const yid = videoState.youtubeId;
   return `
     <div class="row" style="justify-content:flex-end; margin-bottom:8px;">
-      <button class="btn btn-sm" id="${prefix}ChangeLinkBtn">🔗 ${yid?'Change video':'Add a video'}</button>
+      <button class="btn btn-sm" id="${prefix}ChangeLinkBtn">🔗 ${yid?'Change video':'Add video'}</button>
     </div>
-    <div class="video-embed">
-      ${yid ? `<iframe src="https://www.youtube-nocookie.com/embed/${yid}" title="video" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`
-        : `<div class="empty-state" style="position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; margin:0;"><span class="emoji">🎬</span><p>No video set — add a link or upload your own below.</p></div>`}
-    </div>
+    ${yid ? `<div class="video-embed">
+      <iframe src="https://www.youtube-nocookie.com/embed/${yid}" title="video" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+    </div>` : ''}
     <div class="field" style="margin-top:16px;">
       <label>Or play your own video file</label>
       <input type="file" accept="video/*" class="input" id="${prefix}FileInput">
