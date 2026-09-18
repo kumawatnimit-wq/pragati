@@ -2,7 +2,12 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0F1D18">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="AI Wisdom">
+<meta name="mobile-web-app-capable" content="yes">
 <title>AI Wisdom — Daily Growth</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -16,22 +21,28 @@
   --border-soft:#25392C;
   --text:#F2EFE3;
   --text-dim:#A9BCAC;
-  --text-faint:#71897A;
+  --text-faint:#96AC9D;
   --gold:#E3A857;
   --gold-dim:#B9884A;
   --gold-soft:rgba(227,168,87,.16);
   --sage:#84B594;
   --sage-soft:rgba(132,181,148,.16);
-  --coral:#DD7259;
-  --coral-soft:rgba(221,114,89,.16);
+  --coral:#EA8F78;
+  --coral-soft:rgba(234,143,120,.16);
   --radius-sm:10px;
   --radius:16px;
   --radius-lg:24px;
+  --radius-card:20px;
   --shadow: 0 16px 40px -16px rgba(0,0,0,.55);
   --font-display:'Fraunces', Georgia, 'Times New Roman', serif;
   --font-body:'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   --font-mono:'JetBrains Mono', 'SF Mono', Consolas, monospace;
   --nav-w: 252px;
+  /* Type scale - one set of sizes used everywhere. Nothing below 13px. */
+  --fs-page:22px;
+  --fs-card:17px;
+  --fs-body:14.5px;
+  --fs-small:13px;
 }
 *{box-sizing:border-box;}
 html,body{margin:0;padding:0;}
@@ -46,6 +57,9 @@ body{
   -webkit-font-smoothing:antialiased;
 }
 h1,h2,h3,h4{font-family:var(--font-display); font-weight:600; margin:0; letter-spacing:.2px;}
+h3{font-size:var(--fs-card);}
+/* numbers always mono */
+.num-mono{font-family:var(--font-mono); font-weight:600;}
 p{margin:0;}
 button{font-family:inherit; cursor:pointer;}
 input,select,textarea{font-family:inherit;}
@@ -57,7 +71,7 @@ a{color:inherit;}
 }
 
 /* ---------- Layout ---------- */
-#app{display:flex; min-height:100vh;}
+#app{min-height:100vh;}
 .sidebar{
   width:var(--nav-w); flex-shrink:0; background:var(--surface);
   border-right:1px solid var(--border-soft);
@@ -68,7 +82,7 @@ a{color:inherit;}
 .brand{display:flex; align-items:center; gap:10px; padding:6px 8px 20px 8px;}
 .brand-mark{width:34px;height:34px; flex-shrink:0;}
 .brand-name{font-family:var(--font-display); font-size:21px; font-weight:700; color:var(--text);}
-.brand-sub{font-size:11px; color:var(--text-faint); letter-spacing:.4px; text-transform:uppercase; margin-top:1px;}
+.brand-sub{font-size:var(--fs-small); color:var(--text-faint); letter-spacing:.4px; text-transform:uppercase; margin-top:1px;}
 .nav-list{list-style:none; margin:6px 0 0 0; padding:0; display:flex; flex-direction:column; gap:2px; overflow-y:auto;}
 .nav-item{
   display:flex; align-items:center; gap:12px; padding:10px 12px; border-radius:12px;
@@ -82,7 +96,58 @@ a{color:inherit;}
   font-size:15px; flex-shrink:0;
 }
 .nav-item.active .nav-icon{background:var(--gold); color:var(--surface);}
-.sidebar-foot{margin-top:auto; padding:14px 8px 4px; font-size:11.5px; color:var(--text-faint); line-height:1.5;}
+.sidebar-foot{margin-top:auto; padding:14px 8px 4px; font-size:var(--fs-small); color:var(--text-faint); line-height:1.5;}
+.nav-group{list-style:none; margin-top:16px;}
+.nav-group:first-child{margin-top:2px;}
+.nav-group-label{
+  font-size:var(--fs-small); font-weight:700; letter-spacing:.7px; text-transform:uppercase;
+  color:var(--text-faint); padding:0 12px 6px;
+}
+.nav-group-items{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:2px;}
+.lang-toggle{display:flex; gap:6px; padding:0 8px 10px;}
+.lang-btn{
+  flex:1; padding:8px 0; border-radius:10px; border:1px solid var(--border);
+  background:var(--surface-2); color:var(--text-dim); font-size:var(--fs-small); font-weight:700;
+}
+.lang-btn.active{background:var(--gold); color:#20160A; border-color:var(--gold);}
+
+/* Bottom navigation (mobile only) */
+.bottom-nav{display:none;}
+
+/* Habit tick feedback */
+@keyframes tickPop{0%{transform:scale(.85);}60%{transform:scale(1.14);}100%{transform:scale(1);}}
+@keyframes sageGlow{0%{box-shadow:0 0 0 0 rgba(132,181,148,.55);}100%{box-shadow:0 0 0 13px rgba(132,181,148,0);}}
+.checkbox.just-checked{animation:tickPop .28s ease-out, sageGlow .6s ease-out;}
+
+/* Aaj ka EK kaam */
+.one-thing{display:flex; align-items:center; gap:12px; flex-wrap:wrap;}
+.one-thing .input{flex:1; min-width:180px;}
+.one-thing-done{text-decoration:line-through; color:var(--text-faint);}
+
+/* Six life areas strip */
+.area-strip{display:grid; grid-template-columns:repeat(6,1fr); gap:10px;}
+.area-ring{display:flex; flex-direction:column; align-items:center; gap:5px; text-align:center;}
+.area-ring-pct{font-size:var(--fs-small); color:var(--text);}
+.area-ring-lbl{font-size:var(--fs-small); color:var(--text-dim); line-height:1.2;}
+
+/* Weekly points chart */
+.pts-chart{display:flex; align-items:flex-end; gap:8px; height:96px; margin-top:6px;}
+.pts-col{flex:1; display:flex; flex-direction:column; align-items:center; justify-content:flex-end; gap:5px; height:100%;}
+.pts-fill{width:100%; background:linear-gradient(180deg, var(--gold), var(--sage)); border-radius:7px 7px 0 0; min-height:3px;}
+.pts-day{font-size:var(--fs-small); color:var(--text-faint);}
+
+.sleep-chart{display:flex; align-items:flex-end; gap:8px; height:96px; margin-top:6px;}
+.sleep-col{flex:1; display:flex; flex-direction:column; align-items:center; justify-content:flex-end; gap:5px; height:100%;}
+.sleep-fill{width:100%; background:linear-gradient(180deg, var(--sage), var(--surface-3)); border-radius:7px 7px 0 0; min-height:3px;}
+.sleep-day{font-size:var(--fs-small); color:var(--text-faint);}
+.note-soft{background:var(--gold-soft); border:1px solid var(--gold-dim); color:var(--text);
+  border-radius:12px; padding:12px 14px; font-size:var(--fs-small); margin-bottom:18px;}
+
+/* Never miss twice note - coral only, it is a warning */
+.miss-note{color:var(--coral); font-size:var(--fs-small); margin-top:4px;}
+.habit-extra{font-size:var(--fs-small); color:var(--text-faint); margin-top:3px;}
+.choice-btns{display:flex; flex-direction:column; gap:10px;}
+@media(max-width:900px){ .area-strip{grid-template-columns:repeat(3,1fr);} }
 
 .overlay{position:fixed; inset:0; background:rgba(6,12,9,.55); z-index:35; opacity:0; pointer-events:none; transition:opacity .2s ease;}
 .overlay.visible{opacity:1; pointer-events:auto;}
@@ -92,19 +157,23 @@ a{color:inherit;}
 .topbar{
   padding:26px 36px 14px; display:flex; align-items:flex-end; justify-content:space-between; gap:20px; flex-wrap:wrap;
 }
-.topbar-date{font-size:12.5px; color:var(--text-faint); text-transform:uppercase; letter-spacing:.6px; font-weight:600;}
+.topbar-date{font-size:var(--fs-small); color:var(--text-faint); text-transform:uppercase; letter-spacing:.6px; font-weight:600;}
 .topbar-greet{font-family:var(--font-display); font-size:26px; margin-top:4px;}
 .topbar-stats{display:flex; gap:10px; flex-wrap:wrap;}
 .stat-pill{
   background:var(--surface); border:1px solid var(--border-soft); border-radius:999px; padding:8px 14px;
-  display:flex; align-items:center; gap:7px; font-size:12.5px; color:var(--text-dim); white-space:nowrap;
+  display:flex; align-items:center; gap:7px; font-size:var(--fs-small); color:var(--text-dim); white-space:nowrap;
 }
 .stat-pill b{color:var(--text); font-family:var(--font-mono); font-weight:600;}
 .view-root{padding:8px 36px 60px;}
 
+/* Row layout only on desktop. On mobile #app must stay block so the
+   top bar sits across the top instead of becoming a left-hand column. */
+@media(min-width:901px){ #app{display:flex;} }
+
 /* ---------- Components ---------- */
 .card{
-  background:var(--surface); border:1px solid var(--border-soft); border-radius:var(--radius-lg);
+  background:var(--surface); border:1px solid var(--border-soft); border-radius:var(--radius-card);
   padding:22px; box-shadow:var(--shadow);
 }
 .card + .card{margin-top:18px;}
@@ -115,8 +184,8 @@ a{color:inherit;}
 .grid-3 + .grid-2, .grid-3 + .grid-3,
 .stat-box + .card, .stat-box + .grid-2, .stat-box + .grid-3,
 .tabs + .grid-2, .tabs + .grid-3{margin-top:18px;}
-.section-title{font-size:22px; margin-bottom:4px;}
-.section-sub{color:var(--text-dim); font-size:14px; margin-bottom:22px; line-height:1.5;}
+.section-title{font-size:var(--fs-page); margin-bottom:4px;}
+.section-sub{color:var(--text-dim); font-size:var(--fs-body); margin-bottom:22px; line-height:1.5;}
 .row{display:flex; gap:16px; flex-wrap:wrap;}
 .col{flex:1; min-width:220px;}
 .grid-2{display:grid; grid-template-columns:1fr 1fr; gap:16px;}
@@ -125,7 +194,7 @@ a{color:inherit;}
 
 .btn{
   display:inline-flex; align-items:center; gap:8px; padding:10px 16px; border-radius:11px; border:1px solid var(--border);
-  background:var(--surface-2); color:var(--text); font-size:13.5px; font-weight:600; transition:transform .12s ease, background .15s ease, border-color .15s ease;
+  background:var(--surface-2); color:var(--text); font-size:var(--fs-body); font-weight:600; transition:transform .12s ease, background .15s ease, border-color .15s ease;
 }
 .btn:hover{background:var(--surface-3); border-color:var(--gold-dim);}
 .btn:active{transform:scale(.97);}
@@ -135,7 +204,7 @@ a{color:inherit;}
 .btn-ghost:hover{background:var(--surface-2); color:var(--text);}
 .btn-danger{background:transparent; border-color:var(--coral); color:var(--coral);}
 .btn-danger:hover{background:var(--coral-soft);}
-.btn-sm{padding:7px 12px; font-size:12.5px; border-radius:9px;}
+.btn-sm{padding:7px 12px; font-size:var(--fs-small); border-radius:9px;}
 .btn-block{width:100%; justify-content:center;}
 .icon-btn{
   width:32px; height:32px; border-radius:9px; background:transparent; border:1px solid transparent; color:var(--text-faint);
@@ -144,7 +213,7 @@ a{color:inherit;}
 .icon-btn:hover{background:var(--surface-3); color:var(--text);}
 
 .field{display:flex; flex-direction:column; gap:6px; margin-bottom:14px;}
-.field label{font-size:12.5px; font-weight:700; color:var(--text-dim); text-transform:uppercase; letter-spacing:.3px;}
+.field label{font-size:var(--fs-small); font-weight:700; color:var(--text-dim); text-transform:uppercase; letter-spacing:.3px;}
 .input,.select,.textarea{
   background:var(--surface-2); border:1px solid var(--border); border-radius:10px; padding:10px 12px; color:var(--text); font-size:14px; width:100%;
 }
@@ -156,7 +225,7 @@ a{color:inherit;}
 .slider::-webkit-slider-thumb{-webkit-appearance:none; width:20px; height:20px; border-radius:50%; background:var(--gold); cursor:pointer; border:3px solid var(--surface); box-shadow:0 2px 6px rgba(0,0,0,.4);}
 .slider::-moz-range-thumb{width:20px; height:20px; border-radius:50%; background:var(--gold); cursor:pointer; border:3px solid var(--surface);}
 
-.badge{display:inline-flex; align-items:center; gap:5px; font-size:11.5px; font-weight:700; padding:4px 10px; border-radius:999px;}
+.badge{display:inline-flex; align-items:center; gap:5px; font-size:var(--fs-small); font-weight:700; padding:4px 10px; border-radius:999px;}
 .badge-sage{background:var(--sage-soft); color:var(--sage);}
 .badge-gold{background:var(--gold-soft); color:var(--gold);}
 .badge-coral{background:var(--coral-soft); color:var(--coral);}
@@ -170,22 +239,24 @@ a{color:inherit;}
   display:flex; align-items:center; gap:14px; padding:13px 14px; border-radius:13px; background:var(--surface-2); border:1px solid var(--border-soft);
 }
 .list-item-main{flex:1; min-width:0;}
-.list-item-title{font-size:14.5px; font-weight:700; color:var(--text);}
-.list-item-sub{font-size:12.5px; color:var(--text-dim); margin-top:2px; line-height:1.4;}
-.list-item-amount{font-family:var(--font-mono); font-weight:600; font-size:14.5px; white-space:nowrap;}
+.list-item-title{font-size:var(--fs-body); font-weight:700; color:var(--text); overflow-wrap:anywhere;}
+.list-item-sub{font-size:var(--fs-small); color:var(--text-dim); margin-top:2px; line-height:1.4; overflow-wrap:anywhere;}
+.list-item-amount{font-family:var(--font-mono); font-weight:600; font-size:var(--fs-body); white-space:nowrap;}
 .list-item-actions{display:flex; gap:4px; flex-shrink:0;}
 
 .empty-state{
-  text-align:center; padding:34px 20px; color:var(--text-faint);
+  text-align:center; padding:30px 20px; color:var(--text-faint);
+  display:flex; flex-direction:column; align-items:center; gap:12px;
 }
+.empty-state p{margin:0; max-width:34ch;}
 .empty-state .emoji{font-size:30px; display:block; margin-bottom:10px;}
-.empty-state p{font-size:13.5px; line-height:1.6;}
+.empty-state p{font-size:var(--fs-body); line-height:1.6;}
 
 .checkbox-row{display:flex; align-items:center; gap:12px; padding:12px 14px; border-radius:13px; background:var(--surface-2); border:1px solid var(--border-soft);}
 .detail-item{display:flex; align-items:flex-start; gap:14px; padding:14px; border-radius:13px; background:var(--surface-2); border:1px solid var(--border-soft);}
 .detail-item .checkbox{margin-top:2px;}
 .detail-illo{flex-shrink:0; background:var(--surface-3); border-radius:11px; padding:4px;}
-.detail-num{font-family:var(--font-mono); font-size:12px; color:var(--text-faint); width:20px; flex-shrink:0; padding-top:3px;}
+.detail-num{font-family:var(--font-mono); font-size:var(--fs-small); color:var(--text-faint); width:20px; flex-shrink:0; padding-top:3px;}
 .checkbox{
   width:24px; height:24px; border-radius:8px; border:2px solid var(--border); flex-shrink:0; display:flex; align-items:center; justify-content:center;
   background:var(--surface); transition:all .15s ease; font-size:13px; color:transparent;
@@ -200,24 +271,24 @@ a{color:inherit;}
 .tabs::-webkit-scrollbar{display:none;}
 .tab{
   padding:9px 15px; border-radius:11px; background:var(--surface-2); border:1px solid var(--border-soft); color:var(--text-dim);
-  font-size:13px; font-weight:700; white-space:nowrap; flex-shrink:0; scroll-snap-align:start;
+  font-size:var(--fs-small); font-weight:700; white-space:nowrap; flex-shrink:0; scroll-snap-align:start;
 }
 .tab.active{background:var(--gold); color:#20160A; border-color:var(--gold);}
 
-.stat-box{background:var(--surface-2); border:1px solid var(--border-soft); border-radius:16px; padding:18px;}
+.stat-box{background:var(--surface-2); border:1px solid var(--border-soft); border-radius:var(--radius-card); padding:18px;}
 .stat-box .num{font-family:var(--font-mono); font-size:26px; font-weight:700; color:var(--text);}
-.stat-box .lbl{font-size:12px; color:var(--text-dim); margin-top:4px;}
+.stat-box .lbl{font-size:var(--fs-small); color:var(--text-dim); margin-top:4px;}
 
 .timer-wrap{display:flex; flex-direction:column; align-items:center; gap:18px; padding:14px 0 6px;}
 .timer-durations{display:flex; gap:8px;}
-.dur-btn{padding:8px 16px; border-radius:999px; border:1px solid var(--border); background:var(--surface-2); color:var(--text-dim); font-size:13px; font-weight:700;}
+.dur-btn{padding:8px 16px; border-radius:999px; border:1px solid var(--border); background:var(--surface-2); color:var(--text-dim); font-size:var(--fs-small); font-weight:700;}
 .dur-btn.active{background:var(--sage-soft); border-color:var(--sage); color:var(--sage);}
 .timer-ring{
   width:190px; height:190px; border-radius:50%; border:5px solid var(--sage); display:flex; flex-direction:column; align-items:center; justify-content:center;
   background:var(--surface-2);
 }
 .timer-ring .time{font-family:var(--font-mono); font-size:38px; font-weight:700;}
-.timer-ring .lbl{font-size:11.5px; color:var(--text-faint); margin-top:4px; text-transform:uppercase; letter-spacing:.5px;}
+.timer-ring .lbl{font-size:var(--fs-small); color:var(--text-faint); margin-top:4px; text-transform:uppercase; letter-spacing:.5px;}
 .timer-actions{display:flex; gap:10px; flex-wrap:wrap; justify-content:center;}
 
 .breath-circle{
@@ -226,14 +297,14 @@ a{color:inherit;}
   border:3px solid var(--sage); display:flex; flex-direction:column; align-items:center; justify-content:center;
   transform:scale(.72); transition:transform 1s ease-in-out;
 }
-.breath-phase{font-weight:700; font-size:14.5px; letter-spacing:.4px;}
+.breath-phase{font-weight:700; font-size:var(--fs-body); letter-spacing:.4px;}
 .breath-count{font-family:var(--font-mono); font-size:26px; margin-top:4px;}
 
 .video-embed{position:relative; width:100%; padding-top:56.25%; border-radius:14px; overflow:hidden; background:#000;}
 .video-embed iframe{position:absolute; inset:0; width:100%; height:100%; border:0;}
 
 .weight-chart{width:100%; height:auto; display:block;}
-.chart-label{font-family:var(--font-mono); font-size:9px; fill:var(--text-faint);}
+.chart-label{font-family:var(--font-mono); font-size:11px; fill:var(--text-faint);}
 .chart-label.gold{fill:var(--gold);}
 
 .sprout-wrap{display:flex; align-items:center; gap:22px; flex-wrap:wrap;}
@@ -256,17 +327,29 @@ a{color:inherit;}
 .modal-footer{display:flex; gap:10px; margin-top:6px;}
 
 .toast-host{position:fixed; bottom:22px; left:50%; transform:translateX(-50%); z-index:80; display:flex; flex-direction:column; gap:8px; align-items:center;}
-.toast{background:var(--surface-3); border:1px solid var(--border); color:var(--text); padding:10px 18px; border-radius:11px; font-size:13px; font-weight:600; box-shadow:var(--shadow); animation:toast-in .18s ease;}
+.toast{background:var(--surface-3); border:1px solid var(--border); color:var(--text); padding:10px 18px; border-radius:11px; font-size:var(--fs-small); font-weight:600; box-shadow:var(--shadow); animation:toast-in .18s ease;}
 .toast.error{border-color:var(--coral); color:var(--coral);}
 @keyframes toast-in{from{opacity:0; transform:translateY(8px);} to{opacity:1; transform:translateY(0);}}
 
 .loading-screen{position:fixed; inset:0; background:var(--bg); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:14px; z-index:100;}
-.loading-screen .lbl{color:var(--text-faint); font-size:13px;}
+.loading-screen .lbl{color:var(--text-faint); font-size:var(--fs-small);}
 
-.helper-text{font-size:12px; color:var(--text-faint); margin-top:-6px; margin-bottom:14px; line-height:1.5;}
+.helper-text{font-size:var(--fs-small); color:var(--text-faint); margin-top:-6px; margin-bottom:14px; line-height:1.5;}
 
 /* Mobile */
 @media(max-width:900px){
+  .bottom-nav{
+    display:flex; position:fixed; left:0; right:0; bottom:0; z-index:45;
+    background:var(--surface); border-top:1px solid var(--border-soft);
+    padding:6px 4px calc(6px + env(safe-area-inset-bottom, 0px));
+  }
+  .bottom-nav button{
+    flex:1; min-height:52px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px;
+    background:transparent; border:none; color:var(--text-faint);
+    font-size:var(--fs-small); font-weight:600; border-radius:12px; padding:4px 2px;
+  }
+  .bottom-nav button .bn-icon{font-size:17px; line-height:1;}
+  .bottom-nav button.active{color:var(--gold);}
   :root{--nav-w:0px;}
   /* FIX: #app is display:flex (a row), which turned .mobile-topbar into a
      left-hand column and squeezed content to ~290px. Stack normally instead. */
@@ -287,7 +370,7 @@ a{color:inherit;}
   }
   .topbar-stats::-webkit-scrollbar{display:none;}
   .stat-pill{flex:0 0 auto;}
-  .view-root{padding:8px 18px 60px;}
+  .view-root{padding:8px 18px 104px;}
   .grid-3{grid-template-columns:1fr 1fr;}
   /* Soft fade at the right of scrollable tab rows = hint there is more */
   .tabs{
@@ -338,7 +421,8 @@ a{color:inherit;}
       </div>
     </div>
     <ul class="nav-list" id="navList"></ul>
-    <div class="sidebar-foot">Saved automatically on this device.<br>Everything here is private to you.</div>
+    <div class="lang-toggle" id="langToggle"></div>
+    <div class="sidebar-foot" id="sidebarFoot"></div>
   </nav>
 
   <div class="main">
@@ -351,6 +435,8 @@ a{color:inherit;}
     </div>
     <div class="view-root" id="viewRoot"></div>
   </div>
+
+  <nav class="bottom-nav" id="bottomNav"></nav>
 </div>
 
 <div class="modal-overlay" id="modalOverlay">
@@ -376,14 +462,111 @@ const NAV_ITEMS = [
   {id:'habits', label:'Habit Tracker', icon:'✅'},
   {id:'fitness', label:'Fitness', icon:'💪'},
   {id:'food', label:'Food Log', icon:'🍽️'},
-  {id:'expenses', label:'Expenses', icon:'💰'},
+  {id:'expenses', label:'Expenses', icon:'\u{1F4B0}'},
+  {id:'finance', label:'Paisa Plan', icon:'\u{1F4B5}'},
+  {id:'business', label:'Business', icon:'\u{1F3ED}'},
+  {id:'spiritual', label:'Spiritual', icon:'\u{1F549}\uFE0F'},
   {id:'growth', label:'Personal Growth', icon:'✨'},
   {id:'mistakes', label:'Lessons Journal', icon:'🪞'},
   {id:'relationships', label:'Relationships', icon:'🤝'},
   {id:'gratitude', label:'Gratitude', icon:'🙏'},
   {id:'journal', label:'Journal', icon:'📝'},
-  {id:'export', label:'Reports', icon:'📊'},
+  {id:'weekly', label:'Weekly Report', icon:'\u{1F4C5}'},
+  {id:'monthly', label:'Monthly Report', icon:'\u{1F5D3}\uFE0F'},
+  {id:'export', label:'Reports', icon:'\u{1F4CA}'},
 ];
+
+const NAV_GROUPS = [
+  {id:'aaj',          items:['dashboard','ritual','habits']},
+  {id:'health',       items:['fitness','food']},
+  {id:'mindset',      items:['growth','mistakes','journal']},
+  {id:'relationship', items:['relationships','gratitude']},
+  {id:'finance',      items:['expenses','finance']},
+  // Ready for later - add the section id here and it appears automatically.
+  {id:'business',     items:['business']},
+  {id:'spiritual',    items:['spiritual']},
+  {id:'reports',      items:['weekly','monthly','export']},
+];
+
+const BOTTOM_NAV = [
+  {id:'dashboard', icon:'\u{1F3E0}', key:'bn_aaj'},
+  {id:'habits',    icon:'\u2705',    key:'bn_habits'},
+  {id:'fitness',   icon:'\u{1F4AA}', key:'bn_health'},
+  {id:'journal',   icon:'\u{1F4DD}', key:'bn_journal'},
+  {id:'__more',    icon:'\u2630',    key:'bn_more'},
+];
+
+/* Interface language. Content you type stays exactly as you wrote it. */
+const I18N = {
+  en:{
+    nav_dashboard:'Dashboard', nav_ritual:'Morning Ritual', nav_habits:'Habit Tracker',
+    nav_fitness:'Fitness', nav_food:'Food Log', nav_growth:'Personal Growth',
+    nav_mistakes:'Lessons Journal', nav_journal:'Journal', nav_relationships:'Relationships',
+    nav_gratitude:'Gratitude', nav_export:'Reports', nav_finance:'Money Plan', nav_business:'Business', nav_spiritual:'Spiritual', nav_weekly:'Weekly Report', nav_monthly:'Monthly Report',
+    grp_aaj:'Today', grp_health:'Health', grp_mindset:'Mindset', grp_relationship:'Relationship',
+    grp_finance:'Finance', grp_business:'Business', grp_spiritual:'Spiritual', grp_reports:'Reports',
+    bn_aaj:'Today', bn_habits:'Habits', bn_health:'Health', bn_journal:'Journal', bn_more:'More',
+    add_habit:'Add habit', add_food:'Add food', add_expense:'Add expense', add_entry:'Add entry',
+    write_something:'Write something', add_today:'Add today', new_entry:'New entry',
+    log_weighin:'Log weigh-in', add_workout:'Add workout', log_today:'Log today',
+    empty_habits:'No habits yet. Add the first one you want to build.',
+    empty_food:'Nothing logged yet. Start with today\u2019s first meal.',
+    empty_expense:'Nothing logged yet. Add today\u2019s first expense.',
+    empty_growth:'Nothing logged yet. Write what you worked on today.',
+    empty_learning:'Nothing written yet. One line is enough.',
+    empty_mistakes:'Nothing written yet. Every setback teaches something.',
+    empty_gratitude:'Nothing written yet. Three small things will do.',
+    empty_journal:'Nothing written yet. Write whatever is on your mind.',
+    empty_workout:'No workouts logged yet.',
+    empty_weight:'No weigh-ins logged yet.',
+    empty_relation:'Nothing logged yet. How did today go?',
+    saved_note:'Saved automatically on this device.',
+    private_note:'Everything here is private to you.',
+    streak_7:'7 days in a row. Keep going.',
+    streak_21:'21 days. This is becoming a habit.',
+    streak_30:'30 days. Well done.',
+  },
+  hi:{
+    nav_dashboard:'Dashboard', nav_ritual:'Subah ka Ritual', nav_habits:'Habit Tracker',
+    nav_fitness:'Fitness', nav_food:'Khana Log', nav_growth:'Personal Growth',
+    nav_mistakes:'Seekh Journal', nav_journal:'Journal', nav_relationships:'Rishtey',
+    nav_gratitude:'Aabhaar', nav_export:'Reports', nav_finance:'Paisa Plan', nav_business:'Business', nav_spiritual:'Adhyatm', nav_weekly:'Hafte ki Report', nav_monthly:'Mahine ki Report',
+    grp_aaj:'Aaj', grp_health:'Health', grp_mindset:'Mindset', grp_relationship:'Rishtey',
+    grp_finance:'Paisa', grp_business:'Business', grp_spiritual:'Adhyatm', grp_reports:'Reports',
+    bn_aaj:'Aaj', bn_habits:'Habits', bn_health:'Health', bn_journal:'Journal', bn_more:'Aur',
+    add_habit:'Habit jodo', add_food:'Khana jodo', add_expense:'Kharcha jodo', add_entry:'Entry jodo',
+    write_something:'Kuch likho', add_today:'Aaj ka jodo', new_entry:'Nayi entry',
+    log_weighin:'Vajan likho', add_workout:'Workout jodo', log_today:'Aaj ka likho',
+    empty_habits:'Abhi koi habit nahi. Pehli habit jodo jo banani hai.',
+    empty_food:'Abhi kuch nahi likha. Aaj ke pehle khane se shuru karo.',
+    empty_expense:'Abhi kuch nahi likha. Aaj ka pehla kharcha jodo.',
+    empty_growth:'Abhi kuch nahi likha. Aaj kis par kaam kiya likho.',
+    empty_learning:'Abhi kuch nahi likha. Ek line kaafi hai.',
+    empty_mistakes:'Abhi kuch nahi likha. Har galti kuch sikhati hai.',
+    empty_gratitude:'Abhi kuch nahi likha. Teen chhoti baatein kaafi hain.',
+    empty_journal:'Abhi kuch nahi likha. Jo mann mein hai wahi likho.',
+    empty_workout:'Abhi koi workout nahi likha.',
+    empty_weight:'Abhi koi vajan nahi likha.',
+    empty_relation:'Abhi kuch nahi likha. Aaj ka din kaisa raha?',
+    saved_note:'Is device par apne aap save hota hai.',
+    private_note:'Yeh sab sirf aapke liye hai.',
+    streak_7:'7 din lagatar. Aise hi chalte raho.',
+    streak_21:'21 din. Ab yeh aadat ban rahi hai.',
+    streak_30:'30 din. Bahut badhiya.',
+  }
+};
+function t(key, fallback){
+  const d = I18N[state && state.lang] || I18N.hi;
+  if(d[key]!=null) return d[key];
+  if(I18N.en[key]!=null) return I18N.en[key];
+  return fallback!=null ? fallback : key;
+}
+/* Short, friendly empty state with one clear button */
+function emptyState(emoji, textKey, btnKey, targetBtnId){
+  return `<div class="empty-state"><span class="emoji">${emoji}</span><p>${escapeHtml(t(textKey))}</p>`
+    + (targetBtnId ? `<button class="btn btn-primary btn-sm" data-empty-action="${targetBtnId}">${escapeHtml(t(btnKey))}</button>` : '')
+    + `</div>`;
+}
 
 const RITUAL_PRACTICES = [
   {id:'meditation', label:'Meditation', icon:'🧘', hint:'Sit quietly, observe your breath.'},
@@ -475,12 +658,38 @@ let state = {
   relationshipTaskLogs:{},
   gratitudeEntries:[],
   journalEntries:[],
+  lang:'hi',
+  oneThingLogs:{},      // { 'YYYY-MM-DD': {text, done} }
+  habitMeta:{},         // { habitId: {points, twoMin, identity} }
+  habitModeLogs:{},     // { 'YYYY-MM-DD': { habitId: 'full' | 'two' } }
+  habitCheckins:{},     // { habitId: [{date, milestone, answer}] }
+  conflictNotes:[],     // NVC notes
+  sleepLogs:{},         // { 'YYYY-MM-DD': {bed, wake, hours, quality, phoneAway} }
+  fitnessSettings:{},   // { paceKgPerMonth }
+  incomeEntries:[],     // [{id, date, amount, source}]
+  buckets:{},           // { kharcha, emergency, nivesh }  - you type these yourself
+  financeGoal:{},       // { target, targetDate }
+  investments:[],       // [{id, month, amount}]
+  parKaamLogs:[],       // [{id, date, minutes, what}]
+  decisions:[],         // [{id, date, decision, worst, survive, taken, reviewDate, outcome}]
+  contacts:[],          // [{id, name, place, family, problem, lastContact}]
+  sops:[],              // [{id, title, steps}]
+  sittings:[],          // [{id, date, type, minutes, note}]
+  gitaLogs:[],          // [{id, date, chapter, verses, reflection}]
+  eveningLogs:{},       // { 'YYYY-MM-DD': {stuck, note} }
+  weeklyPlans:{},       // { weekStartDate: {change} }
+  monthlyPlans:{},      // { 'YYYY-MM': {focus} }
+  backupMeta:{},        // { lastBackupAt }
+  financeSettings:{},   // { monthlyKharchaOverride }
 };
 let currentView = 'dashboard';
 let workoutPlanActiveDay = ['sun','mon','tue','wed','thu','fri','sat'][new Date().getDay()];
 let activeTimer = null;  // generic ritual timer: {practiceId, remaining, totalSeconds, intervalId, running}
 let breathTimer = null;  // breathing timer: {phaseIdx, phaseRemaining, cyclesDone, totalCycles, running, finished, intervalId}
 let ritualActiveTab = RITUAL_PRACTICES[0].id;
+let justCheckedHabitId = null;   // for the tick animation
+let pendingMilestone = null;     // for the 7/21/30 day toast
+let pendingCheckin = null;       // day-15 'is it still easy?' prompt
 
 /* ===================== Utils ===================== */
 function toDateStr(d){
@@ -536,6 +745,15 @@ const STORAGE_KEYS = {
   relationships:'relationships', relationshipEntries:'relationship-entries',
   relationshipTasks:'relationship-tasks', relationshipTaskLogs:'relationship-task-logs',
   gratitudeEntries:'gratitude-entries', journalEntries:'journal-entries',
+  lang:'lang',
+  oneThingLogs:'one-thing-logs', habitMeta:'habit-meta', habitModeLogs:'habit-mode-logs',
+  habitCheckins:'habit-checkins', conflictNotes:'conflict-notes',
+  sleepLogs:'sleep-logs', fitnessSettings:'fitness-settings',
+  incomeEntries:'income-entries', buckets:'buckets', financeGoal:'finance-goal', investments:'investments',
+  parKaamLogs:'par-kaam-logs', decisions:'decisions', contacts:'contacts', sops:'sops',
+  sittings:'sittings', gitaLogs:'gita-logs', eveningLogs:'evening-logs',
+  weeklyPlans:'weekly-plans', monthlyPlans:'monthly-plans', backupMeta:'backup-meta',
+  financeSettings:'finance-settings',
 };
 
 const STORAGE_PREFIX = 'pragati:';
@@ -557,7 +775,7 @@ async function saveKey(stateKey){
 }
 
 async function loadAll(){
-  const [profile, habits, habitLogs, ritualLogs, breathingSettings, stretchExercises, recoverySteps, mangalMaitriVideo, meditationVideo, weightLog, workoutEntries, expenses, foodEntries, foodReviewNotes, growthEntries, growthTasks, growthTaskLogs, learningEntries, mistakeEntries, relationships, relationshipEntries, relationshipTasks, relationshipTaskLogs, gratitudeEntries, journalEntries] = await Promise.all([
+  const [profile, habits, habitLogs, ritualLogs, breathingSettings, stretchExercises, recoverySteps, mangalMaitriVideo, meditationVideo, weightLog, workoutEntries, expenses, foodEntries, foodReviewNotes, growthEntries, growthTasks, growthTaskLogs, learningEntries, mistakeEntries, relationships, relationshipEntries, relationshipTasks, relationshipTaskLogs, gratitudeEntries, journalEntries, lang, oneThingLogs, habitMeta, habitModeLogs, habitCheckins, conflictNotes, sleepLogs, fitnessSettings, incomeEntries, buckets, financeGoal, investments, parKaamLogs, decisions, contacts, sops, sittings, gitaLogs, eveningLogs, weeklyPlans, monthlyPlans, backupMeta, financeSettings] = await Promise.all([
     loadKey(STORAGE_KEYS.profile, {name:'', currentWeight:null, goalWeight:null, startWeight:null}),
     loadKey(STORAGE_KEYS.habits, seedHabits()),
     loadKey(STORAGE_KEYS.habitLogs, {}),
@@ -583,8 +801,31 @@ async function loadAll(){
     loadKey(STORAGE_KEYS.relationshipTaskLogs, {}),
     loadKey(STORAGE_KEYS.gratitudeEntries, []),
     loadKey(STORAGE_KEYS.journalEntries, []),
+    loadKey(STORAGE_KEYS.lang, 'hi'),
+    loadKey(STORAGE_KEYS.oneThingLogs, {}),
+    loadKey(STORAGE_KEYS.habitMeta, {}),
+    loadKey(STORAGE_KEYS.habitModeLogs, {}),
+    loadKey(STORAGE_KEYS.habitCheckins, {}),
+    loadKey(STORAGE_KEYS.conflictNotes, []),
+    loadKey(STORAGE_KEYS.sleepLogs, {}),
+    loadKey(STORAGE_KEYS.fitnessSettings, {}),
+    loadKey(STORAGE_KEYS.incomeEntries, []),
+    loadKey(STORAGE_KEYS.buckets, {}),
+    loadKey(STORAGE_KEYS.financeGoal, {target:50000000, targetDate:''}),
+    loadKey(STORAGE_KEYS.investments, []),
+    loadKey(STORAGE_KEYS.parKaamLogs, []),
+    loadKey(STORAGE_KEYS.decisions, []),
+    loadKey(STORAGE_KEYS.contacts, []),
+    loadKey(STORAGE_KEYS.sops, []),
+    loadKey(STORAGE_KEYS.sittings, []),
+    loadKey(STORAGE_KEYS.gitaLogs, []),
+    loadKey(STORAGE_KEYS.eveningLogs, {}),
+    loadKey(STORAGE_KEYS.weeklyPlans, {}),
+    loadKey(STORAGE_KEYS.monthlyPlans, {}),
+    loadKey(STORAGE_KEYS.backupMeta, {}),
+    loadKey(STORAGE_KEYS.financeSettings, {}),
   ]);
-state = {profile, habits, habitLogs, ritualLogs, breathingSettings, stretchExercises, recoverySteps, mangalMaitriVideo, meditationVideo, weightLog, workoutEntries, expenses, foodEntries, foodReviewNotes, growthEntries, growthTasks, growthTaskLogs, learningEntries, mistakeEntries, relationships, relationshipEntries, relationshipTasks, relationshipTaskLogs, gratitudeEntries, journalEntries};
+state = {profile, habits, habitLogs, ritualLogs, breathingSettings, stretchExercises, recoverySteps, mangalMaitriVideo, meditationVideo, weightLog, workoutEntries, expenses, foodEntries, foodReviewNotes, growthEntries, growthTasks, growthTaskLogs, learningEntries, mistakeEntries, relationships, relationshipEntries, relationshipTasks, relationshipTaskLogs, gratitudeEntries, journalEntries, lang, oneThingLogs, habitMeta, habitModeLogs, habitCheckins, conflictNotes, sleepLogs, fitnessSettings, incomeEntries, buckets, financeGoal, investments, parKaamLogs, decisions, contacts, sops, sittings, gitaLogs, eveningLogs, weeklyPlans, monthlyPlans, backupMeta, financeSettings};
   // Migrate stretch entries saved before desc/illustration fields existed
   {
     const byName = {};
@@ -685,6 +926,268 @@ function stretchIllustration(key){
   return `<div class="detail-illo"><svg viewBox="0 0 100 100" width="64" height="64">${svg}</svg></div>`;
 }
 
+/* ===================== New helpers (Stage 1) ===================== */
+function oneThingFor(date){
+  const cur = state.oneThingLogs[date] || {};
+  return {text: cur.text || '', done: !!cur.done};
+}
+function setOneThing(date, patch){
+  state.oneThingLogs[date] = {...oneThingFor(date), ...patch};
+  saveKey('oneThingLogs');
+}
+function habitMetaFor(id){
+  const m = state.habitMeta[id] || {};
+  return {points: (m.points==null ? 1 : m.points), twoMin: m.twoMin || '', identity: m.identity || '', createdAt: m.createdAt || ''};
+}
+/* Habits made before this field existed count as old, which is correct - they have been around. */
+function habitAgeDays(id){
+  const c = (state.habitMeta[id] || {}).createdAt;
+  if(!c) return 9999;
+  return Math.floor((new Date(todayStr()) - new Date(c)) / 86400000);
+}
+function habitModeOn(date, id){ return (state.habitModeLogs[date] || {})[id] || 'full'; }
+function habitPointsForDay(d){
+  return state.habits.reduce((sum,h)=>{
+    if(!(state.habitLogs[d]||{})[h.id]) return sum;
+    const meta = habitMetaFor(h.id);
+    return sum + (habitModeOn(d,h.id)==='two' ? meta.points/2 : meta.points);
+  }, 0);
+}
+function habitDoneDays(id){
+  return new Set(Object.keys(state.habitLogs).filter(d=> state.habitLogs[d][id]));
+}
+/* A logged fight makes the streak honest - that day is no longer fight-free */
+function fightFreeDates(){
+  const conflictDays = new Set(state.conflictNotes.map(c=>c.date));
+  return new Set(state.relationshipEntries.filter(r=>r.fightFree && !conflictDays.has(r.date)).map(r=>r.date));
+}
+/* Weekly 0-100% per life area, from activity already in the app */
+function areaScores(nDays){
+  const n = nDays || 7;
+  const days = lastNDates(n);
+  const pct = (n,total)=> total>0 ? Math.round(n/total*100) : 0;
+  const gT = state.growthTasks.length;
+  const gDone = days.reduce((s,d)=> s + state.growthTasks.filter(x=>(state.growthTaskLogs[d]||{})[x.id]).length, 0);
+  const rT = state.relationshipTasks.length;
+  const rDone = days.reduce((s,d)=> s + state.relationshipTasks.filter(x=>(state.relationshipTaskLogs[d]||{})[x.id]).length, 0);
+  return [
+    {id:'mindset', emoji:'\u{1F9E0}', label:'Mindset', pct: pct(gDone, gT*n)},
+    {id:'health', emoji:'\u{1F4AA}', label:'Health',
+      pct: pct(days.filter(d=> state.workoutEntries.some(w=>w.date===d) || state.weightLog.some(w=>w.date===d)).length, n)},
+    {id:'business', emoji:'\u{1F3ED}', label:'Business', pct: clamp(Math.round(state.parKaamLogs.filter(l=>days.includes(l.date)).reduce((s,l)=>s+(Number(l.minutes)||0),0)/(PAR_KAAM_WEEKLY_TARGET*n/7)*100),0,100)},
+    {id:'finance', emoji:'\u{1F4B0}', label:'Finance',
+      pct: pct(days.filter(d=> state.expenses.some(e=>e.date===d)).length, n)},
+    {id:'relationship', emoji:'\u{1F91D}', label:'Rishtey', pct: pct(rDone, rT*n)},
+    {id:'spiritual', emoji:'\u{1F549}\uFE0F', label:'Spiritual',
+      pct: pct(days.filter(d=>{ const r = state.ritualLogs[d]||{};
+        return (r.meditation && r.meditation.done) || (r.mangalMaitri && r.mangalMaitri.done)
+          || state.sittings.some(s=>s.date===d); }).length, n)},
+  ];
+}
+function areaRing(a){
+  const r=18, c=2*Math.PI*r, off=c*(1-clamp(a.pct,0,100)/100);
+  return `<div class="area-ring">
+    <svg viewBox="0 0 44 44" width="44" height="44" aria-hidden="true">
+      <circle cx="22" cy="22" r="18" fill="none" stroke="var(--surface-3)" stroke-width="4"/>
+      <circle cx="22" cy="22" r="18" fill="none" stroke="var(--sage)" stroke-width="4" stroke-linecap="round"
+        stroke-dasharray="${c.toFixed(1)}" stroke-dashoffset="${off.toFixed(1)}" transform="rotate(-90 22 22)"/>
+    </svg>
+    <div class="area-ring-pct num-mono">${a.pct}%</div>
+    <div class="area-ring-lbl">${a.emoji}<br>${escapeHtml(a.label)}</div>
+  </div>`;
+}
+/* ----- Sleep ----- */
+function sleepFor(date){ return state.sleepLogs[date] || null; }
+function sleepHours(bed, wake){
+  if(!bed || !wake) return null;
+  const [bh,bm] = bed.split(':').map(Number);
+  const [wh,wm] = wake.split(':').map(Number);
+  let mins = (wh*60+wm) - (bh*60+bm);
+  if(mins <= 0) mins += 24*60;           // crossed midnight
+  return Math.round(mins/60*10)/10;
+}
+/* ----- Workout: what did I do last time? ----- */
+function lastSessionFor(name){
+  if(!name) return null;
+  const key = String(name).trim().toLowerCase();
+  const hits = state.workoutEntries
+    .filter(w => String(w.exercise||'').trim().toLowerCase() === key)
+    .sort((a,b)=> b.date.localeCompare(a.date));
+  return hits[0] || null;
+}
+const PROGRESSION_HINT = 'Badhane ka kram: pehle reps, phir sets, phir weight, phir dheema tempo.';
+/* Every 4th week is a lighter week */
+function isDeloadWeek(){
+  const d = new Date();
+  const start = new Date(d.getFullYear(), 0, 1);
+  const week = Math.floor(((d - start)/86400000 + start.getDay()+1)/7);
+  return week % 4 === 0;
+}
+/* Attaches the "beat last time" hint under the exercise field of an open modal */
+function attachBeatLastTime(){
+  const form = document.getElementById('modalForm');
+  if(!form || !form.elements || !form.elements['exercise']) return;
+  const ex = form.elements['exercise'];
+  const box = document.createElement('div');
+  box.className = 'helper-text';
+  box.style.marginTop = '6px';
+  if(ex.parentElement) ex.parentElement.appendChild(box);
+  const update = ()=>{
+    const l = lastSessionFor(ex.value);
+    box.innerHTML = l
+      ? 'Pichhli baar: <span class="num-mono">'+(l.sets||'-')+'</span> sets \u00d7 <span class="num-mono">'+(l.reps||'-')+'</span> reps'
+        + (l.weight ? ' \u00b7 <span class="num-mono">'+l.weight+'kg</span>' : '')
+        + ' \u2014 <b style="color:var(--gold)">Beat last time</b><br>' + PROGRESSION_HINT
+      : 'Pehli baar. Aaram se shuru karo.';
+  };
+  ex.addEventListener('input', update);
+  update();
+}
+
+/* ----- Reporting helpers ----- */
+function weekStartStr(){
+  const d = new Date();
+  const day = (d.getDay()+6)%7;            // Monday = 0
+  d.setDate(d.getDate()-day);
+  return toDateStr(d);
+}
+function habitPctOver(id, days){
+  if(!days.length) return 0;
+  const done = days.filter(d=> (state.habitLogs[d]||{})[id]).length;
+  return Math.round(done/days.length*100);
+}
+function habitRanking(days){
+  return state.habits.map(h=>({h, pct: habitPctOver(h.id, days)})).sort((a,b)=> b.pct - a.pct);
+}
+/* Which weekday do I miss most, looking back 4 weeks */
+function worstWeekday(){
+  const days = lastNDates(28);
+  const names = ['Somvaar','Mangalvaar','Budhvaar','Guruvaar','Shukravaar','Shanivaar','Ravivaar'];
+  const miss = [0,0,0,0,0,0,0], total = [0,0,0,0,0,0,0];
+  days.forEach(d=>{
+    const idx = (parseDate(d).getDay()+6)%7;
+    state.habits.forEach(h=>{
+      total[idx]++;
+      if(!(state.habitLogs[d]||{})[h.id]) miss[idx]++;
+    });
+  });
+  let best = null;
+  for(let i=0;i<7;i++){
+    if(!total[i]) continue;
+    const rate = miss[i]/total[i];
+    if(!best || rate > best.rate) best = {name:names[i], rate, miss:miss[i], total:total[i]};
+  }
+  return best;
+}
+/* 14-day cross-area picture: same x-axis, one band per thing */
+function renderCrossChart(){
+  const days = lastNDates(14);
+  const W = 700, bandH = 34, padL = 92, padR = 10, top = 6;
+  const colW = (W - padL - padR) / days.length;
+  const sleep = days.map(d=> (sleepFor(d)||{}).hours || 0);
+  const money = days.map(d=> state.expenses.filter(e=>e.date===d).reduce((s,e)=>s+(e.amount||0),0));
+  const workout = days.map(d=> state.workoutEntries.some(w=>w.date===d));
+  const ff = days.map(d=>{
+    const conflict = state.conflictNotes.some(c=>c.date===d);
+    const entry = state.relationshipEntries.find(r=>r.date===d);
+    if(conflict) return 'bad';
+    if(entry) return entry.fightFree ? 'good' : 'bad';
+    return 'none';
+  });
+  const mood = days.map(d=> (state.eveningLogs[d]||{}).stuck || '');
+  const sMax = Math.max(9, ...sleep), mMax = Math.max(1, ...money);
+
+  const line = (vals, max, colour, y0) => {
+    const pts = vals.map((v,i)=> `${(padL + i*colW + colW/2).toFixed(1)},${(y0 + bandH - 4 - (v/max)*(bandH-10)).toFixed(1)}`).join(' ');
+    return `<polyline points="${pts}" fill="none" stroke="${colour}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>`
+      + vals.map((v,i)=> `<circle cx="${(padL + i*colW + colW/2).toFixed(1)}" cy="${(y0 + bandH - 4 - (v/max)*(bandH-10)).toFixed(1)}" r="2.6" fill="${colour}"/>`).join('');
+  };
+  const dots = (vals, y0, colourFor) => vals.map((v,i)=>{
+    const c = colourFor(v);
+    if(!c) return '';
+    return `<circle cx="${(padL + i*colW + colW/2).toFixed(1)}" cy="${(y0 + bandH/2).toFixed(1)}" r="5" fill="${c}"/>`;
+  }).join('');
+  const label = (txt, y0) => `<text x="6" y="${(y0 + bandH/2 + 4).toFixed(1)}" class="chart-label" style="fill:var(--text-dim)">${txt}</text>`;
+
+  const rows = [
+    {t:'Neend (ghante)', draw:(y)=> line(sleep, sMax, '#84B594', y)},
+    {t:'Workout', draw:(y)=> dots(workout, y, v=> v ? '#84B594' : null)},
+    {t:'Mann atka', draw:(y)=> dots(mood, y, v=> v ? (v==='kahin_nahi' ? '#84B594' : '#EA8F78') : null)},
+    {t:'Fight-free', draw:(y)=> dots(ff, y, v=> v==='good' ? '#84B594' : (v==='bad' ? '#EA8F78' : null))},
+    {t:'Kharcha', draw:(y)=> line(money, mMax, '#E3A857', y)},
+  ];
+  const H = top + rows.length*bandH + 20;
+  let svg = '';
+  rows.forEach((r,i)=>{
+    const y = top + i*bandH;
+    svg += `<line x1="${padL}" y1="${y+bandH}" x2="${W-padR}" y2="${y+bandH}" stroke="var(--border-soft)" stroke-width="1"/>`;
+    svg += label(r.t, y) + r.draw(y);
+  });
+  svg += days.map((d,i)=> (i%3===0 || i===days.length-1)
+    ? `<text x="${(padL + i*colW + colW/2).toFixed(1)}" y="${H-4}" text-anchor="middle" class="chart-label">${formatDateShort(d).split(' ')[0]}</text>` : '').join('');
+  return `<svg viewBox="0 0 ${W} ${H}" style="width:100%; height:auto; display:block;">${svg}</svg>`;
+}
+/* Plain text weekly summary you can paste to a coach */
+function weeklySummaryText(){
+  const days = lastNDates(7);
+  const rank = habitRanking(days);
+  const areas = areaScores(7);
+  const sleepVals = days.map(d=> (sleepFor(d)||{}).hours).filter(x=>x);
+  const avgSleep = sleepVals.length ? (sleepVals.reduce((a,b)=>a+b,0)/sleepVals.length).toFixed(1) : '-';
+  const spend = state.expenses.filter(e=> days.includes(e.date)).reduce((s,e)=>s+(e.amount||0),0);
+  const pts = days.reduce((s,d)=> s + habitPointsForDay(d), 0);
+  const wd = worstWeekday();
+  const L = [];
+  L.push('AI Wisdom - hafte ki report (' + formatDateNice(days[0]) + ' se ' + formatDateNice(days[6]) + ')');
+  L.push('');
+  L.push('Habit points: ' + pts);
+  if(rank.length){
+    L.push('Sabse strong habit: ' + rank[0].h.name + ' (' + rank[0].pct + '%)');
+    L.push('Sabse weak habit: ' + rank[rank.length-1].h.name + ' (' + rank[rank.length-1].pct + '%)');
+  }
+  if(wd) L.push('Sabse zyada miss: ' + wd.name);
+  L.push('Average neend: ' + avgSleep + ' ghante');
+  L.push('Kharcha: Rs ' + Math.round(spend));
+  L.push('');
+  L.push('Chhah kshetra:');
+  areas.forEach(a=> L.push('  ' + a.label + ': ' + a.pct + '%'));
+  const plan = (state.weeklyPlans[weekStartStr()]||{}).change;
+  if(plan) L.push('', 'Agle hafte ka EK change: ' + plan);
+  return L.join('\n');
+}
+/* ----- Backup reminder ----- */
+function daysSinceBackup(){
+  const last = (state.backupMeta||{}).lastBackupAt;
+  if(!last) return null;
+  return Math.floor((new Date(todayStr()) - new Date(last)) / 86400000);
+}
+function doJsonBackup(){
+  downloadFile('ai-wisdom-backup-'+todayStr()+'.json', JSON.stringify(state, null, 2), 'application/json');
+  state.backupMeta = {...(state.backupMeta||{}), lastBackupAt: todayStr()};
+  saveKey('backupMeta');
+  showToast('Backup ho gaya');
+}
+
+/* Simple one-question chooser that reuses the modal */
+function openChoice(title, note, options, onPick){
+  const overlay = document.getElementById('modalOverlay');
+  document.getElementById('modalTitle').textContent = title;
+  const oldForm = document.getElementById('modalForm');
+  const form = oldForm.cloneNode(false);
+  oldForm.replaceWith(form);
+  form.innerHTML = (note ? `<p class="section-sub">${escapeHtml(note)}</p>` : '')
+    + `<div class="choice-btns">`
+    + options.map((o,i)=>`<button type="button" class="btn ${o.primary?'btn-primary':''} btn-block" data-choice="${i}">${escapeHtml(o.label)}</button>`).join('')
+    + `</div>`;
+  overlay.classList.add('visible');
+  form.addEventListener('click', (e)=>{
+    const b = e.target.closest('[data-choice]');
+    if(!b) return;
+    overlay.classList.remove('visible');
+    onPick(options[parseInt(b.getAttribute('data-choice'),10)].value);
+  });
+}
+
 /* ===================== Modal ===================== */
 function openModal({title, fields, values, submitLabel, onSubmit, onDelete}){
   const overlay = document.getElementById('modalOverlay');
@@ -745,20 +1248,53 @@ document.getElementById('modalOverlay').addEventListener('click', (e)=>{
 });
 
 /* ===================== Rendering shell ===================== */
+function navItemById(id){ return NAV_ITEMS.find(n=>n.id===id); }
 function renderNav(){
   const list = document.getElementById('navList');
-  list.innerHTML = NAV_ITEMS.map(item=>`
-    <li>
-      <button class="nav-item ${currentView===item.id?'active':''}" data-nav="${item.id}">
-        <span class="nav-icon">${item.icon}</span> ${item.label}
-      </button>
+  list.innerHTML = NAV_GROUPS.filter(g=>g.items.length).map(g=>`
+    <li class="nav-group">
+      <div class="nav-group-label">${escapeHtml(t('grp_'+g.id, g.id))}</div>
+      <ul class="nav-group-items">
+        ${g.items.map(id=>{
+          const item = navItemById(id);
+          if(!item) return '';
+          return `<li>
+            <button class="nav-item ${currentView===id?'active':''}" data-nav="${id}">
+              <span class="nav-icon">${item.icon}</span> ${escapeHtml(t('nav_'+id, item.label))}
+            </button>
+          </li>`;
+        }).join('')}
+      </ul>
     </li>`).join('');
+  renderBottomNav();
+  renderLangToggle();
+}
+function renderBottomNav(){
+  const bn = document.getElementById('bottomNav');
+  if(!bn) return;
+  bn.innerHTML = BOTTOM_NAV.map(b=>`
+    <button data-bottomnav="${b.id}" class="${b.id!=='__more' && currentView===b.id ? 'active':''}">
+      <span class="bn-icon">${b.icon}</span>${escapeHtml(t(b.key))}
+    </button>`).join('');
+}
+function renderLangToggle(){
+  const el = document.getElementById('langToggle');
+  if(!el) return;
+  el.innerHTML = [['hi','Hinglish'],['en','English']].map(([code,label])=>
+    `<button class="lang-btn ${state.lang===code?'active':''}" data-lang="${code}">${label}</button>`).join('');
 }
 function renderTopbar(){
   const d = new Date();
-  document.getElementById('topbarDate').textContent = d.toLocaleDateString('en-IN', {weekday:'long', day:'numeric', month:'long', year:'numeric'});
   const hour = d.getHours();
-  const greetWord = hour<12?'Good morning':hour<17?'Good afternoon':'Good evening';
+  const hi = (state.lang !== 'en');
+  const HI_DAYS = ['Ravivaar','Somvaar','Mangalvaar','Budhvaar','Guruvaar','Shukravaar','Shanivaar'];
+  const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  document.getElementById('topbarDate').textContent = hi
+    ? `${HI_DAYS[d.getDay()]}, ${d.getDate()} ${MONTHS[d.getMonth()]}`
+    : d.toLocaleDateString('en-IN', {weekday:'long', day:'numeric', month:'long', year:'numeric'});
+  const greetWord = hi
+    ? (hour<12 ? 'Shubh prabhat' : hour<17 ? 'Shubh dopahar' : 'Shubh sandhya')
+    : (hour<12 ? 'Good morning' : hour<17 ? 'Good afternoon' : 'Good evening');
   const name = state.profile.name ? `, ${state.profile.name}` : '';
   document.getElementById('topbarGreet').textContent = `${greetWord}${name} 🙏`;
 
@@ -782,11 +1318,14 @@ function switchView(view){
   window.scrollTo(0,0);
   const renderers = {
     dashboard: renderDashboard, ritual: renderRitual, habits: renderHabits, fitness: renderFitness,
-    food: renderFoodLog, expenses: renderExpenses, growth: renderGrowth, mistakes: renderMistakes,
+    food: renderFoodLog, expenses: renderExpenses, finance: renderFinance, business: renderBusiness, spiritual: renderSpiritual, weekly: renderWeekly, monthly: renderMonthly, growth: renderGrowth, mistakes: renderMistakes,
     relationships: renderRelationships, gratitude: renderGratitude, journal: renderJournal, export: renderExport,
   };
   root.innerHTML = renderers[view] ? renderers[view]() : '';
+  const foot = document.getElementById('sidebarFoot');
+  if(foot) foot.innerHTML = escapeHtml(t('saved_note')) + '<br>' + escapeHtml(t('private_note'));
   renderTopbar();
+  renderBottomNav();
   attachViewHandlers(view);
 }
 function openSidebarMobile(){ document.getElementById('sidebar').classList.add('open'); document.getElementById('overlay').classList.add('visible'); }
@@ -840,12 +1379,40 @@ function renderDashboard(){
   const expensesWeek = state.expenses.filter(e=>e.date>=weekAgo).reduce((s,e)=>s+(e.amount||0),0);
 
   const lastWeight = state.weightLog.length? [...state.weightLog].sort((a,b)=>b.date.localeCompare(a.date))[0] : null;
-  const fightFreeSet = new Set(state.relationshipEntries.filter(r=>r.fightFree).map(r=>r.date));
-  const fightFreeStreak = computeStreak(fightFreeSet);
+  const fightFreeStreak = computeStreak(fightFreeDates());
 
   const growthWeekMins = state.growthEntries.filter(g=>g.date>=weekAgo).reduce((s,g)=>s+(g.minutes||0),0);
 
+  const dashSleepDay = [...lastNDates(7)].reverse().find(d=> sleepFor(d));
+  const dashSleep = dashSleepDay ? sleepFor(dashSleepDay) : null;
+  const ot = oneThingFor(today);
+  const areas = areaScores();
+  const bkDays = daysSinceBackup();
+  const needsBackup = (bkDays === null) || (bkDays > 7);
+
   return `
+  ${needsBackup ? `<div class="note-soft">
+    \u{1F4BE} Aapka data sirf is phone mein hai. ${bkDays===null? 'Abhi tak backup nahi liya.' : bkDays+' din se backup nahi liya.'}
+    <div style="margin-top:10px;"><button class="btn btn-sm btn-primary" id="dashBackupBtn">Abhi backup lo</button></div>
+  </div>` : ''}
+
+  <div class="card">
+    <h3 style="margin-bottom:4px;">\u{1F3AF} Aaj ka EK kaam</h3>
+    <p class="section-sub">Sirf ek. Sabse zaroori wala.</p>
+    <div class="one-thing">
+      <button class="checkbox ${ot.done?'checked':''}" id="oneThingDone" aria-label="Done">${ot.done?'\u2713':''}</button>
+      <input class="input ${ot.done?'one-thing-done':''}" id="oneThingText" type="text"
+        placeholder="Aaj ka ek kaam likho\u2026" value="${escapeHtml(ot.text)}">
+      <button class="btn btn-sm" id="oneThingSave">Save</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3 style="margin-bottom:4px;">Chhah kshetra \u00b7 is hafte</h3>
+    <p class="section-sub">Pichhle 7 din ki activity se.</p>
+    <div class="area-strip">${areas.map(areaRing).join('')}</div>
+  </div>
+
   <div class="card">
     <div class="sprout-wrap">
       ${sproutSVG(overallPct, 130)}
@@ -859,7 +1426,8 @@ function renderDashboard(){
 
   <div class="grid-3" style="margin-top:18px;">
     <div class="stat-box"><div class="num">${ritualStreak}d</div><div class="lbl">🌅 Morning ritual streak</div></div>
-    <div class="stat-box"><div class="num">${lastWeight? lastWeight.weight+'kg' : '—'}</div><div class="lbl">💪 Last logged weight</div></div>
+    <div class="stat-box"><div class="num">${lastWeight? lastWeight.weight+'kg' : '\u2014'}</div><div class="lbl">\u{1F4AA} Last logged weight</div></div>
+    <div class="stat-box"><div class="num">${dashSleep? dashSleep.hours : '\u2014'}</div><div class="lbl">\u{1F634} Kal raat (ghante)</div></div>
     <div class="stat-box"><div class="num">₹${expensesToday.toFixed(0)}</div><div class="lbl">💰 Spent today</div></div>
     <div class="stat-box"><div class="num">${growthWeekMins}m</div><div class="lbl">✨ Growth time this week</div></div>
     <div class="stat-box"><div class="num">${fightFreeStreak}d</div><div class="lbl">🤝 Fight-free streak</div></div>
@@ -869,10 +1437,10 @@ function renderDashboard(){
   <div class="card">
     <h3 style="margin-bottom:14px;">Quick add</h3>
     <div class="row">
-      <button class="btn" data-quick="gratitude">🙏 Add gratitude</button>
-      <button class="btn" data-quick="weight">💪 Log weight</button>
-      <button class="btn" data-quick="expense">💰 Add expense</button>
-      <button class="btn" data-quick="mistake">🪞 Note a lesson</button>
+      <button class="btn" data-quick="gratitude">Add gratitude</button>
+      <button class="btn" data-quick="weight">Log weight</button>
+      <button class="btn" data-quick="expense">Add expense</button>
+      <button class="btn" data-quick="mistake">Note a lesson</button>
     </div>
   </div>`;
 }
@@ -1093,7 +1661,7 @@ function renderBreathingPanel(){
       <input type="range" min="0" max="12" value="${s.hold2}" id="hold2Slider" class="slider">
     </div>
 
-    <div class="row" style="justify-content:space-between; margin:8px 0 18px; font-size:12.5px; color:var(--text-dim);">
+    <div class="row" style="justify-content:space-between; margin:8px 0 18px; font-size:var(--fs-small); color:var(--text-dim);">
       <span>Cycle length: <b id="cycleLenLbl" style="color:var(--text); font-family:var(--font-mono);">${cl}s</b></span>
       <span>Exercise length: <b id="exerciseLenLbl" style="color:var(--text); font-family:var(--font-mono);">${lenLabel}</b></span>
     </div>
@@ -1259,7 +1827,7 @@ function renderVideoWidget(prefix, videoState){
   const yid = videoState.youtubeId;
   return `
     <div class="row" style="justify-content:flex-end; margin-bottom:8px;">
-      <button class="btn btn-sm" id="${prefix}ChangeLinkBtn">🔗 ${yid?'Change video':'Add video'}</button>
+      <button class="btn btn-sm" id="${prefix}ChangeLinkBtn">${yid?'Change video':'Add video'}</button>
     </div>
     ${yid ? `<div class="video-embed">
       <iframe src="https://www.youtube-nocookie.com/embed/${yid}" title="video" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
@@ -1401,7 +1969,7 @@ function renderDetailChecklist(practiceId, items, opts){
   const quoteCard = opts.quote? `
   <div class="card" style="text-align:center;">
     <p style="font-family:var(--font-display); font-style:italic; font-size:16px; color:var(--text);">${escapeHtml(opts.quote.text)}</p>
-    <p class="section-sub" style="margin:8px 0 0; letter-spacing:1px; text-transform:uppercase; font-size:11px;">${escapeHtml(opts.quote.tag)}</p>
+    <p class="section-sub" style="margin:8px 0 0; letter-spacing:1px; text-transform:uppercase; font-size:var(--fs-small);">${escapeHtml(opts.quote.tag)}</p>
   </div>` : '';
 
   return `
@@ -1495,27 +2063,52 @@ function renderHabits(){
   const todayLog = state.habitLogs[today] || {};
   const doneToday = state.habits.filter(h=>todayLog[h.id]).length;
 
-  const list = state.habits.length? state.habits.map(h=>{
+  const yday = daysAgoStr(1);
+  // "Never miss twice": anything missed yesterday and still not done today floats to the top
+  const ordered = [...state.habits].sort((a,b)=>{
+    const miss = h => (habitAgeDays(h.id) >= 2 ? 1 : 0) * ((state.habitLogs[yday]||{})[h.id] ? 0 : 1) * (todayLog[h.id] ? 0 : 1);
+    return miss(b) - miss(a);
+  });
+  const list = state.habits.length? ordered.map(h=>{
     const checked = !!todayLog[h.id];
-    const successSet = new Set(Object.keys(state.habitLogs).filter(d=> state.habitLogs[d][h.id]));
-    const streak = computeStreak(successSet);
+    const streak = computeStreak(habitDoneDays(h.id));
+    const meta = habitMetaFor(h.id);
+    const missedYday = habitAgeDays(h.id) >= 2 && !(state.habitLogs[yday]||{})[h.id];
+    const mode = habitModeOn(todayStr(), h.id);
     return `<div class="checkbox-row">
-      <button class="checkbox ${checked?'checked':''}" data-habit-toggle="${h.id}">${checked?'✓':''}</button>
+      <button class="checkbox ${checked?'checked':''}" data-habit-toggle="${h.id}">${checked?'\u2713':''}</button>
       <div class="list-item-main">
-        <div class="list-item-title">${h.icon||'•'} ${escapeHtml(h.name)}</div>
-        <div class="list-item-sub">${streak>0? `🔥 ${streak} day streak` : 'No streak yet'}</div>
+        <div class="list-item-title">${h.icon||'\u2022'} ${escapeHtml(h.name)}
+          <span class="badge badge-muted num-mono" style="margin-left:6px;">${meta.points}p</span>
+          ${checked && mode==='two' ? '<span class="badge badge-sage" style="margin-left:4px;">2-min</span>' : ''}
+        </div>
+        <div class="list-item-sub">${streak>0? `\u{1F525} <span class="num-mono">${streak}</span> day streak` : 'No streak yet'}</div>
+        ${meta.identity ? `<div class="habit-extra">${escapeHtml(meta.identity)}</div>` : ''}
+        ${(missedYday && !checked) ? `<div class="miss-note">Kal chhoot gaya \u2014 aaj 2-minute version hi kar lo${meta.twoMin? ': '+escapeHtml(meta.twoMin):''}</div>` : ''}
       </div>
       <div class="list-item-actions">
-        <button class="icon-btn" data-habit-edit="${h.id}">✎</button>
+        <button class="icon-btn" data-habit-edit="${h.id}">\u270E</button>
       </div>
     </div>`;
-  }).join('') : `<div class="empty-state"><span class="emoji">✅</span><p>No habits yet. Add the first one you want to build.</p></div>`;
+  }).join('') : emptyState('\u2705','empty_habits','add_habit','addHabitBtn');
+
+  // daily points + weekly chart
+  const todayPts = habitPointsForDay(todayStr());
+  const ptsDays = lastNDates(7);
+  const ptsVals = ptsDays.map(habitPointsForDay);
+  const ptsMax = Math.max(1, ...ptsVals);
+  const ptsChart = `<div class="pts-chart">${ptsDays.map((d,i)=>`
+      <div class="pts-col">
+        <div class="pts-day num-mono">${ptsVals[i]}</div>
+        <div class="pts-fill" style="height:${Math.round(ptsVals[i]/ptsMax*70)}%"></div>
+        <div class="pts-day">${formatDateShort(d).split(' ')[0]}</div>
+      </div>`).join('')}</div>`;
 
   const gridRows = state.habits.map(h=>{
     const cells = days.map(d=> `<td style="text-align:center; padding:6px;">${state.habitLogs[d] && state.habitLogs[d][h.id] ? '<span style="color:var(--sage)">●</span>' : '<span style="color:var(--border)">○</span>'}</td>`).join('');
-    return `<tr><td style="padding:6px 10px 6px 0; font-size:12.5px; color:var(--text-dim); white-space:nowrap;">${h.icon||''} ${escapeHtml(h.name)}</td>${cells}</tr>`;
+    return `<tr><td style="padding:6px 10px 6px 0; font-size:var(--fs-small); color:var(--text-dim); white-space:nowrap;">${h.icon||''} ${escapeHtml(h.name)}</td>${cells}</tr>`;
   }).join('');
-  const headerCells = days.map(d=> `<th style="font-size:10.5px; color:var(--text-faint); font-weight:600; padding:6px;">${formatDateShort(d)}</th>`).join('');
+  const headerCells = days.map(d=> `<th style="font-size:var(--fs-small); color:var(--text-faint); font-weight:600; padding:6px;">${formatDateShort(d)}</th>`).join('');
 
   return `
   <div class="section-title">✅ Habit Tracker</div>
@@ -1524,10 +2117,18 @@ function renderHabits(){
   <div class="card">
     <div class="row" style="justify-content:space-between; align-items:center; margin-bottom:14px;">
       <h3>Today</h3>
-      <button class="btn btn-sm btn-primary" id="addHabitBtn">+ Add habit</button>
+      <button class="btn btn-sm btn-primary" id="addHabitBtn">+ ${escapeHtml(t('add_habit'))}</button>
     </div>
     <div class="list">${list}</div>
   </div>
+
+  ${state.habits.length? `<div class="card">
+    <div class="row" style="justify-content:space-between; align-items:center;">
+      <h3>Points</h3>
+      <div class="stat-pill">Aaj <b>${todayPts}</b></div>
+    </div>
+    ${ptsChart}
+  </div>`:''}
 
   ${state.habits.length? `<div class="card">
     <h3 style="margin-bottom:14px;">Last 7 days</h3>
@@ -1541,26 +2142,101 @@ function renderHabits(){
 }
 function habitFormFields(){
   return [
-    {key:'icon', label:'Emoji', type:'text', placeholder:'🏃'},
+    {key:'icon', label:'Emoji', type:'text', placeholder:'\u{1F3C3}'},
     {key:'name', label:'Habit', type:'text', placeholder:'e.g. Read 10 pages', required:true},
+    {key:'points', label:'Points', type:'number', placeholder:'1', helper:'Kitna bhaari hai? Default 1.'},
+    {key:'twoMin', label:'2-minute version', type:'text', placeholder:'e.g. Sirf 1 page padho',
+      helper:'Bura din ho to itna hi karo. Streak bacha rehta hai, aadhe points milte hain.'},
+    {key:'identity', label:'Identity line', type:'text', placeholder:'e.g. Main strong banta hoon'},
   ];
 }
+/* Habit extras live in their own key, so old habit records stay untouched */
+function saveHabitMeta(id, data, createdAt){
+  const prev = state.habitMeta[id] || {};
+  state.habitMeta[id] = {
+    points: (data.points==null || data.points==='' ? 1 : Number(data.points)),
+    twoMin: data.twoMin || '',
+    identity: data.identity || '',
+    createdAt: createdAt || prev.createdAt || ''
+  };
+  saveKey('habitMeta');
+}
+function setHabitDone(id, mode){
+  const today = todayStr();
+  if(!state.habitLogs[today]) state.habitLogs[today] = {};
+  state.habitLogs[today][id] = true;
+  saveKey('habitLogs');
+  if(!state.habitModeLogs[today]) state.habitModeLogs[today] = {};
+  state.habitModeLogs[today][id] = mode;
+  saveKey('habitModeLogs');
+  justCheckedHabitId = id;
+  const streak = computeStreak(habitDoneDays(id));
+  if(streak===7 || streak===21 || streak===30) pendingMilestone = 'streak_'+streak;
+  const asked = (state.habitCheckins[id]||[]).some(c=>c.milestone===15);
+  if(streak===15 && !asked) pendingCheckin = id;
+  switchView('habits');
+}
+function clearHabitDone(id){
+  const today = todayStr();
+  if(state.habitLogs[today]) delete state.habitLogs[today][id];
+  saveKey('habitLogs');
+  if(state.habitModeLogs[today]) delete state.habitModeLogs[today][id];
+  saveKey('habitModeLogs');
+  switchView('habits');
+}
 function attachHabitsHandlers(){
+  // gentle tick animation + milestone toast, both respect prefers-reduced-motion
+  if(justCheckedHabitId){
+    const el = document.querySelector('[data-habit-toggle="'+justCheckedHabitId+'"]');
+    if(el){ el.classList.add('just-checked'); setTimeout(()=>el.classList.remove('just-checked'), 700); }
+    justCheckedHabitId = null;
+  }
+  if(pendingMilestone){ showToast(t(pendingMilestone)); pendingMilestone = null; }
+  if(pendingCheckin){
+    const hid = pendingCheckin; pendingCheckin = null;
+    openChoice('15 din ho gaye', 'Kya abhi bhi aasan lag raha hai? Kya chhota karna hai?', [
+      {label:'Aasan hai', value:'easy', primary:true},
+      {label:'Mushkil lag raha hai', value:'hard'},
+      {label:'Chhota karna hai', value:'smaller'},
+    ], (ans)=>{
+      if(!state.habitCheckins[hid]) state.habitCheckins[hid] = [];
+      state.habitCheckins[hid].push({date: todayStr(), milestone: 15, answer: ans});
+      saveKey('habitCheckins');
+      if(ans==='smaller'){
+        const h = state.habits.find(x=>x.id===hid);
+        const meta = habitMetaFor(hid);
+        openModal({title:'Chhota kar do', fields:habitFormFields(), values:{...h, ...meta},
+          submitLabel:'Save', onSubmit:(data)=>{
+            Object.assign(h, {name:data.name, icon:data.icon||'\u2022'});
+            saveKey('habits'); saveHabitMeta(hid, data); switchView('habits');
+          }});
+      } else { showToast('Likh liya'); }
+    });
+  }
   document.querySelectorAll('[data-habit-toggle]').forEach(btn=>{
     btn.addEventListener('click', ()=>{
       const id = btn.getAttribute('data-habit-toggle');
       const today = todayStr();
-      if(!state.habitLogs[today]) state.habitLogs[today] = {};
-      state.habitLogs[today][id] = !state.habitLogs[today][id];
-      saveKey('habitLogs');
-      switchView('habits');
+      const isOn = !!(state.habitLogs[today]||{})[id];
+      if(isOn){ clearHabitDone(id); return; }
+      const meta = habitMetaFor(id);
+      if(meta.twoMin){
+        openChoice('Kaise kiya?', meta.twoMin, [
+          {label:'Full', value:'full', primary:true},
+          {label:'2-min version (aadhe points)', value:'two'},
+        ], (mode)=> setHabitDone(id, mode));
+      } else {
+        setHabitDone(id, 'full');
+      }
     });
   });
   const addBtn = document.getElementById('addHabitBtn');
   if(addBtn) addBtn.addEventListener('click', ()=>{
-    openModal({title:'Add habit', fields:habitFormFields(), submitLabel:'Add', onSubmit:(data)=>{
-      state.habits.push({id:uid(), name:data.name, icon:data.icon||'•'});
+    openModal({title:'Add habit', fields:habitFormFields(), values:{points:1}, submitLabel:'Add', onSubmit:(data)=>{
+      const id = uid();
+      state.habits.push({id, name:data.name, icon:data.icon||'\u2022'});
       saveKey('habits');
+      saveHabitMeta(id, data, todayStr());
       switchView('habits');
       showToast('Habit added');
     }});
@@ -1569,9 +2245,10 @@ function attachHabitsHandlers(){
     btn.addEventListener('click', ()=>{
       const id = btn.getAttribute('data-habit-edit');
       const h = state.habits.find(x=>x.id===id);
-      openModal({title:'Edit habit', fields:habitFormFields(), values:h, submitLabel:'Save', onSubmit:(data)=>{
-        Object.assign(h, {name:data.name, icon:data.icon||'•'});
+      openModal({title:'Edit habit', fields:habitFormFields(), values:{...h, ...habitMetaFor(id)}, submitLabel:'Save', onSubmit:(data)=>{
+        Object.assign(h, {name:data.name, icon:data.icon||'\u2022'});
         saveKey('habits');
+        saveHabitMeta(id, data);
         switchView('habits');
       }, onDelete:()=>{
         state.habits = state.habits.filter(x=>x.id!==id);
@@ -1594,15 +2271,28 @@ function renderFitness(){
     progressPct = span!==0 ? clamp(((last.weight-p.startWeight)/span)*100, 0, 100) : 0;
   }
 
+  const sleepDays = lastNDates(7);
+  const sleepVals = sleepDays.map(d=>{ const s = sleepFor(d); return s && s.hours ? s.hours : 0; });
+  const sleepMax = Math.max(8, ...sleepVals);
+  const sleepChart = `<div class="sleep-chart">${sleepDays.map((d,i)=>`
+      <div class="sleep-col">
+        <div class="sleep-day num-mono">${sleepVals[i]||''}</div>
+        <div class="sleep-fill" style="height:${Math.round(sleepVals[i]/sleepMax*70)}%"></div>
+        <div class="sleep-day">${formatDateShort(d).split(' ')[0]}</div>
+      </div>`).join('')}</div>`;
+  const lastSleepDay = [...sleepDays].reverse().find(d=> sleepFor(d));
+  const lastSleep = lastSleepDay ? sleepFor(lastSleepDay) : null;
+  const pace = state.fitnessSettings.paceKgPerMonth;
+
   const workoutsSorted = [...state.workoutEntries].sort((a,b)=>b.date.localeCompare(a.date));
   const workoutList = workoutsSorted.length? workoutsSorted.map(w=>`
     <div class="list-item">
       <div class="list-item-main">
         <div class="list-item-title">${escapeHtml(w.exercise)}</div>
-        <div class="list-item-sub">${formatDateNice(w.date)} · ${w.sets||'–'} sets × ${w.reps||'–'} reps ${w.weight?`· ${w.weight}kg`:''}${w.notes? ' · '+escapeHtml(w.notes):''}</div>
+        <div class="list-item-sub">${formatDateNice(w.date)} · <span class="num-mono">${w.sets||'–'}</span> sets × <span class="num-mono">${w.reps||'–'}</span> reps ${w.weight?`· <span class="num-mono">${w.weight}kg</span>`:''}${w.notes? ' · '+escapeHtml(w.notes):''}</div>
       </div>
       <div class="list-item-actions"><button class="icon-btn" data-workout-edit="${w.id}">✎</button></div>
-    </div>`).join('') : `<div class="empty-state"><span class="emoji">🏋️</span><p>Log your first workout to start building the record.</p></div>`;
+    </div>`).join('') : emptyState('🏋️','empty_workout','add_workout','addWorkoutBtn');
 
   return `
   <div class="section-title">💪 Fitness</div>
@@ -1617,15 +2307,32 @@ function renderFitness(){
       <button class="btn btn-sm" id="editGoalBtn">✎ Edit goal</button>
     </div>
     ${p.startWeight!=null && p.goalWeight!=null ? `<div class="progress" style="margin:10px 0 4px;"><div style="width:${progressPct}%"></div></div>
-    <div class="section-sub">${last? `Currently ${last.weight}kg · ${Math.round(progressPct)}% of the way there`:'Log a weigh-in to see progress'}</div>`:''}
+    <div class="section-sub">${last? `Abhi <span class="num-mono">${last.weight}kg</span> \u00b7 <span class="num-mono">${Math.round(progressPct)}%</span> raasta poora`:'Ek weigh-in likho to progress dikhega'}</div>`:''}
+    ${(p.startWeight!=null && p.goalWeight!=null && pace) ? (()=>{
+        const remain = p.goalWeight - (last? last.weight : p.startWeight);
+        const months = pace>0 ? Math.max(0, Math.ceil(remain/pace*10)/10) : null;
+        return `<div class="section-sub" style="margin-top:2px;">Aapki pace: <span class="num-mono">${pace}</span> kg/mahina \u00b7 bacha hai <span class="num-mono">${Math.round(remain*10)/10}</span> kg${months!=null? ` \u00b7 lagbhag <span class="num-mono">${months}</span> mahine`:''}</div>`;
+      })() : ''}
   </div>
 
   <div class="card">
     <div class="row" style="justify-content:space-between; align-items:center; margin-bottom:12px;">
       <h3>Weight log</h3>
-      <button class="btn btn-sm btn-primary" id="addWeightBtn">+ Log weigh-in</button>
+      <button class="btn btn-sm btn-primary" id="addWeightBtn">+ ${escapeHtml(t('log_weighin'))}</button>
     </div>
     ${renderWeightChart(sorted, p.goalWeight)}
+  </div>
+
+  ${isDeloadWeek() ? `<div class="note-soft">\u{1F343} Deload week \u2014 halka rakho. Weight kam, form saaf.</div>` : ''}
+
+  <div class="card">
+    <div class="row" style="justify-content:space-between; align-items:center; margin-bottom:6px;">
+      <h3>\u{1F634} Neend</h3>
+      <button class="btn btn-sm btn-primary" id="addSleepBtn">+ Aaj ki neend</button>
+    </div>
+    <p class="section-sub">Pichhle 7 din.</p>
+    ${sleepChart}
+    ${lastSleep ? `<p class="section-sub" style="margin:10px 0 0;">Kal raat: <span class="num-mono">${lastSleep.hours}</span> ghante \u00b7 quality <span class="num-mono">${lastSleep.quality||'-'}</span>/5 \u00b7 phone door: ${lastSleep.phoneAway==='yes'?'haan':'nahi'}</p>` : ''}
   </div>
 
   ${renderWorkoutPlanCard()}
@@ -1633,7 +2340,7 @@ function renderFitness(){
   <div class="card">
     <div class="row" style="justify-content:space-between; align-items:center; margin-bottom:12px;">
       <h3>Workout log</h3>
-      <button class="btn btn-sm btn-primary" id="addWorkoutBtn">+ Add workout</button>
+      <button class="btn btn-sm btn-primary" id="addWorkoutBtn">+ ${escapeHtml(t('add_workout'))}</button>
     </div>
     <div class="list">${workoutList}</div>
   </div>`;
@@ -1654,13 +2361,13 @@ function renderWorkoutPlanCard(){
             <div class="list-item-title">${escapeHtml(ex.name)}</div>
             <div class="list-item-sub">${ex.sets} sets × ${ex.reps}${ex.note? ' — '+escapeHtml(ex.note):''}</div>
           </div>
-          <div class="list-item-actions"><button class="icon-btn" data-plan-log="${workoutPlanActiveDay}:${idx}" title="Log this">➕</button></div>
+          <div class="list-item-actions"><button class="icon-btn" data-plan-log="${workoutPlanActiveDay}:${idx}" title="Log this">+</button></div>
         </div>`).join('')}
     </div>
   </div>`;
 }
 function renderWeightChart(sorted, goal){
-  if(!sorted.length) return `<div class="empty-state"><span class="emoji">📈</span><p>No weigh-ins logged yet.</p></div>`;
+  if(!sorted.length) return emptyState('📈','empty_weight','log_weighin','addWeightBtn');
   const w=600,h=180,pad=32;
   const weights = sorted.map(e=>e.weight);
   let min = Math.min(...weights, goal!=null?goal:weights[0]) - 1.5;
@@ -1711,17 +2418,40 @@ function attachFitnessHandlers(){
         saveKey('workoutEntries');
         switchView('fitness');
       }});
+      attachBeatLastTime();
     });
+  });
+  const addSleepBtn = document.getElementById('addSleepBtn');
+  if(addSleepBtn) addSleepBtn.addEventListener('click', ()=>{
+    const today = todayStr();
+    const cur = sleepFor(today) || {};
+    openModal({title:'Aaj ki neend', fields:[
+      {key:'date', label:'Date', type:'date', required:true},
+      {key:'bed', label:'Soye kitne baje?', type:'time', required:true},
+      {key:'wake', label:'Uthe kitne baje?', type:'time', required:true},
+      {key:'quality', label:'Quality (1-5)', type:'number', placeholder:'3'},
+      {key:'phoneAway', label:'Phone door tha 1 ghanta pehle?', type:'select', options:[{value:'yes',label:'Haan'},{value:'no',label:'Nahi'}]},
+    ], values:{date:today, ...cur}, submitLabel:'Save', onSubmit:(data)=>{
+      const hrs = sleepHours(data.bed, data.wake);
+      state.sleepLogs[data.date] = {bed:data.bed, wake:data.wake, hours:hrs, quality:data.quality, phoneAway:data.phoneAway};
+      saveKey('sleepLogs');
+      switchView('fitness');
+      if(hrs!=null) showToast(hrs + ' ghante likh liye');
+    }});
   });
   const editGoalBtn = document.getElementById('editGoalBtn');
   if(editGoalBtn) editGoalBtn.addEventListener('click', ()=>{
     openModal({title:'Weight goal', fields:[
       {key:'startWeight', label:'Starting weight (kg)', type:'number', step:'0.1', placeholder:'Current weight in kg'},
-      {key:'goalWeight', label:'Goal weight (kg)', type:'number', step:'0.1', placeholder:'e.g. 60'},
-    ], values:state.profile, submitLabel:'Save', onSubmit:(data)=>{
+      {key:'goalWeight', label:'Goal weight (kg)', type:'number', step:'0.1', placeholder:'e.g. 70'},
+      {key:'paceKgPerMonth', label:'Pace (kg per mahina)', type:'number', step:'0.1', placeholder:'e.g. 0.5',
+        helper:'Aap khud tay karo. Dheemi pace bhi theek hai.'},
+    ], values:{...state.profile, paceKgPerMonth: state.fitnessSettings.paceKgPerMonth}, submitLabel:'Save', onSubmit:(data)=>{
       state.profile.startWeight = data.startWeight;
       state.profile.goalWeight = data.goalWeight;
       saveKey('profile');
+      state.fitnessSettings.paceKgPerMonth = data.paceKgPerMonth;
+      saveKey('fitnessSettings');
       switchView('fitness');
     }});
   });
@@ -1741,6 +2471,7 @@ function attachFitnessHandlers(){
       saveKey('workoutEntries');
       switchView('fitness');
     }});
+    attachBeatLastTime();
   });
   document.querySelectorAll('[data-workout-edit]').forEach(btn=>{
     btn.addEventListener('click', ()=>{
@@ -1773,7 +2504,7 @@ function renderExpenses(){
   const catRows = Object.entries(byCategory).sort((a,b)=>b[1]-a[1]).map(([cat,amt])=>{
     const pct = weekTotal? (amt/weekTotal*100):0;
     return `<div style="margin-bottom:10px;">
-      <div style="display:flex; justify-content:space-between; font-size:12.5px; margin-bottom:4px;"><span>${escapeHtml(cat)}</span><span style="font-family:var(--font-mono);">₹${amt.toFixed(0)}</span></div>
+      <div style="display:flex; justify-content:space-between; font-size:var(--fs-small); margin-bottom:4px;"><span>${escapeHtml(cat)}</span><span style="font-family:var(--font-mono);">₹${amt.toFixed(0)}</span></div>
       <div class="progress"><div style="width:${pct}%"></div></div>
     </div>`;
   }).join('') || `<p class="section-sub">No expenses logged this week yet.</p>`;
@@ -1781,12 +2512,14 @@ function renderExpenses(){
   const list = sorted.length? sorted.slice(0,30).map(e=>`
     <div class="list-item">
       <div class="list-item-main">
-        <div class="list-item-title">${escapeHtml(e.category)}${e.note? ' · '+escapeHtml(e.note):''}</div>
+        <div class="list-item-title">${escapeHtml(e.category)}${e.note? ' \u00b7 '+escapeHtml(e.note):''}
+          <span class="badge ${e.flow==='business'?'badge-gold':'badge-muted'}" style="margin-left:6px;">${e.flow==='business'?'Business':'Ghar'}</span>
+        </div>
         <div class="list-item-sub">${formatDateNice(e.date)}</div>
       </div>
       <div class="list-item-amount">₹${(e.amount||0).toFixed(0)}</div>
       <div class="list-item-actions"><button class="icon-btn" data-expense-edit="${e.id}">✎</button></div>
-    </div>`).join('') : `<div class="empty-state"><span class="emoji">💸</span><p>No expenses yet. Add today's first one.</p></div>`;
+    </div>`).join('') : emptyState('💸','empty_expense','add_expense','addExpenseBtn');
 
   return `
   <div class="section-title">💰 Expenses</div>
@@ -1800,7 +2533,7 @@ function renderExpenses(){
   <div class="card">
     <div class="row" style="justify-content:space-between; align-items:center; margin-bottom:12px;">
       <h3>This week by category</h3>
-      <button class="btn btn-sm btn-primary" id="addExpenseBtn">+ Add expense</button>
+      <button class="btn btn-sm btn-primary" id="addExpenseBtn">+ ${escapeHtml(t('add_expense'))}</button>
     </div>
     ${catRows}
   </div>
@@ -1815,13 +2548,15 @@ function expenseFormFields(){
     {key:'date', label:'Date', type:'date', required:true},
     {key:'amount', label:'Amount (₹)', type:'number', step:'1', placeholder:'e.g. 250', required:true},
     {key:'category', label:'Category', type:'select', options:EXPENSE_CATEGORIES, required:true},
+    {key:'flow', label:'Ghar ya Business?', type:'select',
+      options:[{value:'ghar',label:'Ghar'},{value:'business',label:'Business'}]},
     {key:'note', label:'Where / what for', type:'text', placeholder:'e.g. Auto to market'},
   ];
 }
 function attachExpensesHandlers(){
   const addBtn = document.getElementById('addExpenseBtn');
   if(addBtn) addBtn.addEventListener('click', ()=>{
-    openModal({title:'Add expense', fields:expenseFormFields(), values:{date:todayStr(), category:EXPENSE_CATEGORIES[0]}, submitLabel:'Add', onSubmit:(data)=>{
+    openModal({title:'Add expense', fields:expenseFormFields(), values:{date:todayStr(), category:EXPENSE_CATEGORIES[0], flow:'ghar'}, submitLabel:'Add', onSubmit:(data)=>{
       state.expenses.push({id:uid(), ...data});
       saveKey('expenses');
       switchView('expenses');
@@ -1857,19 +2592,19 @@ function renderFoodLog(){
     const entries = weekEntries.filter(e=>e.date===d);
     if(!entries.length) return '';
     return `<div style="margin-bottom:16px;">
-      <div style="font-size:12.5px; font-weight:700; color:var(--text); margin-bottom:8px;">${formatDateNice(d)}</div>
+      <div style="font-size:var(--fs-small); font-weight:700; color:var(--text); margin-bottom:8px;">${formatDateNice(d)}</div>
       <div class="list">
         ${entries.map(e=>`
           <div class="list-item">
             <div class="list-item-main">
               <div class="list-item-title">${e.meal? `<span class="badge badge-sage" style="margin-right:6px;">${escapeHtml(e.meal)}</span>`:''}${escapeHtml(e.food)}</div>
-              <div class="list-item-sub">${escapeHtml(e.amount||'')}${e.notes? ' \u00b7 '+escapeHtml(e.notes):''}</div>
+              <div class="list-item-sub">${escapeHtml(e.amount||'')}${e.protein? ' \u00b7 \u{1F95A} '+escapeHtml(e.protein):''}${e.notes? ' \u00b7 '+escapeHtml(e.notes):''}</div>
             </div>
             <div class="list-item-actions"><button class="icon-btn" data-food-edit="${e.id}">\u270E</button></div>
           </div>`).join('')}
       </div>
     </div>`;
-  }).join('') || `<div class="empty-state"><span class="emoji">\u{1F37D}\uFE0F</span><p>Log what you eat \u2014 start with today's first meal.</p></div>`;
+  }).join('') || emptyState('🍽️','empty_food','add_food','addFoodBtn');
 
   return `
   <div class="section-title">\u{1F37D}\uFE0F Food Log</div>
@@ -1883,7 +2618,7 @@ function renderFoodLog(){
   <div class="card">
     <div class="row" style="justify-content:space-between; align-items:center; margin-bottom:14px;">
       <h3>This week</h3>
-      <button class="btn btn-sm btn-primary" id="addFoodBtn">+ Add food</button>
+      <button class="btn btn-sm btn-primary" id="addFoodBtn">+ ${escapeHtml(t('add_food'))}</button>
     </div>
     ${groupsHtml}
   </div>
@@ -1901,6 +2636,9 @@ function foodFormFields(){
     {key:'meal', label:'Meal', type:'select', options:['Breakfast','Lunch','Dinner','Snack']},
     {key:'food', label:'What did you eat?', type:'text', placeholder:'e.g. Dal, rice, roti', required:true},
     {key:'amount', label:'How much?', type:'text', placeholder:'e.g. 2 rotis, 1 bowl'},
+    {key:'protein', label:'Protein source (optional)', type:'select',
+      options:[{value:'',label:'\u2014'},{value:'dal',label:'Dal'},{value:'chana',label:'Chana'},{value:'paneer',label:'Paneer'},
+               {value:'eggs',label:'Eggs'},{value:'doodh',label:'Doodh'},{value:'other',label:'Other'}]},
     {key:'notes', label:'Notes (optional)', type:'textarea', placeholder:'How did you feel?'},
   ];
 }
@@ -1937,6 +2675,532 @@ function attachFoodLogHandlers(){
   });
 }
 
+/* ===================== SPIRITUAL ===================== */
+const SITTING_TYPES = [
+  {value:'vipassana', label:'Vipassana'},
+  {value:'mangalMaitri', label:'Mangal Maitri'},
+  {value:'selfInquiry', label:'Main kaun hoon'},
+];
+const STUCK_CHOICES = [
+  {value:'darr', label:'Darr'},
+  {value:'jealousy', label:'Jealousy'},
+  {value:'shikayat', label:'Shikayat'},
+  {value:'kahin_nahi', label:'Kahin nahi'},
+];
+function sittingTypeLabel(v){ const x = SITTING_TYPES.find(s=>s.value===v); return x? x.label : (v||''); }
+function stuckLabel(v){ const x = STUCK_CHOICES.find(s=>s.value===v); return x? x.label : (v||''); }
+function renderSpiritual(){
+  const today = todayStr();
+  const weekAgo = daysAgoStr(6);
+  const weekMins = state.sittings.filter(s=> s.date>=weekAgo).reduce((sum,s)=> sum+(Number(s.minutes)||0), 0);
+  const ev = state.eveningLogs[today] || null;
+
+  const sitSorted = [...state.sittings].sort((a,b)=> b.date.localeCompare(a.date));
+  const sitList = sitSorted.length ? sitSorted.slice(0,20).map(s=>`
+    <div class="list-item">
+      <div class="list-item-main">
+        <div class="list-item-title">${escapeHtml(sittingTypeLabel(s.type))}</div>
+        <div class="list-item-sub">${formatDateNice(s.date)}${s.note? ' \u00b7 '+escapeHtml(s.note):''}</div>
+      </div>
+      <div class="list-item-amount"><span class="num-mono">${s.minutes||0}</span>m</div>
+      <div class="list-item-actions"><button class="icon-btn" data-sit-edit="${s.id}">\u270E</button></div>
+    </div>`).join('') : `<div class="empty-state"><span class="emoji">\u{1F9D8}</span><p>Abhi koi baithak nahi likhi. 5 minute se shuru karo.</p><button class="btn btn-primary btn-sm" data-empty-action="addSitBtn">Baithak jodo</button></div>`;
+
+  const gitaSorted = [...state.gitaLogs].sort((a,b)=> b.date.localeCompare(a.date));
+  const gitaList = gitaSorted.length ? gitaSorted.slice(0,20).map(g=>`
+    <div class="list-item" style="align-items:flex-start;">
+      <div class="list-item-main">
+        <div class="list-item-title">Adhyay <span class="num-mono">${escapeHtml(String(g.chapter||''))}</span>${g.verses? ' \u00b7 shlok <span class="num-mono">'+escapeHtml(String(g.verses))+'</span>':''}</div>
+        <div class="list-item-sub">${formatDateNice(g.date)}</div>
+        ${g.reflection? `<div class="list-item-sub" style="margin-top:6px; color:var(--text);">${escapeHtml(g.reflection)}</div>`:''}
+      </div>
+      <div class="list-item-actions"><button class="icon-btn" data-gita-edit="${g.id}">\u270E</button></div>
+    </div>`).join('') : `<div class="empty-state"><span class="emoji">\u{1F4D6}</span><p>Abhi koi paath nahi likha.</p><button class="btn btn-primary btn-sm" data-empty-action="addGitaBtn">Gita paath jodo</button></div>`;
+
+  return `
+  <div class="section-title">\u{1F549}\uFE0F Adhyatm</div>
+  <div class="section-sub">Baithak, paath, aur shaam ka ek sawaal.</div>
+
+  <div class="grid-2">
+    <div class="stat-box"><div class="num"><span class="num-mono">${weekMins}</span>m</div><div class="lbl">Is hafte baithak</div></div>
+    <div class="stat-box"><div class="num">${ev? escapeHtml(stuckLabel(ev.stuck)) : '\u2014'}</div><div class="lbl">Aaj mann atka</div></div>
+  </div>
+
+  <div class="card">
+    <div class="row" style="justify-content:space-between; align-items:center; margin-bottom:6px;">
+      <h3>\u{1F319} Shaam ka sawaal</h3>
+      <button class="btn btn-sm ${ev?'':'btn-primary'}" id="eveningBtn">${ev? 'Badlo' : 'Jawab do'}</button>
+    </div>
+    <p class="section-sub">Aaj mann sabse zyada kahan atka?</p>
+    ${ev ? `<p class="section-sub" style="margin:0;"><b>${escapeHtml(stuckLabel(ev.stuck))}</b>${ev.note? ' \u2014 '+escapeHtml(ev.note):''}</p>` : ''}
+  </div>
+
+  <div class="card">
+    <div class="row" style="justify-content:space-between; align-items:center; margin-bottom:6px;">
+      <h3>Baithak</h3>
+      <button class="btn btn-sm btn-primary" id="addSitBtn">+ Baithak</button>
+    </div>
+    <p class="section-sub">Timer chahiye to Morning Ritual \u2192 Meditation kholo.</p>
+    <div class="list" style="margin-top:8px;">${sitList}</div>
+  </div>
+
+  <div class="card">
+    <div class="row" style="justify-content:space-between; align-items:center; margin-bottom:12px;">
+      <h3>\u{1F4D6} Gita</h3>
+      <button class="btn btn-sm btn-primary" id="addGitaBtn">+ Paath</button>
+    </div>
+    <div class="list">${gitaList}</div>
+  </div>`;
+}
+function sittingFormFields(){
+  return [
+    {key:'date', label:'Date', type:'date', required:true},
+    {key:'type', label:'Kis tarah ki baithak?', type:'select', options:SITTING_TYPES, required:true},
+    {key:'minutes', label:'Kitne minute?', type:'number', placeholder:'10', required:true},
+    {key:'note', label:'Ek line', type:'text', placeholder:'Jo mehsoos hua'},
+  ];
+}
+function gitaFormFields(){
+  return [
+    {key:'date', label:'Date', type:'date', required:true},
+    {key:'chapter', label:'Adhyay', type:'number', placeholder:'2', required:true},
+    {key:'verses', label:'Shlok', type:'text', placeholder:'e.g. 47-48'},
+    {key:'reflection', label:'Meri ek line', type:'textarea', placeholder:'Apne shabdon mein'},
+  ];
+}
+function attachSpiritualHandlers(){
+  const sitBtn = document.getElementById('addSitBtn');
+  if(sitBtn) sitBtn.addEventListener('click', ()=>{
+    openModal({title:'Baithak', fields:sittingFormFields(), values:{date:todayStr(), type:'vipassana'}, submitLabel:'Save', onSubmit:(data)=>{
+      state.sittings.push({id:uid(), ...data});
+      saveKey('sittings'); switchView('spiritual');
+    }});
+  });
+  const gitaBtn = document.getElementById('addGitaBtn');
+  if(gitaBtn) gitaBtn.addEventListener('click', ()=>{
+    openModal({title:'Gita paath', fields:gitaFormFields(), values:{date:todayStr()}, submitLabel:'Save', onSubmit:(data)=>{
+      state.gitaLogs.push({id:uid(), ...data});
+      saveKey('gitaLogs'); switchView('spiritual');
+    }});
+  });
+  const evBtn = document.getElementById('eveningBtn');
+  if(evBtn) evBtn.addEventListener('click', ()=>{
+    const today = todayStr();
+    openChoice('Aaj mann sabse zyada kahan atka?', '', STUCK_CHOICES.map(c=>({label:c.label, value:c.value})), (val)=>{
+      openModal({title:stuckLabel(val), fields:[
+        {key:'note', label:'Ek line', type:'textarea', placeholder:'Kya hua tha?'},
+      ], values:(state.eveningLogs[today]||{}), submitLabel:'Save', onSubmit:(data)=>{
+        state.eveningLogs[today] = {stuck:val, note:data.note};
+        saveKey('eveningLogs'); switchView('spiritual');
+      }});
+    });
+  });
+  [['data-sit-edit','sittings',sittingFormFields,'Baithak'],['data-gita-edit','gitaLogs',gitaFormFields,'Gita paath']]
+  .forEach(([attr,key,fields,title])=>{
+    document.querySelectorAll('['+attr+']').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        const id = btn.getAttribute(attr);
+        const item = state[key].find(x=>x.id===id);
+        openModal({title:'Edit '+title, fields:fields(), values:item, submitLabel:'Save', onSubmit:(data)=>{
+          Object.assign(item, data); saveKey(key); switchView('spiritual');
+        }, onDelete:()=>{
+          state[key] = state[key].filter(x=>x.id!==id);
+          saveKey(key); switchView('spiritual'); showToast('Hata diya');
+        }});
+      });
+    });
+  });
+}
+
+/* ===================== BUSINESS ===================== */
+const PAR_KAAM_WEEKLY_TARGET = 120; // minutes
+function parKaamThisWeek(){
+  const days = lastNDates(7);
+  return state.parKaamLogs.filter(l=> days.includes(l.date)).reduce((s,l)=> s+(Number(l.minutes)||0), 0);
+}
+function daysSince(ds){
+  if(!ds) return null;
+  return Math.floor((new Date(todayStr()) - new Date(ds)) / 86400000);
+}
+function decisionsDueForReview(){
+  const today = todayStr();
+  return state.decisions.filter(d=> d.reviewDate && d.reviewDate <= today && !d.outcome);
+}
+function renderBusiness(){
+  const mins = parKaamThisWeek();
+  const pct = clamp(Math.round(mins/PAR_KAAM_WEEKLY_TARGET*100), 0, 100);
+  const due = decisionsDueForReview();
+
+  const parSorted = [...state.parKaamLogs].sort((a,b)=> b.date.localeCompare(a.date));
+  const parList = parSorted.length ? parSorted.slice(0,15).map(l=>`
+    <div class="list-item">
+      <div class="list-item-main">
+        <div class="list-item-title">${escapeHtml(l.what||'PAR kaam')}</div>
+        <div class="list-item-sub">${formatDateNice(l.date)}</div>
+      </div>
+      <div class="list-item-amount"><span class="num-mono">${l.minutes||0}</span>m</div>
+      <div class="list-item-actions"><button class="icon-btn" data-par-edit="${l.id}">\u270E</button></div>
+    </div>`).join('') : `<div class="empty-state"><span class="emoji">\u{1F9F1}</span><p>Abhi kuch nahi likha. Hafte mein 120 minute system par lagao.</p><button class="btn btn-primary btn-sm" data-empty-action="addParBtn">PAR kaam jodo</button></div>`;
+
+  const decSorted = [...state.decisions].sort((a,b)=> b.date.localeCompare(a.date));
+  const decList = decSorted.length ? decSorted.map(d=>{
+    const isDue = d.reviewDate && d.reviewDate <= todayStr() && !d.outcome;
+    return `<div class="list-item" style="align-items:flex-start;">
+      <div class="list-item-main">
+        <div class="list-item-title">${escapeHtml(d.decision||'')}
+          ${isDue? '<span class="badge badge-coral" style="margin-left:6px;">Review due</span>' : ''}
+          ${d.outcome? '<span class="badge badge-sage" style="margin-left:6px;">Reviewed</span>' : ''}
+        </div>
+        <div class="list-item-sub">${formatDateNice(d.date)}${d.reviewDate? ' \u00b7 review ' + formatDateNice(d.reviewDate) : ''}</div>
+        ${d.worst? `<div class="list-item-sub" style="margin-top:4px;">Sabse bura: ${escapeHtml(d.worst)}</div>`:''}
+        ${d.survive? `<div class="list-item-sub">Survive: ${escapeHtml(d.survive)}</div>`:''}
+        ${d.taken? `<div class="list-item-sub" style="color:var(--gold);">Faisla: ${escapeHtml(d.taken)}</div>`:''}
+        ${d.outcome? `<div class="list-item-sub" style="color:var(--sage);">Asal mein hua: ${escapeHtml(d.outcome)}</div>`:''}
+      </div>
+      <div class="list-item-actions"><button class="icon-btn" data-dec-edit="${d.id}">\u270E</button></div>
+    </div>`;
+  }).join('') : `<div class="empty-state"><span class="emoji">\u{1F9ED}</span><p>Abhi koi faisla nahi likha.</p><button class="btn btn-primary btn-sm" data-empty-action="addDecBtn">Faisla likho</button></div>`;
+
+  const conSorted = [...state.contacts].sort((a,b)=> (daysSince(b.lastContact)||999) - (daysSince(a.lastContact)||999));
+  const conList = conSorted.length ? conSorted.map(c=>{
+    const gap = daysSince(c.lastContact);
+    const cold = gap==null || gap >= 30;
+    return `<div class="list-item" style="align-items:flex-start;">
+      <div class="list-item-main">
+        <div class="list-item-title">${escapeHtml(c.name||'')}${c.place? ' \u00b7 ' + escapeHtml(c.place):''}
+          ${cold? `<span class="badge badge-coral" style="margin-left:6px;">${gap==null?'kabhi nahi':gap+' din'}</span>`
+                : `<span class="badge badge-sage" style="margin-left:6px;"><span class="num-mono">${gap}</span> din</span>`}
+        </div>
+        ${c.family? `<div class="list-item-sub" style="margin-top:4px;">Ghar: ${escapeHtml(c.family)}</div>`:''}
+        ${c.problem? `<div class="list-item-sub">Unki dikkat: ${escapeHtml(c.problem)}</div>`:''}
+      </div>
+      <div class="list-item-actions"><button class="icon-btn" data-con-edit="${c.id}">\u270E</button></div>
+    </div>`;
+  }).join('') : `<div class="empty-state"><span class="emoji">\u{1F91D}</span><p>Abhi koi contact nahi.</p><button class="btn btn-primary btn-sm" data-empty-action="addConBtn">Contact jodo</button></div>`;
+
+  const sopList = state.sops.length ? state.sops.map(s=>`
+    <div class="list-item" style="align-items:flex-start;">
+      <div class="list-item-main">
+        <div class="list-item-title">${escapeHtml(s.title||'')}</div>
+        <div class="list-item-sub" style="margin-top:6px; white-space:pre-wrap;">${escapeHtml(s.steps||'')}</div>
+      </div>
+      <div class="list-item-actions"><button class="icon-btn" data-sop-edit="${s.id}">\u270E</button></div>
+    </div>`).join('') : `<div class="empty-state"><span class="emoji">\u{1F4CB}</span><p>Abhi koi SOP nahi. Jo kaam baar baar hota hai, ek baar likh do.</p><button class="btn btn-primary btn-sm" data-empty-action="addSopBtn">SOP jodo</button></div>`;
+
+  return `
+  <div class="section-title">\u{1F3ED} Business</div>
+  <div class="section-sub">Business PAR kaam \u2014 system banana, roz ki aag bujhana nahi.</div>
+
+  ${due.length ? `<div class="note-soft">\u{1F9ED} ${due.length} faisle ka review due hai. Likho ki asal mein kya hua.</div>` : ''}
+
+  <div class="card">
+    <div class="row" style="justify-content:space-between; align-items:center; margin-bottom:6px;">
+      <h3>Is hafte PAR kaam</h3>
+      <button class="btn btn-sm btn-primary" id="addParBtn">+ Minute jodo</button>
+    </div>
+    <p class="section-sub"><span class="num-mono">${mins}</span> / <span class="num-mono">${PAR_KAAM_WEEKLY_TARGET}</span> minute</p>
+    <div class="progress"><div style="width:${pct}%"></div></div>
+    <div class="list" style="margin-top:14px;">${parList}</div>
+  </div>
+
+  <div class="card">
+    <div class="row" style="justify-content:space-between; align-items:center; margin-bottom:12px;">
+      <h3>Faisle (Decision log)</h3>
+      <button class="btn btn-sm btn-primary" id="addDecBtn">+ Faisla</button>
+    </div>
+    <div class="list">${decList}</div>
+  </div>
+
+  <div class="card">
+    <div class="row" style="justify-content:space-between; align-items:center; margin-bottom:6px;">
+      <h3>Contacts</h3>
+      <button class="btn btn-sm btn-primary" id="addConBtn">+ Contact</button>
+    </div>
+    <p class="section-sub">30 din se zyada ho gaya to laal dikhega.</p>
+    <div class="list" style="margin-top:8px;">${conList}</div>
+  </div>
+
+  <div class="card">
+    <div class="row" style="justify-content:space-between; align-items:center; margin-bottom:12px;">
+      <h3>SOP list</h3>
+      <button class="btn btn-sm btn-primary" id="addSopBtn">+ SOP</button>
+    </div>
+    <div class="list">${sopList}</div>
+  </div>`;
+}
+function parFormFields(){
+  return [
+    {key:'date', label:'Date', type:'date', required:true},
+    {key:'minutes', label:'Kitne minute?', type:'number', placeholder:'30', required:true},
+    {key:'what', label:'Kis par kaam kiya?', type:'text', placeholder:'e.g. Distributor list banayi'},
+  ];
+}
+function decisionFormFields(){
+  return [
+    {key:'date', label:'Date', type:'date', required:true},
+    {key:'decision', label:'Kya faisla lena hai?', type:'text', required:true},
+    {key:'worst', label:'Sabse bura kya ho sakta hai?', type:'textarea'},
+    {key:'survive', label:'Kya main usme survive kar lunga?', type:'textarea'},
+    {key:'taken', label:'Faisla kya liya?', type:'textarea'},
+    {key:'reviewDate', label:'Review kab karein?', type:'date'},
+  ];
+}
+function contactFormFields(){
+  return [
+    {key:'name', label:'Naam', type:'text', required:true},
+    {key:'place', label:'Jagah', type:'text', placeholder:'e.g. Bhilwara'},
+    {key:'family', label:'Ek ghar ki baat', type:'text', placeholder:'e.g. Beti ka naam Aarti'},
+    {key:'problem', label:'Unki sabse badi dikkat', type:'textarea'},
+    {key:'lastContact', label:'Aakhri baar kab baat hui?', type:'date'},
+  ];
+}
+function sopFormFields(){
+  return [
+    {key:'title', label:'Kaam ka naam', type:'text', required:true},
+    {key:'steps', label:'Steps (ek line mein ek)', type:'textarea', required:true, big:true},
+  ];
+}
+function attachBusinessHandlers(){
+  const simple = [
+    ['addParBtn','PAR kaam', parFormFields, 'parKaamLogs', ()=>({date:todayStr()})],
+    ['addDecBtn','Faisla', decisionFormFields, 'decisions', ()=>({date:todayStr()})],
+    ['addConBtn','Contact', contactFormFields, 'contacts', ()=>({lastContact:todayStr()})],
+    ['addSopBtn','SOP', sopFormFields, 'sops', ()=>({})],
+  ];
+  simple.forEach(([btnId, title, fields, key, defaults])=>{
+    const b = document.getElementById(btnId);
+    if(b) b.addEventListener('click', ()=>{
+      openModal({title, fields:fields(), values:defaults(), submitLabel:'Save', onSubmit:(data)=>{
+        state[key].push({id:uid(), ...data});
+        saveKey(key); switchView('business');
+      }});
+    });
+  });
+  const edits = [
+    ['data-par-edit','parKaamLogs', parFormFields, 'PAR kaam'],
+    ['data-con-edit','contacts', contactFormFields, 'Contact'],
+    ['data-sop-edit','sops', sopFormFields, 'SOP'],
+  ];
+  edits.forEach(([attr, key, fields, title])=>{
+    document.querySelectorAll('['+attr+']').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        const id = btn.getAttribute(attr);
+        const item = state[key].find(x=>x.id===id);
+        openModal({title:'Edit '+title, fields:fields(), values:item, submitLabel:'Save', onSubmit:(data)=>{
+          Object.assign(item, data); saveKey(key); switchView('business');
+        }, onDelete:()=>{
+          state[key] = state[key].filter(x=>x.id!==id);
+          saveKey(key); switchView('business'); showToast('Hata diya');
+        }});
+      });
+    });
+  });
+  // decisions get an extra field once the review date arrives
+  document.querySelectorAll('[data-dec-edit]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const id = btn.getAttribute('data-dec-edit');
+      const d = state.decisions.find(x=>x.id===id);
+      const due = d.reviewDate && d.reviewDate <= todayStr();
+      const fields = decisionFormFields().concat(due
+        ? [{key:'outcome', label:'Asal mein kya hua?', type:'textarea',
+            helper:'Review ka din aa gaya. Sach likho \u2014 isse agla faisla behtar hoga.'}]
+        : []);
+      openModal({title:'Faisla', fields, values:d, submitLabel:'Save', onSubmit:(data)=>{
+        Object.assign(d, data); saveKey('decisions'); switchView('business');
+      }, onDelete:()=>{
+        state.decisions = state.decisions.filter(x=>x.id!==id);
+        saveKey('decisions'); switchView('business'); showToast('Hata diya');
+      }});
+    });
+  });
+}
+
+/* ===================== FINANCE (Paisa Plan) ===================== */
+function monthKey(ds){ return (ds||'').slice(0,7); }
+function inr(n){ return '\u20B9' + Math.round(n||0).toLocaleString('en-IN'); }
+/* Average monthly spend, from the months you actually have expenses for */
+/* Average monthly spend. The running month is still incomplete, so it is left
+   out - otherwise the target dips at the start of every month. */
+function avgMonthlyExpense(){
+  const ov = Number((state.financeSettings||{}).monthlyKharchaOverride);
+  if(ov > 0) return ov;
+  const cur = monthKey(todayStr());
+  const byMonth = {};
+  state.expenses.forEach(e=>{
+    const m = monthKey(e.date);
+    if(!m || m === cur) return;
+    byMonth[m] = (byMonth[m]||0) + (e.amount||0);
+  });
+  const months = Object.keys(byMonth).sort().slice(-6);
+  if(!months.length) return 0;
+  return months.reduce((s,m)=> s + byMonth[m], 0) / months.length;
+}
+function usingKharchaOverride(){ return Number((state.financeSettings||{}).monthlyKharchaOverride) > 0; }
+function thisMonthTotals(){
+  const m = monthKey(todayStr());
+  const income = state.incomeEntries.filter(e=> monthKey(e.date)===m).reduce((s,e)=> s+(e.amount||0), 0);
+  const spend  = state.expenses.filter(e=> monthKey(e.date)===m).reduce((s,e)=> s+(e.amount||0), 0);
+  return {income, spend, rate: income>0 ? Math.round((income-spend)/income*100) : null};
+}
+function renderFinance(){
+  const b = state.buckets || {};
+  const avg = avgMonthlyExpense();
+  const efTarget = avg * 6;
+  const efNow = Number(b.emergency||0);
+  const efPct = efTarget>0 ? clamp(Math.round(efNow/efTarget*100),0,100) : 0;
+  const tm = thisMonthTotals();
+  const goal = state.financeGoal || {};
+  const target = Number(goal.target||50000000);
+  const invested = state.investments.reduce((s,i)=> s+(i.amount||0), 0);
+  const goalPct = target>0 ? clamp(Math.round(invested/target*100),0,100) : 0;
+
+  const invSorted = [...state.investments].sort((a,b2)=> (a.month||'').localeCompare(b2.month||''));
+  const invMax = Math.max(1, ...invSorted.map(i=>i.amount||0));
+  const invChart = invSorted.length ? `<div class="pts-chart">${invSorted.slice(-8).map(i=>`
+      <div class="pts-col">
+        <div class="pts-day num-mono">${Math.round((i.amount||0)/1000)}k</div>
+        <div class="pts-fill" style="height:${Math.round((i.amount||0)/invMax*70)}%"></div>
+        <div class="pts-day">${escapeHtml((i.month||'').slice(5))}</div>
+      </div>`).join('')}</div>` : '';
+
+  const incomeSorted = [...state.incomeEntries].sort((a,b2)=> b2.date.localeCompare(a.date));
+  const incomeList = incomeSorted.length ? incomeSorted.slice(0,20).map(e=>`
+    <div class="list-item">
+      <div class="list-item-main">
+        <div class="list-item-title">${escapeHtml(e.source||'Income')}</div>
+        <div class="list-item-sub">${formatDateNice(e.date)}</div>
+      </div>
+      <div class="list-item-amount">${inr(e.amount)}</div>
+      <div class="list-item-actions"><button class="icon-btn" data-income-edit="${e.id}">\u270E</button></div>
+    </div>`).join('') : `<div class="empty-state"><span class="emoji">\u{1F4B5}</span><p>Abhi koi income nahi likhi.</p><button class="btn btn-primary btn-sm" data-empty-action="addIncomeBtn">Income jodo</button></div>`;
+
+  return `
+  <div class="section-title">\u{1F4B5} Paisa Plan</div>
+  <div class="section-sub">Apne numbers khud likho. Yahan koi market tip nahi hai.</div>
+
+  <div class="grid-3">
+    <div class="stat-box"><div class="num">${tm.rate!=null? tm.rate+'%' : '\u2014'}</div><div class="lbl">Is mahine savings rate</div></div>
+    <div class="stat-box"><div class="num">${inr(tm.income)}</div><div class="lbl">Is mahine income</div></div>
+    <div class="stat-box"><div class="num">${inr(tm.spend)}</div><div class="lbl">Is mahine kharcha</div></div>
+  </div>
+
+  <div class="card">
+    <div class="row" style="justify-content:space-between; align-items:center; margin-bottom:6px;">
+      <h3>Teen baalti</h3>
+      <button class="btn btn-sm" id="editBucketsBtn">Balance likho</button>
+    </div>
+    <p class="section-sub">Aaj ka balance aap khud bharo.</p>
+    <div class="grid-3">
+      <div class="stat-box"><div class="num">${inr(b.kharcha)}</div><div class="lbl">Kharcha</div></div>
+      <div class="stat-box"><div class="num">${inr(b.emergency)}</div><div class="lbl">Emergency fund</div></div>
+      <div class="stat-box"><div class="num">${inr(b.nivesh)}</div><div class="lbl">Nivesh</div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="row" style="justify-content:space-between; align-items:center; margin-bottom:4px;">
+      <h3>Emergency fund</h3>
+      <button class="btn btn-sm" id="editKharchaBtn">Kharcha set karo</button>
+    </div>
+    <p class="section-sub">Target = 6 \u00d7 mahina kharcha (${inr(avg)}) = <b>${inr(efTarget)}</b><br>
+      <span style="color:var(--text-faint);">${usingKharchaOverride()
+        ? 'Aapka likha hua number use ho raha hai.'
+        : 'Pure mahino ka average. Chalu mahina nahi gina jaata.'}</span></p>
+    <div class="progress"><div style="width:${efPct}%"></div></div>
+    <p class="section-sub" style="margin:8px 0 0;"><span class="num-mono">${efPct}%</span> \u00b7 ${inr(efNow)} / ${inr(efTarget)}</p>
+  </div>
+
+  <div class="card">
+    <div class="row" style="justify-content:space-between; align-items:center; margin-bottom:6px;">
+      <h3>Bada lakshya</h3>
+      <button class="btn btn-sm" id="editGoalFinBtn">Badlo</button>
+    </div>
+    <p class="section-sub">Target <b>${inr(target)}</b>${goal.targetDate? ' \u00b7 ' + escapeHtml(goal.targetDate) : ''}</p>
+    <div class="progress"><div style="width:${goalPct}%"></div></div>
+    <p class="section-sub" style="margin:8px 0 0;">Ab tak nivesh kiya: <span class="num-mono">${inr(invested)}</span> \u00b7 <span class="num-mono">${goalPct}%</span></p>
+    ${invChart}
+    <div class="row" style="margin-top:12px;"><button class="btn btn-sm btn-primary" id="addInvestBtn">Mahine ka nivesh jodo</button></div>
+  </div>
+
+  <div class="card">
+    <div class="row" style="justify-content:space-between; align-items:center; margin-bottom:12px;">
+      <h3>Income</h3>
+      <button class="btn btn-sm btn-primary" id="addIncomeBtn">+ Income jodo</button>
+    </div>
+    <div class="list">${incomeList}</div>
+  </div>`;
+}
+function incomeFormFields(){
+  return [
+    {key:'date', label:'Date', type:'date', required:true},
+    {key:'amount', label:'Amount (\u20B9)', type:'number', step:'1', required:true},
+    {key:'source', label:'Kahan se?', type:'text', placeholder:'e.g. Shop, salary, rent'},
+  ];
+}
+function attachFinanceHandlers(){
+  const bBtn = document.getElementById('editBucketsBtn');
+  if(bBtn) bBtn.addEventListener('click', ()=>{
+    openModal({title:'Teen baalti', fields:[
+      {key:'kharcha', label:'Kharcha account (\u20B9)', type:'number'},
+      {key:'emergency', label:'Emergency fund (\u20B9)', type:'number'},
+      {key:'nivesh', label:'Nivesh (\u20B9)', type:'number'},
+    ], values:state.buckets, submitLabel:'Save', onSubmit:(data)=>{
+      state.buckets = {kharcha:data.kharcha, emergency:data.emergency, nivesh:data.nivesh};
+      saveKey('buckets'); switchView('finance');
+    }});
+  });
+  const kBtn = document.getElementById('editKharchaBtn');
+  if(kBtn) kBtn.addEventListener('click', ()=>{
+    openModal({title:'Mahina kharcha', fields:[
+      {key:'monthlyKharchaOverride', label:'Mahine ka kharcha (\u20B9)', type:'number',
+        helper:'Khali chhod do to app khud purane pure mahino ka average nikaal lega.'},
+    ], values:state.financeSettings, submitLabel:'Save', onSubmit:(data)=>{
+      state.financeSettings = {...state.financeSettings, monthlyKharchaOverride: data.monthlyKharchaOverride};
+      saveKey('financeSettings'); switchView('finance');
+    }});
+  });
+  const gBtn = document.getElementById('editGoalFinBtn');
+  if(gBtn) gBtn.addEventListener('click', ()=>{
+    openModal({title:'Bada lakshya', fields:[
+      {key:'target', label:'Target (\u20B9)', type:'number', placeholder:'50000000'},
+      {key:'targetDate', label:'Kab tak?', type:'date'},
+    ], values:state.financeGoal, submitLabel:'Save', onSubmit:(data)=>{
+      state.financeGoal = {target:data.target, targetDate:data.targetDate};
+      saveKey('financeGoal'); switchView('finance');
+    }});
+  });
+  const iBtn = document.getElementById('addInvestBtn');
+  if(iBtn) iBtn.addEventListener('click', ()=>{
+    openModal({title:'Mahine ka nivesh', fields:[
+      {key:'month', label:'Mahina', type:'month', required:true},
+      {key:'amount', label:'Amount (\u20B9)', type:'number', required:true},
+    ], values:{month: todayStr().slice(0,7)}, submitLabel:'Save', onSubmit:(data)=>{
+      const ex = state.investments.find(x=>x.month===data.month);
+      if(ex){ ex.amount = data.amount; } else { state.investments.push({id:uid(), ...data}); }
+      saveKey('investments'); switchView('finance');
+    }});
+  });
+  const incBtn = document.getElementById('addIncomeBtn');
+  if(incBtn) incBtn.addEventListener('click', ()=>{
+    openModal({title:'Income jodo', fields:incomeFormFields(), values:{date:todayStr()}, submitLabel:'Save', onSubmit:(data)=>{
+      state.incomeEntries.push({id:uid(), ...data});
+      saveKey('incomeEntries'); switchView('finance');
+    }});
+  });
+  document.querySelectorAll('[data-income-edit]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const id = btn.getAttribute('data-income-edit');
+      const e = state.incomeEntries.find(x=>x.id===id);
+      openModal({title:'Edit income', fields:incomeFormFields(), values:e, submitLabel:'Save', onSubmit:(data)=>{
+        Object.assign(e, data); saveKey('incomeEntries'); switchView('finance');
+      }, onDelete:()=>{
+        state.incomeEntries = state.incomeEntries.filter(x=>x.id!==id);
+        saveKey('incomeEntries'); switchView('finance'); showToast('Hata diya');
+      }});
+    });
+  });
+}
+
 /* ===================== PERSONAL GROWTH ===================== */
 function renderGrowth(){
   const today = todayStr();
@@ -1962,7 +3226,7 @@ function renderGrowth(){
         <div class="list-item-sub">${formatDateNice(g.date)} · ${g.minutes||0} min${g.notes? ' · '+escapeHtml(g.notes):''}</div>
       </div>
       <div class="list-item-actions"><button class="icon-btn" data-growth-edit="${g.id}">✎</button></div>
-    </div>`).join('') : `<div class="empty-state"><span class="emoji">✨</span><p>Log what you're learning or working on today.</p></div>`;
+    </div>`).join('') : emptyState('✨','empty_growth','add_entry','addGrowthBtn');
 
   const learningSorted = [...state.learningEntries].sort((a,b)=>b.date.localeCompare(a.date));
   const learningList = learningSorted.length? learningSorted.map(l=>`
@@ -1972,7 +3236,7 @@ function renderGrowth(){
         <div class="list-item-sub">${formatDateNice(l.date)}</div>
       </div>
       <div class="list-item-actions"><button class="icon-btn" data-learning-edit="${l.id}">✎</button></div>
-    </div>`).join('') : `<div class="empty-state"><span class="emoji">💡</span><p>Write down one thing you learned today.</p></div>`;
+    </div>`).join('') : emptyState('💡','empty_learning','add_entry','addLearningBtn');
 
   return `
   <div class="section-title">✨ Personal Growth</div>
@@ -1992,7 +3256,7 @@ function renderGrowth(){
   <div class="card">
     <div class="row" style="justify-content:space-between; align-items:center; margin-bottom:12px;">
       <h3>What I learned today</h3>
-      <button class="btn btn-sm btn-primary" id="addLearningBtn">+ Add</button>
+      <button class="btn btn-sm btn-primary" id="addLearningBtn">+ ${escapeHtml(t('add_entry'))}</button>
     </div>
     <div class="list">${learningList}</div>
   </div>
@@ -2000,7 +3264,7 @@ function renderGrowth(){
   <div class="card">
     <div class="row" style="justify-content:space-between; align-items:center; margin-bottom:12px;">
       <h3>Skill &amp; learning log</h3>
-      <button class="btn btn-sm btn-primary" id="addGrowthBtn">+ Add entry</button>
+      <button class="btn btn-sm btn-primary" id="addGrowthBtn">+ ${escapeHtml(t('add_entry'))}</button>
     </div>
     <div class="list">${list}</div>
   </div>`;
@@ -2111,10 +3375,11 @@ function renderMistakes(){
       <div class="list-item-main">
         <div class="list-item-title">${escapeHtml(m.title)}</div>
         <div class="list-item-sub">${formatDateNice(m.date)}</div>
-        ${m.lesson? `<div class="list-item-sub" style="margin-top:6px; color:var(--sage);">Lesson: ${escapeHtml(m.lesson)}</div>`:''}
+        ${m.lesson? `<div class="list-item-sub" style="margin-top:6px; color:var(--sage);">Seekha: ${escapeHtml(m.lesson)}</div>`:''}
+        ${m.nextTime? `<div class="list-item-sub" style="margin-top:4px; color:var(--gold);">Agli baar: ${escapeHtml(m.nextTime)}</div>`:''}
       </div>
       <div class="list-item-actions"><button class="icon-btn" data-mistake-edit="${m.id}">✎</button></div>
-    </div>`).join('') : `<div class="empty-state"><span class="emoji">🪞</span><p>Every setback has something to teach. Write down the next one here.</p></div>`;
+    </div>`).join('') : emptyState('🪞','empty_mistakes','new_entry','addMistakeBtn');
 
   return `
   <div class="section-title">🪞 Lessons Journal</div>
@@ -2123,7 +3388,7 @@ function renderMistakes(){
   <div class="card">
     <div class="row" style="justify-content:space-between; align-items:center; margin-bottom:12px;">
       <h3>Entries</h3>
-      <button class="btn btn-sm btn-primary" id="addMistakeBtn">+ New entry</button>
+      <button class="btn btn-sm btn-primary" id="addMistakeBtn">+ ${escapeHtml(t('new_entry'))}</button>
     </div>
     <div class="list">${list}</div>
   </div>`;
@@ -2132,7 +3397,8 @@ function mistakeFormFields(){
   return [
     {key:'date', label:'Date', type:'date', required:true},
     {key:'title', label:'What happened', type:'text', placeholder:'Short summary', required:true},
-    {key:'lesson', label:'What you learned', type:'textarea', placeholder:'What will you do differently next time?'},
+    {key:'lesson', label:'Isse kya seekha?', type:'textarea', placeholder:'Ek line kaafi hai', required:true},
+    {key:'nextTime', label:'Agli baar kya alag karunga?', type:'textarea', placeholder:'Ek chhota badlav', required:true},
   ];
 }
 function attachMistakesHandlers(){
@@ -2165,8 +3431,7 @@ function attachMistakesHandlers(){
 /* ===================== RELATIONSHIPS ===================== */
 function renderRelationships(){
   const today = todayStr();
-  const fightFreeSet = new Set(state.relationshipEntries.filter(r=>r.fightFree).map(r=>r.date));
-  const streak = computeStreak(fightFreeSet);
+  const streak = computeStreak(fightFreeDates());
   const sorted = [...state.relationshipEntries].sort((a,b)=>b.date.localeCompare(a.date));
   const peopleChips = state.relationships.map(p=>`<span class="badge badge-muted" data-person-edit="${p.id}" style="cursor:pointer;">${escapeHtml(p.name)} ✎</span>`).join(' ');
 
@@ -2181,6 +3446,19 @@ function renderRelationships(){
     </div>`;
   }).join('') : `<div class="empty-state"><span class="emoji">🤝</span><p>Add the daily habits you want with the people you love.</p></div>`;
 
+  const conflictSorted = [...state.conflictNotes].sort((a,b)=>b.date.localeCompare(a.date));
+  const conflictList = conflictSorted.length? conflictSorted.map(c=>`
+    <div class="list-item" style="align-items:flex-start;">
+      <div class="list-item-main">
+        <div class="list-item-title">${formatDateNice(c.date)}</div>
+        <div class="list-item-sub" style="margin-top:6px;">Kya hua: ${escapeHtml(c.what||'')}</div>
+        ${c.felt? `<div class="list-item-sub">Mujhe laga: ${escapeHtml(c.felt)}</div>`:''}
+        ${c.need? `<div class="list-item-sub">Zaroorat: ${escapeHtml(c.need)}</div>`:''}
+        ${c.request? `<div class="list-item-sub" style="color:var(--sage);">Request: ${escapeHtml(c.request)}</div>`:''}
+      </div>
+      <div class="list-item-actions"><button class="icon-btn" data-conflict-edit="${c.id}">\u270E</button></div>
+    </div>`).join('') : `<div class="empty-state"><span class="emoji">\u{1F54A}\uFE0F</span><p>Abhi koi note nahi. Achhi baat hai.</p></div>`;
+
   const list = sorted.length? sorted.map(r=>`
     <div class="list-item" style="align-items:flex-start;">
       <div class="list-item-main">
@@ -2188,7 +3466,7 @@ function renderRelationships(){
         ${r.note? `<div class="list-item-sub" style="margin-top:6px;">${escapeHtml(r.note)}</div>`:''}
       </div>
       <div class="list-item-actions"><button class="icon-btn" data-rel-edit="${r.id}">✎</button></div>
-    </div>`).join('') : `<div class="empty-state"><span class="emoji">🤝</span><p>Log how today went with the people who matter.</p></div>`;
+    </div>`).join('') : emptyState('🤝','empty_relation','log_today','addRelEntryBtn');
 
   return `
   <div class="section-title">🤝 Relationships</div>
@@ -2207,6 +3485,15 @@ function renderRelationships(){
 
   <div class="card">
     <div class="row" style="justify-content:space-between; align-items:center; margin-bottom:10px;">
+      <h3>\u{1F4AC} Ladai / tension note</h3>
+      <button class="btn btn-sm" id="addConflictBtn">+ Likho</button>
+    </div>
+    <p class="section-sub">Chaar chhote sawaal. Likhne se streak honest rehti hai \u2014 us din ka fight-free reset ho jaata hai.</p>
+    <div class="list">${conflictList}</div>
+  </div>
+
+  <div class="card">
+    <div class="row" style="justify-content:space-between; align-items:center; margin-bottom:10px;">
       <h3>People</h3>
       <button class="btn btn-sm" id="addPersonBtn">+ Add person</button>
     </div>
@@ -2216,7 +3503,7 @@ function renderRelationships(){
   <div class="card">
     <div class="row" style="justify-content:space-between; align-items:center; margin-bottom:12px;">
       <h3>Daily log</h3>
-      <button class="btn btn-sm btn-primary" id="addRelEntryBtn">+ Log today</button>
+      <button class="btn btn-sm btn-primary" id="addRelEntryBtn">+ ${escapeHtml(t('log_today'))}</button>
     </div>
     <div class="list">${list}</div>
   </div>`;
@@ -2228,8 +3515,37 @@ function relEntryFormFields(){
     {key:'note', label:'Note', type:'textarea', placeholder:'Anything worth remembering'},
   ];
 }
+function conflictFormFields(){
+  return [
+    {key:'date', label:'Date', type:'date', required:true},
+    {key:'what', label:'1. Kya hua? (bina judgement)', type:'textarea', placeholder:'Sirf fact likho', required:true},
+    {key:'felt', label:'2. Mujhe kaisa laga?', type:'textarea', placeholder:'Gussa, dukh, dar\u2026'},
+    {key:'need', label:'3. Meri kaun si zaroorat thi?', type:'textarea', placeholder:'Izzat, samay, sunna\u2026'},
+    {key:'request', label:'4. Meri saaf request', type:'textarea', placeholder:'Agli baar kya chahiye'},
+  ];
+}
 function attachRelationshipsHandlers(){
   const today = todayStr();
+  const addConflictBtn = document.getElementById('addConflictBtn');
+  if(addConflictBtn) addConflictBtn.addEventListener('click', ()=>{
+    openModal({title:'Ladai / tension note', fields:conflictFormFields(), values:{date:todayStr()}, submitLabel:'Save', onSubmit:(data)=>{
+      state.conflictNotes.push({id:uid(), ...data});
+      saveKey('conflictNotes');
+      switchView('relationships');
+    }});
+  });
+  document.querySelectorAll('[data-conflict-edit]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const id = btn.getAttribute('data-conflict-edit');
+      const c = state.conflictNotes.find(x=>x.id===id);
+      openModal({title:'Edit note', fields:conflictFormFields(), values:c, submitLabel:'Save', onSubmit:(data)=>{
+        Object.assign(c, data); saveKey('conflictNotes'); switchView('relationships');
+      }, onDelete:()=>{
+        state.conflictNotes = state.conflictNotes.filter(x=>x.id!==id);
+        saveKey('conflictNotes'); switchView('relationships'); showToast('Hata diya');
+      }});
+    });
+  });
   document.querySelectorAll('[data-reltask-toggle]').forEach(btn=>{
     btn.addEventListener('click', ()=>{
       const id = btn.getAttribute('data-reltask-toggle');
@@ -2320,7 +3636,7 @@ function renderGratitude(){
         ${g.note? `<div class="list-item-sub" style="margin-top:6px;">${escapeHtml(g.note)}</div>`:''}
       </div>
       <div class="list-item-actions"><button class="icon-btn" data-grat-edit="${g.id}">✎</button></div>
-    </div>`).join('') : `<div class="empty-state"><span class="emoji">🙏</span><p>Write down three things you're grateful for today.</p></div>`;
+    </div>`).join('') : emptyState('🙏','empty_gratitude','add_today','addGratBtn');
 
   return `
   <div class="section-title">🙏 Gratitude Journal</div>
@@ -2331,7 +3647,7 @@ function renderGratitude(){
   <div class="card">
     <div class="row" style="justify-content:space-between; align-items:center; margin-bottom:12px;">
       <h3>Entries</h3>
-      <button class="btn btn-sm btn-primary" id="addGratBtn">+ Add today</button>
+      <button class="btn btn-sm btn-primary" id="addGratBtn">+ ${escapeHtml(t('add_today'))}</button>
     </div>
     <div class="list">${list}</div>
   </div>`;
@@ -2382,7 +3698,7 @@ function renderJournal(){
         <div class="list-item-sub" style="margin-top:8px; white-space:pre-wrap; color:var(--text); line-height:1.6;">${escapeHtml(j.content)}</div>
       </div>
       <div class="list-item-actions"><button class="icon-btn" data-journal-edit="${j.id}">✎</button></div>
-    </div>`).join('') : `<div class="empty-state"><span class="emoji">📝</span><p>Write down whatever's on your mind — as much detail as you want.</p></div>`;
+    </div>`).join('') : emptyState('📝','empty_journal','write_something','addJournalBtn');
 
   return `
   <div class="section-title">📝 Journal</div>
@@ -2391,7 +3707,7 @@ function renderJournal(){
   <div class="card">
     <div class="row" style="justify-content:space-between; align-items:center; margin-bottom:12px;">
       <h3>Entries</h3>
-      <button class="btn btn-sm btn-primary" id="addJournalBtn">+ Write something</button>
+      <button class="btn btn-sm btn-primary" id="addJournalBtn">+ ${escapeHtml(t('write_something'))}</button>
     </div>
     <div class="list">${list}</div>
   </div>`;
@@ -2427,6 +3743,154 @@ function attachJournalHandlers(){
         showToast('Entry removed');
       }});
     });
+  });
+}
+
+/* ===================== WEEKLY REPORT ===================== */
+function renderWeekly(){
+  const days = lastNDates(7);
+  const rank = habitRanking(days);
+  const best = rank[0], worst = rank[rank.length-1];
+  const wd = worstWeekday();
+  const areas = areaScores(7);
+  const wk = weekStartStr();
+  const plan = (state.weeklyPlans[wk]||{}).change || '';
+  const pts = days.reduce((s,d)=> s + habitPointsForDay(d), 0);
+
+  return `
+  <div class="section-title">\u{1F4C5} Hafte ki Report</div>
+  <div class="section-sub">${formatDateNice(days[0])} \u2014 ${formatDateNice(days[6])}</div>
+
+  <div class="grid-3">
+    <div class="stat-box"><div class="num"><span class="num-mono">${pts}</span></div><div class="lbl">Habit points</div></div>
+    <div class="stat-box"><div class="num">${best? escapeHtml(best.h.name) : '\u2014'}</div><div class="lbl">\u{1F4AA} Sabse strong${best? ' \u00b7 '+best.pct+'%':''}</div></div>
+    <div class="stat-box"><div class="num">${worst && rank.length>1? escapeHtml(worst.h.name) : '\u2014'}</div><div class="lbl">\u{1F331} Sabse weak${worst && rank.length>1? ' \u00b7 '+worst.pct+'%':''}</div></div>
+  </div>
+
+  ${wd ? `<div class="note-soft">\u{1F4C6} Sabse zyada miss <b>${escapeHtml(wd.name)}</b> ko hota hai (pichhle 4 hafton mein ${Math.round(wd.rate*100)}% miss). Us din sirf 2-minute version rakho.</div>` : ''}
+
+  <div class="card">
+    <h3 style="margin-bottom:4px;">Sab ek saath \u00b7 14 din</h3>
+    <p class="section-sub">Ek hi timeline par. Dekho kya kharab neend ke baad workout chhootta hai ya ladai hoti hai.</p>
+    ${renderCrossChart()}
+  </div>
+
+  <div class="card">
+    <h3 style="margin-bottom:4px;">Chhah kshetra \u00b7 is hafte</h3>
+    <p class="section-sub">&nbsp;</p>
+    <div class="area-strip">${areas.map(areaRing).join('')}</div>
+  </div>
+
+  <div class="card">
+    <h3 style="margin-bottom:4px;">Agle hafte ka EK change</h3>
+    <p class="section-sub">Sirf ek. Chhota rakho.</p>
+    <textarea class="textarea" id="weeklyChange" placeholder="e.g. Raat 10 baje phone door rakhunga">${escapeHtml(plan)}</textarea>
+    <button class="btn btn-sm btn-primary" id="saveWeeklyChange" style="margin-top:10px;">Save</button>
+  </div>
+
+  <div class="card">
+    <h3 style="margin-bottom:6px;">Coach ko bhejo</h3>
+    <p class="section-sub">Chhota text copy karke chat mein paste kar do.</p>
+    <button class="btn" id="copyWeeklyBtn">Copy weekly summary as text</button>
+  </div>`;
+}
+function attachWeeklyHandlers(){
+  const save = document.getElementById('saveWeeklyChange');
+  if(save) save.addEventListener('click', ()=>{
+    const wk = weekStartStr();
+    state.weeklyPlans[wk] = {change: document.getElementById('weeklyChange').value};
+    saveKey('weeklyPlans');
+    showToast('Save ho gaya');
+  });
+  const copyBtn = document.getElementById('copyWeeklyBtn');
+  if(copyBtn) copyBtn.addEventListener('click', async ()=>{
+    const txt = weeklySummaryText();
+    try{
+      await navigator.clipboard.writeText(txt);
+      showToast('Copy ho gaya');
+    }catch(e){
+      // clipboard blocked (common on file:// and older phones) - show it so it can be copied by hand
+      openModal({title:'Weekly summary', fields:[
+        {key:'summary', label:'Yahan se copy karo', type:'textarea', big:true},
+      ], values:{summary: txt}, submitLabel:'Band karo', onSubmit:()=>{}});
+    }
+  });
+}
+
+/* ===================== MONTHLY REPORT ===================== */
+function renderMonthly(){
+  const days = lastNDates(28);
+  const rank = habitRanking(days);
+  // Only judge habits that have had a full 4 weeks to settle
+  const judged = rank.filter(r=> habitAgeDays(r.h.id) >= 28);
+  const tooNew = rank.length - judged.length;
+  const automatic = judged.filter(r=> r.pct >= 90);
+  const weak = judged.filter(r=> r.pct < 30);
+  const areas = areaScores(28).slice().sort((a,b)=> a.pct - b.pct);
+  const weakestArea = areas[0];
+  const mk = todayStr().slice(0,7);
+  const focus = (state.monthlyPlans[mk]||{}).focus || '';
+
+  const autoList = automatic.length ? automatic.map(r=>`
+    <div class="list-item">
+      <div class="list-item-main">
+        <div class="list-item-title">${r.h.icon||'\u2022'} ${escapeHtml(r.h.name)}</div>
+        <div class="list-item-sub">4 hafte mein <span class="num-mono">${r.pct}%</span></div>
+      </div>
+      <span class="badge badge-sage">Ab automatic</span>
+    </div>`).join('') : `<div class="empty-state"><span class="emoji">\u{1F331}</span><p>Abhi koi habit 90% par nahi. Koi baat nahi \u2014 waqt lagta hai.</p></div>`;
+
+  const weakList = weak.length ? weak.map(r=>`
+    <div class="list-item">
+      <div class="list-item-main">
+        <div class="list-item-title">${r.h.icon||'\u2022'} ${escapeHtml(r.h.name)}</div>
+        <div class="list-item-sub">4 hafte mein <span class="num-mono">${r.pct}%</span></div>
+      </div>
+      <span class="badge badge-coral">Chhota karo</span>
+    </div>`).join('') : `<div class="empty-state"><span class="emoji">\u{1F44D}</span><p>Koi habit 30% se neeche nahi. Badhiya.</p></div>`;
+
+  return `
+  <div class="section-title">\u{1F5D3}\uFE0F Mahine ki Report</div>
+  <div class="section-sub">Pichhle 28 din.</div>
+
+  ${tooNew > 0 ? `<div class="note-soft">\u{1F331} ${tooNew} nayi habit abhi 4 hafte purani nahi hui. Unka faisla baad mein.</div>` : ''}
+
+  <div class="card">
+    <h3 style="margin-bottom:4px;">Ab automatic \u2014 tracking band kar sakte ho</h3>
+    <p class="section-sub">4 hafte se 90% ya zyada. Ab yeh apne aap hoti hai.</p>
+    <div class="list">${autoList}</div>
+  </div>
+
+  <div class="card">
+    <h3 style="margin-bottom:4px;">Chhota karo ya chhod do</h3>
+    <p class="section-sub">4 hafte se 30% se kam. Ya to 2-minute version banao, ya hata do.</p>
+    <div class="list">${weakList}</div>
+  </div>
+
+  <div class="card">
+    <h3 style="margin-bottom:4px;">Sabse kamzor kshetra</h3>
+    <p class="section-sub">Is mahine sabse kam dhyaan yahan gaya.</p>
+    ${weakestArea ? `<div class="row" style="align-items:center; gap:14px;">
+      ${areaRing(weakestArea)}
+      <div><div class="list-item-title">${weakestArea.emoji} ${escapeHtml(weakestArea.label)}</div>
+      <div class="list-item-sub">Agle mahine yahan ek chhota kadam rakho.</div></div>
+    </div>` : ''}
+  </div>
+
+  <div class="card">
+    <h3 style="margin-bottom:4px;">Agle mahine ka focus area</h3>
+    <p class="section-sub">Ek hi kshetra chuno.</p>
+    <textarea class="textarea" id="monthlyFocus" placeholder="e.g. Health \u2014 roz 7 ghante neend">${escapeHtml(focus)}</textarea>
+    <button class="btn btn-sm btn-primary" id="saveMonthlyFocus" style="margin-top:10px;">Save</button>
+  </div>`;
+}
+function attachMonthlyHandlers(){
+  const save = document.getElementById('saveMonthlyFocus');
+  if(save) save.addEventListener('click', ()=>{
+    const mk = todayStr().slice(0,7);
+    state.monthlyPlans[mk] = {focus: document.getElementById('monthlyFocus').value};
+    saveKey('monthlyPlans');
+    showToast('Save ho gaya');
   });
 }
 
@@ -2484,12 +3948,21 @@ function renderExport(){
   </div>
 
   <div class="card">
+    <h3 style="margin-bottom:6px;">Backup</h3>
+    <p class="section-sub" style="margin:0;">Aakhri backup: <b>${(state.backupMeta||{}).lastBackupAt ? formatDateNice(state.backupMeta.lastBackupAt) + ' (' + daysSinceBackup() + ' din pehle)' : 'kabhi nahi liya'}</b></p>
+  </div>
+
+  <div class="card">
     <h3 style="margin-bottom:6px;">Download</h3>
     <p class="section-sub" style="margin-bottom:18px;">A daily-rows CSV for the ${periodInfo.label.toLowerCase()} period (${periodInfo.days} days), or a full JSON backup of everything ever logged.</p>
     <div class="row">
-      <button class="btn btn-primary" id="downloadCsvBtn">⬇ ${periodInfo.label} summary (CSV)</button>
-      <button class="btn" id="downloadJsonBtn">⬇ Full backup (JSON)</button>
+      <button class="btn btn-primary" id="downloadCsvBtn">${periodInfo.label} summary (CSV)</button>
+      <button class="btn" id="downloadJsonBtn">Full backup (JSON)</button>
+      <button class="btn" id="importJsonBtn">Restore from backup</button>
+      <button class="btn" id="downloadSwBtn">Download sw.js (offline)</button>
+      <input type="file" accept="application/json,.json" id="importJsonInput" style="display:none;">
     </div>
+    <p class="helper-text" style="margin-top:12px;">Restore purani backup file se sab wapas le aata hai. Abhi ka data badal jayega.</p>
   </div>`;
 }
 function attachExportHandlers(){
@@ -2511,26 +3984,87 @@ function attachExportHandlers(){
       const gratCount = state.gratitudeEntries.filter(g=>g.date===d).length;
       const mistakeCount = state.mistakeEntries.filter(m=>m.date===d).length;
       const relEntry = state.relationshipEntries.find(r=>r.date===d);
+      const ot = oneThingFor(d);
       return {
         date:d, ritual_done:`${ritualDone}/${RITUAL_PRACTICES.length}`, habits_done:`${habitsDone}/${state.habits.length}`,
+        habit_points: habitPointsForDay(d),
+        sleep_hours: (sleepFor(d)||{}).hours || '',
+        sleep_quality: (sleepFor(d)||{}).quality || '',
+        phone_away: (sleepFor(d)||{}).phoneAway || '',
+        income_inr: state.incomeEntries.filter(e=>e.date===d).reduce((s,e)=>s+(e.amount||0),0),
+        par_kaam_minutes: state.parKaamLogs.filter(l=>l.date===d).reduce((s,l)=>s+(Number(l.minutes)||0),0),
+        sitting_minutes: state.sittings.filter(s2=>s2.date===d).reduce((s,x)=>s+(Number(x.minutes)||0),0),
+        mann_atka: (state.eveningLogs[d]||{}).stuck || '',
+        expense_ghar: state.expenses.filter(e=>e.date===d && e.flow!=='business').reduce((s,e)=>s+(e.amount||0),0),
+        expense_business: state.expenses.filter(e=>e.date===d && e.flow==='business').reduce((s,e)=>s+(e.amount||0),0),
+        one_thing: ot.text, one_thing_done: ot.done ? 'yes' : 'no',
+        conflict_logged: state.conflictNotes.some(c=>c.date===d) ? 'yes' : 'no',
         weight_kg: wt? wt.weight : '', expense_inr: dayExpense.toFixed(0), growth_minutes: growthMin,
         gratitude_entries: gratCount, lessons_logged: mistakeCount, relationship: relEntry? (relEntry.fightFree?'fight-free':'friction') : ''
       };
     });
-    const csv = toCSV(rows, ['date','ritual_done','habits_done','weight_kg','expense_inr','growth_minutes','gratitude_entries','lessons_logged','relationship']);
+    const csv = toCSV(rows, ['date','ritual_done','habits_done','habit_points','one_thing','one_thing_done','weight_kg','expense_inr','growth_minutes','gratitude_entries','lessons_logged','relationship','conflict_logged','sleep_hours','sleep_quality','phone_away','income_inr','expense_ghar','expense_business','par_kaam_minutes','sitting_minutes','mann_atka']);
     const periodInfo = EXPORT_PERIODS.find(p=>p.days===exportPeriodDays) || EXPORT_PERIODS[0];
     downloadFile(`ai-wisdom-${periodInfo.label.toLowerCase()}-${todayStr()}.csv`, csv, 'text/csv');
     showToast('CSV downloaded');
   });
-  const jsonBtn = document.getElementById('downloadJsonBtn');
-  if(jsonBtn) jsonBtn.addEventListener('click', ()=>{
-    downloadFile(`ai-wisdom-backup-${todayStr()}.json`, JSON.stringify(state, null, 2), 'application/json');
-    showToast('Backup downloaded');
+  const impBtn = document.getElementById('importJsonBtn');
+  const impInput = document.getElementById('importJsonInput');
+  if(impBtn && impInput){
+    impBtn.addEventListener('click', ()=> impInput.click());
+    impInput.addEventListener('change', (e)=>{
+      const file = e.target.files && e.target.files[0];
+      if(!file) return;
+      const reader = new FileReader();
+      reader.onload = ()=>{
+        let data;
+        try{ data = JSON.parse(reader.result); }
+        catch(err){ showToast('File padhi nahi gayi', 'error'); impInput.value=''; return; }
+        if(!data || typeof data !== 'object'){ showToast('File theek nahi hai', 'error'); impInput.value=''; return; }
+        const found = Object.keys(STORAGE_KEYS).filter(k=> data[k] !== undefined);
+        if(!found.length){ showToast('Is file mein koi data nahi mila', 'error'); impInput.value=''; return; }
+        openChoice('Restore karein?', found.length + ' cheezein milin. Abhi ka data isse badal jayega.', [
+          {label:'Haan, restore karo', value:'yes', primary:true},
+          {label:'Rehne do', value:'no'},
+        ], async (ans)=>{
+          impInput.value='';
+          if(ans!=='yes') return;
+          for(const k of found){ state[k] = data[k]; await saveKey(k); }
+          showToast('Restore ho gaya');
+          renderNav();
+          switchView('export');
+        });
+      };
+      reader.readAsText(file);
+    });
+  }
+  const swBtn = document.getElementById('downloadSwBtn');
+  if(swBtn) swBtn.addEventListener('click', ()=>{
+    downloadFile('sw.js', SW_SOURCE, 'application/javascript');
+    showToast('sw.js download ho gaya');
   });
+  const jsonBtn = document.getElementById('downloadJsonBtn');
+  if(jsonBtn) jsonBtn.addEventListener('click', doJsonBackup);
 }
 
 /* ===================== Quick add (dashboard) ===================== */
 function attachDashboardHandlers(){
+  const today = todayStr();
+  const bkBtn = document.getElementById('dashBackupBtn');
+  if(bkBtn) bkBtn.addEventListener('click', ()=>{ doJsonBackup(); switchView('dashboard'); });
+  const otText = document.getElementById('oneThingText');
+  const otSave = document.getElementById('oneThingSave');
+  const otDone = document.getElementById('oneThingDone');
+  if(otSave) otSave.addEventListener('click', ()=>{
+    setOneThing(today, {text: otText.value});
+    showToast('Saved');
+  });
+  if(otText) otText.addEventListener('blur', ()=> setOneThing(today, {text: otText.value}));
+  if(otDone) otDone.addEventListener('click', ()=>{
+    const cur = oneThingFor(today);
+    setOneThing(today, {text: otText ? otText.value : cur.text, done: !cur.done});
+    switchView('dashboard');
+  });
   document.querySelectorAll('[data-quick]').forEach(btn=>{
     btn.addEventListener('click', ()=>{
       const kind = btn.getAttribute('data-quick');
@@ -2545,7 +4079,7 @@ function attachDashboardHandlers(){
           saveKey('weightLog'); switchView('dashboard');
         }});
       } else if(kind==='expense'){
-        openModal({title:'Add expense', fields:expenseFormFields(), values:{date:todayStr(), category:EXPENSE_CATEGORIES[0]}, submitLabel:'Add', onSubmit:(data)=>{
+        openModal({title:'Add expense', fields:expenseFormFields(), values:{date:todayStr(), category:EXPENSE_CATEGORIES[0], flow:'ghar'}, submitLabel:'Add', onSubmit:(data)=>{
           state.expenses.push({id:uid(), ...data});
           saveKey('expenses'); switchView('dashboard');
         }});
@@ -2559,33 +4093,122 @@ function attachDashboardHandlers(){
   });
 }
 
+function attachEmptyStateButtons(){
+  document.querySelectorAll('[data-empty-action]').forEach(b=>{
+    b.addEventListener('click', ()=>{
+      const target = document.getElementById(b.getAttribute('data-empty-action'));
+      if(target) target.click();
+    });
+  });
+}
 function attachViewHandlers(view){
   const map = {
     dashboard: attachDashboardHandlers, ritual: attachRitualHandlers, habits: attachHabitsHandlers,
-    fitness: attachFitnessHandlers, food: attachFoodLogHandlers, expenses: attachExpensesHandlers, growth: attachGrowthHandlers,
+    fitness: attachFitnessHandlers, food: attachFoodLogHandlers, expenses: attachExpensesHandlers, finance: attachFinanceHandlers, business: attachBusinessHandlers, spiritual: attachSpiritualHandlers, weekly: attachWeeklyHandlers, monthly: attachMonthlyHandlers, growth: attachGrowthHandlers,
     mistakes: attachMistakesHandlers, relationships: attachRelationshipsHandlers, gratitude: attachGratitudeHandlers,
     journal: attachJournalHandlers, export: attachExportHandlers,
   };
   if(map[view]) map[view]();
+  attachEmptyStateButtons();
 }
 
 /* ===================== Init ===================== */
 function attachShellHandlers(){
   document.getElementById('hamburgerBtn').addEventListener('click', openSidebarMobile);
   document.getElementById('overlay').addEventListener('click', closeSidebarMobile);
+  document.getElementById('bottomNav').addEventListener('click', (e)=>{
+    const btn = e.target.closest('[data-bottomnav]');
+    if(!btn) return;
+    const id = btn.getAttribute('data-bottomnav');
+    if(id === '__more'){ openSidebarMobile(); return; }
+    switchView(id);
+  });
+  document.getElementById('langToggle').addEventListener('click', (e)=>{
+    const btn = e.target.closest('[data-lang]');
+    if(!btn) return;
+    state.lang = btn.getAttribute('data-lang');
+    saveKey('lang');
+    renderNav();
+    switchView(currentView);
+  });
   document.getElementById('navList').addEventListener('click', (e)=>{
     const btn = e.target.closest('[data-nav]');
     if(btn){ switchView(btn.getAttribute('data-nav')); }
   });
 }
 
+/* ===================== Install on phone (PWA) ===================== */
+const APP_ICON_SVG =
+  '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">'
+  + '<rect width="512" height="512" rx="96" fill="#0F1D18"/>'
+  + '<line x1="256" y1="400" x2="256" y2="150" stroke="#84B594" stroke-width="22" stroke-linecap="round"/>'
+  + '<path d="M256 262 q-85 -26 -107 51 q77 21 107 -47" fill="#84B594"/>'
+  + '<path d="M256 262 q85 -26 107 51 q-77 21 -107 -47" fill="#84B594"/>'
+  + '<circle cx="256" cy="132" r="34" fill="#E3A857"/></svg>';
+function iconDataUrl(){ return 'data:image/svg+xml;base64,' + btoa(APP_ICON_SVG); }
+
+function setupPWA(){
+  // Manifest is built at runtime and attached as a blob, so everything stays in one file.
+  try{
+    const manifest = {
+      name: 'AI Wisdom',
+      short_name: 'AI Wisdom',
+      description: 'Daily growth tracker',
+      start_url: location.pathname + location.search,
+      scope: './',
+      display: 'standalone',
+      orientation: 'portrait',
+      background_color: '#0F1D18',
+      theme_color: '#0F1D18',
+      icons: [{ src: iconDataUrl(), sizes: '512x512', type: 'image/svg+xml', purpose: 'any maskable' }]
+    };
+    const url = URL.createObjectURL(new Blob([JSON.stringify(manifest)], {type:'application/manifest+json'}));
+    const link = document.createElement('link');
+    link.rel = 'manifest'; link.href = url;
+    document.head.appendChild(link);
+  }catch(e){ /* manifest is a bonus, never block the app */ }
+
+  // Apple touch icon (iOS uses this for the home screen tile)
+  try{
+    const ai = document.createElement('link');
+    ai.rel = 'apple-touch-icon'; ai.href = iconDataUrl();
+    document.head.appendChild(ai);
+  }catch(e){}
+
+  // Service worker: only possible when the app is served over http(s) from a real file.
+  // Browsers refuse to register a worker from a blob: or data: URL, so this is a
+  // best-effort attempt that quietly does nothing when it is not available.
+  if('serviceWorker' in navigator && location.protocol.startsWith('http')){
+    navigator.serviceWorker.register('sw.js').catch(()=>{ /* no sw.js next to index.html - fine */ });
+  }
+}
+/* The worker file, offered as a download so true offline can be switched on
+   by dropping it beside index.html on the server. */
+const SW_SOURCE = [
+  "const CACHE = 'ai-wisdom-v1';",
+  "self.addEventListener('install', e => { self.skipWaiting(); });",
+  "self.addEventListener('activate', e => { e.waitUntil(self.clients.claim()); });",
+  "self.addEventListener('fetch', e => {",
+  "  if (e.request.method !== 'GET') return;",
+  "  e.respondWith(",
+  "    fetch(e.request).then(res => {",
+  "      const copy = res.clone();",
+  "      caches.open(CACHE).then(c => c.put(e.request, copy));",
+  "      return res;",
+  "    }).catch(() => caches.match(e.request).then(r => r || caches.match('index.html')))",
+  "  );",
+  "});"
+].join('\n');
+
 async function init(){
   await loadAll();
+  setupPWA();
   renderNav();
   attachShellHandlers();
+  document.getElementById('sidebarFoot').innerHTML = escapeHtml(t('saved_note')) + '<br>' + escapeHtml(t('private_note'));
   switchView('dashboard');
   document.getElementById('loadingScreen').style.display = 'none';
-  document.getElementById('app').style.display = 'flex';
+  document.getElementById('app').style.display = '';
 }
 init();
 
